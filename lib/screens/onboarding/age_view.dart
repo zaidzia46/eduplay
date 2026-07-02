@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:eduplay/theme/app_text_styles.dart';
 import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
 
 import '../../controller/onboarding_controller.dart';
-import '../../routes/app_routes.dart';
 import '../../theme/app_colors.dart';
-import '../../widgets/age_selector.dart';
-import '../../widgets/progress_bar.dart';
+import '../../utils/widgets/age_selector.dart';
+import '../../utils/widgets/gender_selector.dart';
+import '../../utils/widgets/progress_bar.dart';
 
 class Age extends StatelessWidget {
   Age({super.key});
   final vm = Get.find<OnboardingViewModel>();
   @override
   Widget build(BuildContext context) {
+    final h = MediaQuery.of(context).size.height;
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -35,7 +35,7 @@ class Age extends StatelessWidget {
               ),
             ),
             Positioned(
-              top: 180,
+              top: h * 0.2,
               left: 0,
               right: 0,
               child: Center(
@@ -57,44 +57,48 @@ class Age extends StatelessWidget {
               ),
             ),
             Positioned(
-              bottom: 190,
+              top: h * 0.5,
               left: 0,
               right: 0,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  children: [
-                    SizedBox(height: 20),
+              child: SingleChildScrollView(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      SizedBox(height: 20),
 
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.calendar_month,
-                          size: 30,
-                          color: AppColors.secondary,
-                        ),
-                        SizedBox(width: 5),
-                        Text("Age", style: AppTextStyles.bodyLarge),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    AgeSelector(),
-                    SizedBox(height: 20),
-
-                    ElevatedButton(
-                      onPressed: vm.goToLevelScreen,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.secondary,
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.calendar_month,
+                            size: 30,
+                            color: AppColors.secondary,
+                          ),
+                          SizedBox(width: 5),
+                          Text("Age", style: AppTextStyles.bodyLarge),
+                        ],
                       ),
-                      child: Text("Next", style: AppTextStyles.buttonLarge),
-                    ),
-                    SizedBox(height: 20),
-                  ],
+                      SizedBox(height: 20),
+                      AgeSelector(),
+                      SizedBox(height: 20),
+                      GenderSelector(),
+                      SizedBox(height: 20),
+
+                      ElevatedButton(
+                        onPressed: vm.goToLevelScreen,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.secondary,
+                        ),
+                        child: Text("Next", style: AppTextStyles.buttonLarge),
+                      ),
+                      SizedBox(height: 20),
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:linear_progress_bar/linear_progress_bar.dart';
-import '../theme/app_colors.dart';
+import '../../theme/app_colors.dart';
 
 class OnboardingProgressBar extends StatelessWidget {
   final int currentStep;

@@ -36,6 +36,8 @@ flutter:
         - asset: assets/fonts/Nunito-VariableFont_wght.ttf
         - asset: assets/fonts/Nunito-SemiBold.ttf
           weight: 600
+        - asset: assets/fonts/Nunito-Bold.ttf
+          weight: 800
         - asset: assets/fonts/Nunito-Italic-VariableFont_wght.ttf
           style: italic
   #   - family: Trajan Pro

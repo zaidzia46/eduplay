@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
@@ -7,7 +9,7 @@ import '../routes/app_routes.dart';
 class OnboardingViewModel extends GetxController {
   final nameController = TextEditingController();
   var selectedAge = '6'.obs;
-  var selectedLevel = 'Beginner'.obs;
+  var selectedGender = 'Male'.obs;
   var currentStep = 0.obs;
 
   // Validation
@@ -29,13 +31,18 @@ class OnboardingViewModel extends GetxController {
 
   void goToLevelScreen() {
     currentStep.value = 2;
-    Get.toNamed(AppRoutes.onboardingLevel);
+    Get.toNamed(AppRoutes.onboardingReady);
   }
 
   void finishOnboarding() {
     GetStorage().write('isOnboarded', true);
     // Save to Hive later — for now just navigate
     Get.offAllNamed(AppRoutes.dashboard);
+  }
+
+  void gender(String gender) {
+    selectedGender.value = gender;
+    log(selectedGender.value);
   }
 
   @override

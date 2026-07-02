@@ -6,13 +6,14 @@ import 'package:lottie/lottie.dart';
 import '../../controller/onboarding_controller.dart';
 import '../../routes/app_routes.dart';
 import '../../theme/app_colors.dart';
-import '../../widgets/progress_bar.dart';
+import '../../utils/widgets/progress_bar.dart';
 
 class Name extends StatelessWidget {
   Name({super.key});
   final vm = Get.find<OnboardingViewModel>();
   @override
   Widget build(BuildContext context) {
+    final h = MediaQuery.of(context).size.height;
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -34,7 +35,7 @@ class Name extends StatelessWidget {
               ),
             ),
             Positioned(
-              top: 180,
+              top: h * 0.2,
               left: 0,
               right: 0,
               child: Center(
@@ -56,7 +57,7 @@ class Name extends StatelessWidget {
               ),
             ),
             Positioned(
-              bottom: 190,
+              top: h * 0.57,
               left: 0,
               right: 0,
               child: Container(
@@ -74,7 +75,7 @@ class Name extends StatelessWidget {
                       children: [
                         Icon(Icons.person, size: 30, color: AppColors.primary),
                         SizedBox(width: 5),
-                        Text("Child's Name", style: AppTextStyles.bodyLarge),
+                        Text("Name", style: AppTextStyles.bodyLarge),
                       ],
                     ),
                     SizedBox(height: 20),
