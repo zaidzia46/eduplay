@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
     final bool isOnboarded = GetStorage().read('isOnboarded') ?? false;
 
     if (isOnboarded) {
-      Get.offNamed(AppRoutes.dashboard);
+      Get.offNamed(AppRoutes.home);
     } else {
       Get.offNamed(AppRoutes.onboardingName);
     }

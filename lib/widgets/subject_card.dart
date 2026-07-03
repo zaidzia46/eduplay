@@ -19,7 +19,7 @@ class SubjectCard extends StatelessWidget {
       // onTap: () => vm.onSubjectTap(subject),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.background,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppColors.border),
         ),

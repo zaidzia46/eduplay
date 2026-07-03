@@ -28,7 +28,7 @@ class DashBoard extends StatelessWidget {
       size.height * 0.45,
     );
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.white,
       body: Stack(
         children: [
           Container(

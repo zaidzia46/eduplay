@@ -37,7 +37,7 @@ class OnboardingController extends GetxController {
   void finishOnboarding() {
     GetStorage().write('isOnboarded', true);
     // Save to Hive later — for now just navigate
-    Get.offAllNamed(AppRoutes.dashboard);
+    Get.offAllNamed(AppRoutes.home);
   }
 
   void gender(String gender) {
