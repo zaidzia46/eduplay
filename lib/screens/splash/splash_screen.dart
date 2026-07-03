@@ -11,6 +11,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  @override
   void initState() {
     super.initState();
     _navigate();
@@ -19,7 +20,8 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _navigate() async {
     await Future.delayed(const Duration(seconds: 2));
 
-    final bool isOnboarded = GetStorage().read('isOnboarded') ?? false;
+    final box = GetStorage();
+    final bool isOnboarded = box.read('isOnboarded') ?? false;
 
     if (isOnboarded) {
       Get.offNamed(AppRoutes.home);

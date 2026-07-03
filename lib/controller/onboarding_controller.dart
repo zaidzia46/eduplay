@@ -34,8 +34,8 @@ class OnboardingController extends GetxController {
     Get.toNamed(AppRoutes.onboardingReady);
   }
 
-  void finishOnboarding() {
-    GetStorage().write('isOnboarded', true);
+  Future<void> finishOnboarding() async {
+    await GetStorage().write('isOnboarded', true);
     // Save to Hive later — for now just navigate
     Get.offAllNamed(AppRoutes.home);
   }
