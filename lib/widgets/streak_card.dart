@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 
 import '../../theme/app_text_styles.dart';
 
-class ActivityTracker extends StatelessWidget {
+class StreakCard extends StatelessWidget {
   final int num;
   final Image image;
 
-  const ActivityTracker({super.key, required this.num, required this.image});
+  const StreakCard({super.key, required this.num, required this.image});
 
   @override
   Widget build(BuildContext context) {

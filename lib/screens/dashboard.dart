@@ -1,16 +1,21 @@
 import 'dart:developer';
 
 import 'package:eduplay/theme/app_colors.dart';
+import 'package:eduplay/widgets/title_row.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 
-import '../controller/onboarding_controller.dart';
+import '../controller/dashboard_controller.dart';
 import '../theme/app_text_styles.dart';
-import '../utils/widgets/activity_tracker.dart';
+import '../widgets/continue_learning_card.dart';
+import '../widgets/streak_card.dart';
+import '../widgets/circular_loader.dart';
+import '../widgets/subject_card.dart';
 
 class DashBoard extends StatelessWidget {
   DashBoard({super.key});
-  final vm = Get.find<OnboardingViewModel>();
+  final vm = Get.find<DashboardController>();
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +24,9 @@ class DashBoard extends StatelessWidget {
     final bannerWidth = size.width - 24;
     final bannerHeight = bannerWidth * 841 / 1871;
     final topBackgroundHeight = (media.padding.top + 97 + bannerHeight).clamp(
-      260.0,
+      250.0,
       size.height * 0.45,
     );
-
-    log('Dashboard: ${vm.selectedGender.value}');
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Stack(
@@ -47,7 +50,7 @@ class DashBoard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    SizedBox(height: 5),
+                    SizedBox(height: 15),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -61,9 +64,7 @@ class DashBoard extends StatelessWidget {
                           child: Center(
                             child: ClipOval(
                               child: Image.asset(
-                                vm.selectedGender.value.toLowerCase() == 'male'
-                                    ? 'assets/images/boy.png'
-                                    : 'assets/images/girl.png',
+                                'assets/images/girl.png',
                                 fit: BoxFit.cover,
                                 height: 50,
                                 width: 50,
@@ -78,7 +79,8 @@ class DashBoard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Hi, ${vm.nameController.value.text.capitalize}!',
+                                // 'Hi, ${vm.nameController.value.text.capitalize}!',
+                                'Hi, Laiba!',
                                 style: AppTextStyles.bodyLarge.copyWith(
                                   color: AppColors.white,
                                   fontWeight: FontWeight.bold,
@@ -97,7 +99,7 @@ class DashBoard extends StatelessWidget {
                           ),
                         ),
                         SizedBox(width: 5),
-                        ActivityTracker(
+                        StreakCard(
                           num: 123,
                           image: Image(
                             image: AssetImage('assets/images/star.png'),
@@ -106,7 +108,7 @@ class DashBoard extends StatelessWidget {
                           ),
                         ),
                         SizedBox(width: 8),
-                        ActivityTracker(
+                        StreakCard(
                           num: 12,
                           image: Image(
                             image: AssetImage('assets/images/3d-fire.png'),
@@ -139,7 +141,7 @@ class DashBoard extends StatelessWidget {
                           bottom: (size.width * 0.055)
                               .clamp(18.0, 30.0)
                               .toDouble(),
-                          width: (size.width * 0.26)
+                          width: (size.width * 0.35)
                               .clamp(125.0, 170.0)
                               .toDouble(),
                           height: (size.width * 0.065)
@@ -154,16 +156,26 @@ class DashBoard extends StatelessWidget {
                               minimumSize: Size.zero,
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(25),
                               ),
                             ),
                             child: FittedBox(
                               fit: BoxFit.scaleDown,
-                              child: Text(
-                                "Start Learning",
-                                style: AppTextStyles.buttonMedium.copyWith(
-                                  color: Colors.white,
-                                ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Start Learning",
+                                    style: AppTextStyles.bodySmall.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(width: 5),
+                                  Icon(
+                                    Icons.arrow_forward,
+                                    color: AppColors.white,
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -171,47 +183,99 @@ class DashBoard extends StatelessWidget {
                       ],
                     ),
                     SizedBox(height: 20),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            'Choose a Subject',
-                            style: AppTextStyles.bodyLarge.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        SizedBox(width: 12),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            TextButton(
-                              onPressed: () {},
-                              style: TextButton.styleFrom(
-                                foregroundColor: AppColors.primary,
-                                padding: EdgeInsets.symmetric(vertical: 8),
+                    TitleRow(title: 'Choose a Subject', onTap: () {}),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Obx(() {
+                        if (vm.isSubjectsLoading.value) {
+                          return CircularLoader();
+                        }
 
-                                minimumSize: Size.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        if (vm.errorSubjectMessage.isNotEmpty) {
+                          return Center(
+                            child: Text(vm.errorSubjectMessage.value),
+                          );
+                        }
+                        return GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3,
+                                crossAxisSpacing: 12,
+                                mainAxisSpacing: 12,
+                                childAspectRatio: 0.85,
                               ),
-                              child: Text(
-                                'View all',
-                                style: AppTextStyles.label.copyWith(
-                                  color: AppColors.primary,
+                          itemCount: vm.subjects.length,
+                          itemBuilder: (context, index) {
+                            final subject = vm.subjects[index];
+                            return SubjectCard(subject: subject);
+                          },
+                        );
+                      }),
+                    ),
+                    SizedBox(height: 20),
+                    TitleRow(title: 'Continue Learning', onTap: () {}),
+                    SizedBox(
+                      height: 124,
+                      child: Obx(() {
+                        if (vm.isLessonLoading.value) {
+                          return CircularLoader();
+                        }
+
+                        if (vm.errorLessonMessage.isNotEmpty) {
+                          return Center(
+                            child: Text(vm.errorLessonMessage.value),
+                          );
+                        }
+
+                        if (vm.continueLearning.isEmpty) {
+                          return Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 12),
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceAlt,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: AppColors.border),
+                            ),
+                            child: Row(
+                              children: [
+                                Lottie.asset(
+                                  'assets/animations/sleep_cat.json',
                                 ),
-                              ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'No lessons in progress',
+                                        style: AppTextStyles.h4,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Pick a subject above and start\nyour learning!',
+                                        style: AppTextStyles.bodySecondary,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                            Icon(
-                              Icons.chevron_right,
-                              color: AppColors.primary,
-                              size: 18,
-                            ),
-                          ],
-                        ),
-                      ],
+                          );
+                        }
+
+                        return ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: vm.continueLearning.length,
+                          itemBuilder: (context, index) {
+                            return ContinueLearningCard(
+                              item: vm.continueLearning[index],
+                            );
+                          },
+                        );
+                      }),
                     ),
                   ],
                 ),

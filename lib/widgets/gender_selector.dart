@@ -9,7 +9,7 @@ class GenderSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final vm = Get.find<OnboardingViewModel>();
+    final vm = Get.find<OnboardingController>();
     final gender = ['Male', 'Female'];
 
     return Obx(

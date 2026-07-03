@@ -6,7 +6,7 @@ import 'package:get_storage/get_storage.dart';
 
 import '../routes/app_routes.dart';
 
-class OnboardingViewModel extends GetxController {
+class OnboardingController extends GetxController {
   final nameController = TextEditingController();
   var selectedAge = '6'.obs;
   var selectedGender = 'Male'.obs;

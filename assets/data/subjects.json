@@ -1,0 +1,44 @@
+{
+  "status": "success",
+  "data": {
+    "section_title": "Choose a Subject",
+    "subjects": [
+      {
+        "id": 1,
+        "title": "English",
+        "image_url": "english.png",
+        "button_color": "#7A4BE4"
+      },
+      {
+        "id": 2,
+        "title": "Maths",
+        "image_url": "math.png",
+        "button_color": "#59C939"
+      },
+      {
+        "id": 3,
+        "title": "Science",
+        "image_url": "science.png",
+        "button_color": "#2C91F3"
+      },
+      {
+        "id": 4,
+        "title": "Social Studies",
+        "image_url": "social_studies.png",
+        "button_color": "#FA9412"
+      },
+      {
+        "id": 5,
+        "title": "Art & Craft",
+        "image_url": "art.png",
+        "button_color": "#EE3D7F"
+      },
+      {
+        "id": 6,
+        "title": "General Knowledge",
+        "image_url": "gk.png",
+        "button_color": "#19C1CD"
+      }
+    ]
+  }
+}

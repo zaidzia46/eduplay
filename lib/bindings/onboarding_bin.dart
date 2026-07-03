@@ -5,6 +5,6 @@ import '../controller/onboarding_controller.dart';
 class OnboardingBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<OnboardingViewModel>(() => OnboardingViewModel());
+    Get.lazyPut<OnboardingController>(() => OnboardingController());
   }
 }

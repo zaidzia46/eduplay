@@ -4,15 +4,15 @@ import 'package:get/get.dart';
 import '../../controller/onboarding_controller.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
-import '../../utils/widgets/feature_tile.dart';
-import '../../utils/widgets/progress_bar.dart';
+import '../../widgets/feature_tile.dart';
+import '../../widgets/progress_bar.dart';
 
 class ReadyView extends StatelessWidget {
   const ReadyView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final vm = Get.find<OnboardingViewModel>();
+    final vm = Get.find<OnboardingController>();
 
     return Scaffold(
       body: Stack(
