@@ -5,8 +5,8 @@ class AppColors {
 
   // ─── Primary brand (purple) ───────────────────────────────────────────────
   static const Color primary = Color(0xFF7C3AED); // main purple
-  static const Color secondary = Color(0xFFF59E0B); // main purple
-  static const Color tertiary = Color(0xFF2563EB); // main purple
+  static const Color secondary = Color(0xFFF59E0B);
+  static const Color tertiary = Color(0xFF2563EB);
   static const Color primaryLight = Color(0xFF9D5FF5); // lighter purple
   static const Color primaryDark = Color(0xFF5B21B6); // darker purple
   static const Color primarySurface = Color(0xFFEDE9FE); // purple tint bg

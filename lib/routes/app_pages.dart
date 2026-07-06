@@ -8,7 +8,7 @@ import '../bindings/dashboard_bin.dart';
 import '../bindings/onboarding_bin.dart';
 import '../screens/home.dart';
 import '../screens/onboarding/age_view.dart';
-import '../screens/onboarding/ready_view.dart';
+import '../screens/onboarding/standard_view.dart';
 import '../screens/onboarding/name_view.dart';
 
 abstract class AppPages {
@@ -29,7 +29,7 @@ abstract class AppPages {
     ),
     GetPage(
       name: AppRoutes.onboardingReady,
-      page: () => ReadyView(),
+      page: () => StandardView(),
       binding: OnboardingBinding(),
       transition: Transition.rightToLeft,
       transitionDuration: const Duration(milliseconds: 400), // ← add this
