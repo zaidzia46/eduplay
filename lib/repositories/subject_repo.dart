@@ -6,7 +6,7 @@ import '../models/subjects_model.dart';
 class SubjectRepository {
   // ── Right now: loads from local JSON asset ──────────────
   // ── Later: replace this method body with an http.get() ──
-  Future<List<SubjectsModel>> getSubjects() async {
+  Future<List<SubjectsModel>> getSubjects({int? standard}) async {
     try {
       // Load local JSON
       final String response = await rootBundle.loadString(

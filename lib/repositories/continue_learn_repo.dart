@@ -4,7 +4,9 @@ import 'package:flutter/services.dart';
 import '../models/continue_learning.dart';
 
 class LessonRepository {
-  Future<List<ContinueLearningModel>> getContinueLearning() async {
+  Future<List<ContinueLearningModel>> getContinueLearning({
+    int? standard,
+  }) async {
     try {
       final String response = await rootBundle.loadString(
         'assets/data/continue_learning.json',

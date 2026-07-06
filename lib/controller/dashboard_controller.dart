@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:eduplay/controller/session_controller.dart';
 import 'package:eduplay/repositories/continue_learn_repo.dart';
 import 'package:eduplay/repositories/subject_repo.dart';
 import 'package:get/get.dart';
@@ -23,6 +24,10 @@ class DashboardController extends GetxController {
     super.onInit();
     fetchSubjects();
     fetchLessons();
+    ever(Get.find<SessionController>().currentStandard, (_) {
+      fetchSubjects();
+      fetchLessons();
+    });
   }
 
   Future<void> fetchSubjects() async {
@@ -41,6 +46,7 @@ class DashboardController extends GetxController {
   // void onSubjectTap(SubjectsModel subject) {
   //   Get.toNamed(AppRoutes.subjectHome, arguments: {'subject': subject});
   // }
+
   Future<void> fetchLessons() async {
     try {
       isLessonLoading.value = true;

@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:eduplay/controller/session_controller.dart';
 import 'package:eduplay/repositories/standard_repo.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +51,10 @@ class OnboardingController extends GetxController {
 
   Future<void> finishOnboarding() async {
     await GetStorage().write('isOnboarded', true);
-    // Save to Hive later — for now just navigate
+    if (standards.isNotEmpty) {
+      final selected = standards[selectedStandardIndex.value];
+      await Get.find<SessionController>().setCurrentStandard(selected);
+    }
     Get.offAllNamed(AppRoutes.home);
   }
 
