@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 
-import '../controller/dashboard_controller.dart';
-import '../theme/app_text_styles.dart';
-import '../widgets/continue_learning_card.dart';
-import '../widgets/streak_card.dart';
-import '../widgets/circular_loader.dart';
-import '../widgets/subject_card.dart';
+import '../../../theme/app_text_styles.dart';
+import '../../../widgets/circular_loader.dart';
+import '../../../widgets/continue_learning_card.dart';
+import '../../../widgets/streak_card.dart';
+import '../../../widgets/subject_card.dart';
+import 'dashboard_controller.dart';
 
 class DashBoard extends StatelessWidget {
   DashBoard({super.key});

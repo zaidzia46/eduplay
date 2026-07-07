@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:eduplay/theme/app_text_styles.dart';
 import 'package:get/get.dart';
 
-import '../../controller/onboarding_controller.dart';
-import '../../theme/app_colors.dart';
-import '../../widgets/progress_bar.dart';
+import '../../../theme/app_colors.dart';
+import '../../../widgets/progress_bar.dart';
+import '../onboarding_controller.dart';
 
 class Name extends StatelessWidget {
   Name({super.key});

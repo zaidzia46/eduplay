@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:eduplay/theme/app_text_styles.dart';
 import 'package:get/get.dart';
 
-import '../../controller/onboarding_controller.dart';
-import '../../theme/app_colors.dart';
-import '../../widgets/age_selector.dart';
-import '../../widgets/gender_selector.dart';
-import '../../widgets/progress_bar.dart';
+import '../../../theme/app_colors.dart';
+import '../../../widgets/age_selector.dart';
+import '../../../widgets/gender_selector.dart';
+import '../../../widgets/progress_bar.dart';
+import '../onboarding_controller.dart';
 
 class Age extends StatelessWidget {
   Age({super.key});

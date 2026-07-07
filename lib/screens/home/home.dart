@@ -1,10 +1,10 @@
-import 'package:eduplay/screens/dashboard.dart';
-import 'package:eduplay/screens/subjects.dart';
+import 'package:eduplay/screens/home/subjects/subjects.dart';
 import 'package:eduplay/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../controller/bottomNavigation_controller.dart';
+import 'bottom_nav/bottomNavigation_controller.dart';
+import 'dashboard/dashboard.dart';
 
 class Home extends StatelessWidget {
   Home({super.key});

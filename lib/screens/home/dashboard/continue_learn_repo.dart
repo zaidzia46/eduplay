@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
 
-import '../models/continue_learning.dart';
+import '../../../models/continue_learning_model.dart';
 
 class LessonRepository {
   Future<List<ContinueLearningModel>> getContinueLearning({

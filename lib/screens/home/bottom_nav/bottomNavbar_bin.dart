@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../controller/bottomNavigation_controller.dart';
+import 'bottomNavigation_controller.dart';
 
 class BottomNavBinding extends Bindings {
   @override

@@ -1,15 +1,16 @@
-import 'package:eduplay/bindings/bottomNavbar_bin.dart';
 import 'package:flutter/animation.dart';
 import 'package:get/get.dart';
 import 'package:eduplay/routes/app_routes.dart';
 
 import 'package:eduplay/screens/splash/splash_screen.dart';
-import '../bindings/dashboard_bin.dart';
-import '../bindings/onboarding_bin.dart';
-import '../screens/home.dart';
-import '../screens/onboarding/age_view.dart';
-import '../screens/onboarding/standard_view.dart';
-import '../screens/onboarding/name_view.dart';
+
+import '../screens/home/bottom_nav/bottomNavbar_bin.dart';
+import '../screens/home/dashboard/dashboard_bin.dart';
+import '../screens/home/home.dart';
+import '../screens/onboarding/onboarding_bin.dart';
+import '../screens/onboarding/onborading_screens/age_view.dart';
+import '../screens/onboarding/onborading_screens/name_view.dart';
+import '../screens/onboarding/onborading_screens/standard_view.dart';
 
 abstract class AppPages {
   static final pages = [

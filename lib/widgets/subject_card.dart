@@ -1,8 +1,8 @@
-import 'package:eduplay/controller/dashboard_controller.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
 import '../models/subjects_model.dart';
+import '../screens/home/dashboard/dashboard_controller.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 
@@ -32,7 +32,7 @@ class SubjectCard extends StatelessWidget {
 
             // Subject title
             Text(
-              subject.title,
+              subject.subjectTitle,
               style: AppTextStyles.caption.copyWith(
                 color: AppColors.textPrimary,
               ),

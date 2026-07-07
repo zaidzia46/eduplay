@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
-import '../models/continue_learning.dart';
+import '../models/continue_learning_model.dart';
 
 class ContinueLearningCard extends StatelessWidget {
   final ContinueLearningModel item;

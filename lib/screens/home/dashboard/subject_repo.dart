@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/services.dart';
-import '../models/subjects_model.dart';
+
+import '../../../models/subjects_model.dart';
 
 class SubjectRepository {
   // ── Right now: loads from local JSON asset ──────────────

@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
-import '../models/standards.dart';
+import '../models/standards_model.dart';
 
 class SessionController extends GetxController {
   var currentStandard = Rxn<StandardModel>();

@@ -1,5 +1,6 @@
-import 'package:eduplay/controller/dashboard_controller.dart';
 import 'package:get/get.dart';
+
+import 'dashboard_controller.dart';
 
 class DashboardBinding extends Bindings {
   @override

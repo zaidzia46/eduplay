@@ -1,12 +1,12 @@
 import 'dart:developer';
 
 import 'package:eduplay/controller/session_controller.dart';
-import 'package:eduplay/repositories/continue_learn_repo.dart';
-import 'package:eduplay/repositories/subject_repo.dart';
+import 'package:eduplay/screens/home/dashboard/subject_repo.dart';
 import 'package:get/get.dart';
 
-import '../models/continue_learning.dart';
-import '../models/subjects_model.dart';
+import '../../../models/continue_learning_model.dart';
+import '../../../models/subjects_model.dart';
+import 'continue_learn_repo.dart';
 
 class DashboardController extends GetxController {
   final SubjectRepository _subjectRepo = SubjectRepository();

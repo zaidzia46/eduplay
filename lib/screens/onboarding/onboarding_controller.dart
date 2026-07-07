@@ -1,13 +1,13 @@
 import 'dart:developer';
 
 import 'package:eduplay/controller/session_controller.dart';
-import 'package:eduplay/repositories/standard_repo.dart';
+import 'package:eduplay/screens/onboarding/standard_repo.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
-import '../models/standards.dart';
-import '../routes/app_routes.dart';
+import '../../models/standards_model.dart';
+import '../../routes/app_routes.dart';
 
 class OnboardingController extends GetxController {
   StandardRepository _standardRepo = StandardRepository();
