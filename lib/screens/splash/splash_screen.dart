@@ -26,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (isOnboarded) {
       Get.offNamed(AppRoutes.home);
     } else {
-      Get.offNamed(AppRoutes.onboardingName);
+      Get.offNamed(AppRoutes.login);
     }
   }
 

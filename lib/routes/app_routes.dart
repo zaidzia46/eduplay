@@ -3,6 +3,10 @@ abstract class AppRoutes {
   static const onboardingName = '/onboarding/name';
   static const onboardingAge = '/onboarding/age';
   static const onboardingReady = '/onboarding/ready';
+  static const String login = '/login';
+  static const String register = '/register';
+  static const String profileSwitcher = '/profile-switcher';
+  static const String createProfile = '/create-profile';
   static const home = '/home';
   static const topics = '/topics';
 }

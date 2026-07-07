@@ -7,4 +7,8 @@ class StandardModel {
   factory StandardModel.fromJson(Map<String, dynamic> json) {
     return StandardModel(id: json['id'], standard: json['standard']);
   }
+
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'standard': standard};
+  }
 }

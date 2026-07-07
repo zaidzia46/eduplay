@@ -12,4 +12,8 @@ class InstitutionModel {
       city: json['city'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'name': name, 'city': city};
+  }
 }
