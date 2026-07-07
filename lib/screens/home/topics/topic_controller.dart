@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:eduplay/screens/home/topics/topics_repo.dart';
 import 'package:get/get.dart';
 
@@ -22,14 +24,14 @@ class TopicController extends GetxController {
 
   Future<void> fetchTopics() async {
     try {
-      isLoading.value = false;
+      isLoading.value = true;
       error.value = '';
       topics.value = await _topicRepo.getTopics(subjectId: subject.id);
     } catch (e) {
       isLoading.value = false;
-      error.value = 'Failed to load topics';
+      error.value = '2) Failed to load topics ${e}';
     } finally {
-      isLoading.value = true;
+      isLoading.value = false;
     }
   }
 

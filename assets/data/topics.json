@@ -3,27 +3,27 @@
   "data": {
     "by_subject": {
       "1": [
-        { "id": 101, "title": "Vowels and Consonants", "progress_percent": 40 },
-        { "id": 102, "title": "Simple Sentences", "progress_percent": 0 },
-        { "id": 103, "title": "Rhyming Words", "progress_percent": 0 }
+        { "id": 101, "topic": "Vowels and Consonants", "progress_percent": 40 },
+        { "id": 102, "topic": "Simple Sentences", "progress_percent": 0 },
+        { "id": 103, "topic": "Rhyming Words", "progress_percent": 0 }
       ],
       "2": [
-        { "id": 201, "title": "Addition Basics", "progress_percent": 60 },
-        { "id": 202, "title": "Subtraction Basics", "progress_percent": 20 },
-        { "id": 203, "title": "Shapes", "progress_percent": 0 }
+        { "id": 201, "topic": "Addition Basics", "progress_percent": 60 },
+        { "id": 202, "topic": "Subtraction Basics", "progress_percent": 20 },
+        { "id": 203, "topic": "Shapes", "progress_percent": 0 }
       ],
       "3": [
-        { "id": 301, "title": "Plants Around Us", "progress_percent": 70 },
-        { "id": 302, "title": "Animals and Habitats", "progress_percent": 10 }
+        { "id": 301, "topic": "Plants Around Us", "progress_percent": 70 },
+        { "id": 302, "topic": "Animals and Habitats", "progress_percent": 10 }
       ],
       "4": [
-        { "id": 401, "title": "Our Pakistan", "progress_percent": 30 }
+        { "id": 401, "topic": "Our Pakistan", "progress_percent": 30 }
       ],
       "5": [
-        { "id": 501, "title": "Colors and Blending", "progress_percent": 0 }
+        { "id": 501, "topic": "Colors and Blending", "progress_percent": 0 }
       ],
       "6": [
-        { "id": 601, "title": "World Capitals", "progress_percent": 0 }
+        { "id": 601, "topic": "World Capitals", "progress_percent": 0 }
       ]
     }
   }

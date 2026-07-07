@@ -7,6 +7,8 @@ import 'package:eduplay/screens/splash/splash_screen.dart';
 import '../screens/home/bottom_nav/bottomNavbar_bin.dart';
 import '../screens/home/dashboard/dashboard_bin.dart';
 import '../screens/home/home.dart';
+import '../screens/home/topics/topic_screen.dart';
+import '../screens/home/topics/topics_bin.dart';
 import '../screens/onboarding/onboarding_bin.dart';
 import '../screens/onboarding/onborading_screens/age_view.dart';
 import '../screens/onboarding/onborading_screens/name_view.dart';
@@ -44,6 +46,12 @@ abstract class AppPages {
         BottomNavBinding().dependencies();
         DashboardBinding().dependencies();
       }),
+    ),
+
+    GetPage(
+      name: AppRoutes.topics,
+      page: () => TopicScreen(),
+      binding: TopicsBinding(),
     ),
   ];
 }

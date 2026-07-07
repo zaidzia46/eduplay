@@ -1,5 +1,7 @@
 import 'dart:developer';
 
+import 'package:eduplay/routes/app_pages.dart';
+import 'package:eduplay/routes/app_routes.dart';
 import 'package:eduplay/theme/app_colors.dart';
 import 'package:eduplay/widgets/title_row.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +13,8 @@ import '../../../widgets/circular_loader.dart';
 import '../../../widgets/continue_learning_card.dart';
 import '../../../widgets/streak_card.dart';
 import '../../../widgets/subject_card.dart';
+import '../topics/topic_controller.dart';
+import '../topics/topic_screen.dart';
 import 'dashboard_controller.dart';
 
 class DashBoard extends StatelessWidget {
@@ -209,7 +213,15 @@ class DashBoard extends StatelessWidget {
                           itemCount: vm.subjects.length,
                           itemBuilder: (context, index) {
                             final subject = vm.subjects[index];
-                            return SubjectCard(subject: subject);
+                            return SubjectCard(
+                              subject: subject,
+                              onPressed: () {
+                                Get.toNamed(
+                                  AppRoutes.topics,
+                                  arguments: {'subject': subject},
+                                );
+                              },
+                            );
                           },
                         );
                       }),

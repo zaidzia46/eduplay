@@ -34,7 +34,6 @@ class DashboardController extends GetxController {
     try {
       isSubjectsLoading.value = true;
       errorSubjectMessage.value = '';
-      await Future.delayed(const Duration(seconds: 3));
       subjects.value = await _subjectRepo.getSubjects();
     } catch (e) {
       errorSubjectMessage.value = 'Could not load subjects';
@@ -51,7 +50,6 @@ class DashboardController extends GetxController {
     try {
       isLessonLoading.value = true;
       errorLessonMessage.value = '';
-      await Future.delayed(const Duration(seconds: 3));
       continueLearning.value = await _lessonRepo.getContinueLearning();
     } catch (e) {
       errorLessonMessage.value = 'Could not load lessons';

@@ -2,13 +2,11 @@ class TopicModel {
   final int id;
   final String topic;
   final int progressPercent;
-  final String? imageUrl;
 
   TopicModel({
     required this.id,
     required this.topic,
     required this.progressPercent,
-    this.imageUrl,
   });
 
   factory TopicModel.fromJson(Map<String, dynamic> json) {
@@ -16,7 +14,6 @@ class TopicModel {
       id: json['id'],
       topic: json['topic'],
       progressPercent: json['progress_percent'],
-      imageUrl: json['image_url'],
     );
   }
 

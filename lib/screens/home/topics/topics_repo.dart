@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/services.dart';
 
 import '../../../models/topics_model.dart';
@@ -24,13 +25,14 @@ class TopicRepository {
       final Map<String, dynamic> bySubject = json['data']['by_subject'];
 
       final List topics = bySubject['$subjectId'] ?? [];
+      log('Topics: $topics');
       return topics.map((item) => TopicModel.fromJson(item)).toList();
     } catch (e) {
-      throw Exception('Failed to load topics: $e');
+      throw Exception('1) Failed to load topics: $e');
     }
   }
 
-  // ── When backend is ready, replace with this: ───────────
+  // ────────────── When backend is ready, replace with this: ─────────────────
   // Future<List<TopicModel>> getTopics({
   //   required int subjectId,
   //   int? standardId,
