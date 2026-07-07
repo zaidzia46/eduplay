@@ -1,0 +1,13 @@
+{
+  "status": "success",
+  "data": {
+    "progress": {
+      "101": { "status": "in_progress", "percent_complete": 40 },
+      "201": { "status": "in_progress", "percent_complete": 60 },
+      "202": { "status": "in_progress", "percent_complete": 20 },
+      "301": { "status": "in_progress", "percent_complete": 70 },
+      "302": { "status": "in_progress", "percent_complete": 10 },
+      "401": { "status": "in_progress", "percent_complete": 30 }
+    }
+  }
+}

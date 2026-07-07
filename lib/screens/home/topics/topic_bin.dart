@@ -5,10 +5,11 @@ import 'package:get/get.dart';
 import '../../../models/subjects_model.dart';
 
 class TopicBinding extends Bindings {
-  final args = Get.arguments as Map<String, dynamic>;
   @override
   void dependencies() {
+    final args = Get.arguments as Map<String, dynamic>;
     final subject = args['subject'] as SubjectsModel;
+
     Get.lazyPut<TopicController>(() => TopicController(subject: subject));
   }
 }
