@@ -38,12 +38,8 @@ class CreateProfileViewModel extends GetxController {
 
   // Avatar options
   final avatars = [
-    'assets/images/avatars/boy1.png',
-    'assets/images/avatars/boy2.png',
-    'assets/images/avatars/girl1.png',
-    'assets/images/avatars/girl2.png',
-    'assets/images/avatars/robot.png',
-    'assets/images/avatars/lion.png',
+    'assets/images/avatars/boy.png',
+    'assets/images/avatars/girl.png',
   ];
 
   @override

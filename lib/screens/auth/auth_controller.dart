@@ -54,10 +54,6 @@ class AuthViewModel extends GetxController {
       errorMessage.value = 'Please enter your email.';
       return false;
     }
-    if (!GetUtils.isEmail(emailController.text.trim())) {
-      errorMessage.value = 'Please enter a valid email.';
-      return false;
-    }
     if (passwordController.text.isEmpty) {
       errorMessage.value = 'Please enter your password.';
       return false;

@@ -28,7 +28,6 @@ class CreateProfileView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Avatar picker ───────────────────────────────
             Text('Pick an avatar', style: AppTextStyles.label),
             const SizedBox(height: 12),
             SizedBox(
@@ -79,7 +78,6 @@ class CreateProfileView extends StatelessWidget {
             ),
             const SizedBox(height: 24),
 
-            // ── Name ────────────────────────────────────────
             Text("Child's Name", style: AppTextStyles.label),
             const SizedBox(height: 6),
             TextField(
@@ -91,7 +89,6 @@ class CreateProfileView extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
-            // ── Username ─────────────────────────────────────
             Text('Username', style: AppTextStyles.label),
             const SizedBox(height: 6),
             TextField(
@@ -103,7 +100,6 @@ class CreateProfileView extends StatelessWidget {
             ),
             const SizedBox(height: 24),
 
-            // ── Standard picker ──────────────────────────────
             Text('Grade / Standard', style: AppTextStyles.label),
             const SizedBox(height: 12),
             Obx(
@@ -144,7 +140,6 @@ class CreateProfileView extends StatelessWidget {
             ),
             const SizedBox(height: 24),
 
-            // ── Institution search ───────────────────────────
             Text('Institution', style: AppTextStyles.label),
             const SizedBox(height: 6),
             TextField(
