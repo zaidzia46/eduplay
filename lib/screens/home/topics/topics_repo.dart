@@ -54,8 +54,6 @@ class TopicRepository {
           progressPercent: progressRow['percent_complete'] ?? 0,
         );
       }).toList();
-
-      log('Topics: $topics');
       return topics;
     } catch (e) {
       throw Exception('Failed to load topics: $e');

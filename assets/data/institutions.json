@@ -1,0 +1,15 @@
+{
+  "status": "success",
+  "data": {
+    "institutions": [
+      { "id": 1, "name": "Beaconhouse School System", "city": "Lahore" },
+      { "id": 2, "name": "The City School", "city": "Lahore" },
+      { "id": 3, "name": "Lahore Grammar School", "city": "Lahore" },
+      { "id": 4, "name": "Roots School System", "city": "Islamabad" },
+      { "id": 5, "name": "Aitchison College", "city": "Lahore" },
+      { "id": 6, "name": "Karachi Grammar School", "city": "Karachi" },
+      { "id": 7, "name": "Froebel's International School", "city": "Islamabad" },
+      { "id": 8, "name": "Homeschooled / not listed", "city": null }
+    ]
+  }
+}

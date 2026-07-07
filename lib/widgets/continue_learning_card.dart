@@ -34,7 +34,7 @@ class ContinueLearningCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                item.title,
+                item.subjectTitle,
                 style: AppTextStyles.label.copyWith(
                   color: AppColors.textPrimary,
                 ),
@@ -52,7 +52,7 @@ class ContinueLearningCard extends StatelessWidget {
 
           // Lesson title
           Text(
-            item.subtitle,
+            item.topicTitle,
             style: AppTextStyles.bodySmall.copyWith(
               color: AppColors.textPrimary,
             ),
