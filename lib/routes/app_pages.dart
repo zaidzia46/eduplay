@@ -16,9 +16,10 @@ import '../screens/onboarding/onboarding_bin.dart';
 import '../screens/onboarding/onborading_screens/age_view.dart';
 import '../screens/onboarding/onborading_screens/name_view.dart';
 import '../screens/onboarding/onborading_screens/standard_view.dart';
-import '../screens/profile/create_profile_screen.dart';
-import '../screens/profile/profile_switcher_bin.dart';
-import '../screens/profile/profile_switcher_screen.dart';
+import '../screens/profile/create_child_profile/create_child_profile_bin.dart';
+import '../screens/profile/create_child_profile/create_child_profile_screen.dart';
+import '../screens/profile/profile_switcher/profile_switcher_bin.dart';
+import '../screens/profile/profile_switcher/profile_switcher_screen.dart';
 
 abstract class AppPages {
   static final pages = [
@@ -65,6 +66,7 @@ abstract class AppPages {
     GetPage(
       name: AppRoutes.createProfile,
       page: () => const CreateProfileView(),
+      binding: ChildProfileBinding(),
       transition: Transition.rightToLeft,
       transitionDuration: const Duration(milliseconds: 400),
     ),
@@ -82,6 +84,7 @@ abstract class AppPages {
       name: AppRoutes.topics,
       page: () => TopicScreen(),
       binding: TopicBinding(),
+      transition: Transition.fadeIn,
     ),
   ];
 }

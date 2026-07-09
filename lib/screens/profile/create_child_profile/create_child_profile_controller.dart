@@ -1,21 +1,18 @@
-// viewmodels/create_profile_viewmodel.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../models/institution_model.dart';
-import '../../models/standards_model.dart';
-import '../../routes/app_routes.dart';
-import 'institution_repo.dart';
+import '../../../models/institution_model.dart';
+import '../../../models/standards_model.dart';
+import '../../../routes/app_routes.dart';
+import '../institution_repo.dart';
 
 class CreateProfileViewModel extends GetxController {
   final InstitutionRepository _institutionRepo = InstitutionRepository();
 
-  // Form controllers
   final nameController = TextEditingController();
   final usernameController = TextEditingController();
   final searchController = TextEditingController();
 
-  // State
   var institutions = <InstitutionModel>[].obs;
   var isLoadingInst = false.obs;
   var selectedStandard = Rxn<StandardModel>();
@@ -36,17 +33,22 @@ class CreateProfileViewModel extends GetxController {
     StandardModel(id: 8, standard: 'Grade 5'),
   ];
 
-  // Avatar options
+  // Avatar option
   final avatars = [
-    'assets/images/avatars/boy.png',
-    'assets/images/avatars/girl.png',
+    'assets/images/boy1.png',
+    'assets/images/boy2.png',
+    'assets/images/boy3.png',
+    'assets/images/boy4.png',
+    'assets/images/girl1.png',
+    'assets/images/girl2.png',
+    'assets/images/girl3.png',
+    'assets/images/girl4.png',
   ];
 
   @override
   void onInit() {
     super.onInit();
     fetchInstitutions();
-    // Listen to search field
     searchController.addListener(() {
       fetchInstitutions(search: searchController.text);
     });

@@ -47,4 +47,20 @@ class ChildProfileModel {
       avatar: avatarUrl ?? this.avatar,
     );
   }
+
+  // models/child_profile_model.dart — add this method
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'username': username,
+      'avatar_url': avatar,
+      'standard': {'id': standard.id, 'standard': standard.standard},
+      'institution': {
+        'id': institution.id,
+        'name': institution.name,
+        'city': institution.city,
+      },
+    };
+  }
 }

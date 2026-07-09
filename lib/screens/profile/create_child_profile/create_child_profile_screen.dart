@@ -1,9 +1,8 @@
-// views/profile_switcher/create_profile_view.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../theme/app_colors.dart';
-import '../../theme/app_text_styles.dart';
-import 'child_profile_controller.dart';
+import '../../../theme/app_colors.dart';
+import '../../../theme/app_text_styles.dart';
+import 'create_child_profile_controller.dart';
 
 class CreateProfileView extends StatelessWidget {
   const CreateProfileView({super.key});
@@ -11,6 +10,7 @@ class CreateProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = Get.find<CreateProfileViewModel>();
+    const double avatarSize = 72;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -30,51 +30,63 @@ class CreateProfileView extends StatelessWidget {
           children: [
             Text('Pick an avatar', style: AppTextStyles.label),
             const SizedBox(height: 12),
-            SizedBox(
-              height: 80,
-              child: Obx(
-                () => ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: vm.avatars.length,
-                  itemBuilder: (context, index) {
-                    final avatar = vm.avatars[index];
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 1,
+              ),
+              itemCount: vm.avatars.length,
+              itemBuilder: (context, index) {
+                final avatar = vm.avatars[index];
+
+                return Center(
+                  child: Obx(() {
                     final isSelected = vm.selectedAvatar.value == avatar;
+
                     return GestureDetector(
                       onTap: () => vm.selectAvatar(avatar),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        margin: const EdgeInsets.only(right: 12),
-                        width: 68,
-                        height: 68,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: isSelected
-                                ? AppColors.primary
-                                : AppColors.border,
-                            width: isSelected ? 3 : 1.5,
-                          ),
-                          color: isSelected
-                              ? AppColors.primarySurface
-                              : Colors.white,
-                        ),
-                        child: ClipOval(
-                          child: Image.asset(
-                            avatar,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Icon(
-                              Icons.person,
+                      child: SizedBox(
+                        width: avatarSize,
+                        height: avatarSize,
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
                               color: isSelected
-                                  ? AppColors.primary
-                                  : AppColors.textMuted,
+                                  ? Colors.yellow.shade600
+                                  : AppColors.border,
+                              width: isSelected ? 4 : 3,
+                            ),
+                            color: isSelected ? Colors.yellow : Colors.white,
+                          ),
+                          child: Center(
+                            child: ClipOval(
+                              child: Image.asset(
+                                avatar,
+                                width: avatarSize * 0.83,
+                                height: avatarSize * 0.83,
+                                fit: BoxFit.contain,
+                                errorBuilder: (_, __, ___) => Icon(
+                                  Icons.person,
+                                  size: avatarSize * 0.5,
+                                  color: isSelected
+                                      ? AppColors.primary
+                                      : AppColors.textMuted,
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
                     );
-                  },
-                ),
-              ),
+                  }),
+                );
+              },
             ),
             const SizedBox(height: 24),
 
@@ -163,81 +175,86 @@ class CreateProfileView extends StatelessWidget {
                   ),
                 );
               }
-              return ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: vm.institutions.length,
-                itemBuilder: (context, index) {
-                  final inst = vm.institutions[index];
-                  final isSelected =
-                      vm.selectedInstitution.value?.id == inst.id;
-                  return GestureDetector(
-                    onTap: () => vm.selectInstitution(inst),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      margin: const EdgeInsets.only(bottom: 8),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 14,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? AppColors.primarySurface
-                            : Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: isSelected
-                              ? AppColors.primary
-                              : AppColors.border,
-                          width: isSelected ? 1.5 : 1,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.school_outlined,
+              return SizedBox(
+                height: MediaQuery.of(context).size.height * 0.35,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: vm.institutions.length,
+                  itemBuilder: (context, index) {
+                    final inst = vm.institutions[index];
+
+                    return Obx(() {
+                      final isSelected =
+                          vm.selectedInstitution.value?.id == inst.id;
+
+                      return GestureDetector(
+                        onTap: () => vm.selectInstitution(inst),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          margin: const EdgeInsets.only(bottom: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                          decoration: BoxDecoration(
                             color: isSelected
-                                ? AppColors.primary
-                                : AppColors.textMuted,
-                            size: 20,
+                                ? AppColors.primarySurface
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isSelected
+                                  ? AppColors.primary
+                                  : AppColors.border,
+                              width: isSelected ? 1.5 : 1,
+                            ),
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  inst.name,
-                                  style: AppTextStyles.body.copyWith(
-                                    color: isSelected
-                                        ? AppColors.primary
-                                        : AppColors.textPrimary,
-                                  ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.school_outlined,
+                                color: isSelected
+                                    ? AppColors.primary
+                                    : AppColors.textMuted,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      inst.name,
+                                      style: AppTextStyles.body.copyWith(
+                                        color: isSelected
+                                            ? AppColors.primary
+                                            : AppColors.textPrimary,
+                                      ),
+                                    ),
+                                    if (inst.city != null)
+                                      Text(
+                                        inst.city!,
+                                        style: AppTextStyles.bodySmall,
+                                      ),
+                                  ],
                                 ),
-                                if (inst.city != null)
-                                  Text(
-                                    inst.city!,
-                                    style: AppTextStyles.bodySmall,
-                                  ),
-                              ],
-                            ),
+                              ),
+                              if (isSelected)
+                                const Icon(
+                                  Icons.check_circle,
+                                  color: AppColors.primary,
+                                  size: 20,
+                                ),
+                            ],
                           ),
-                          if (isSelected)
-                            const Icon(
-                              Icons.check_circle,
-                              color: AppColors.primary,
-                              size: 20,
-                            ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
+                        ),
+                      );
+                    });
+                  },
+                ),
               );
             }),
             const SizedBox(height: 24),
 
-            // ── Error ────────────────────────────────────────
             Obx(
               () => vm.errorMessage.isNotEmpty
                   ? Container(
@@ -257,7 +274,6 @@ class CreateProfileView extends StatelessWidget {
                   : const SizedBox.shrink(),
             ),
 
-            // ── Submit button ────────────────────────────────
             Obx(
               () => ElevatedButton(
                 onPressed: vm.isLoading.value ? null : vm.createProfile,
@@ -270,7 +286,7 @@ class CreateProfileView extends StatelessWidget {
                           strokeWidth: 2,
                         ),
                       )
-                    : const Text('Create Profile 🎉'),
+                    : const Text('Create Profile'),
               ),
             ),
             const SizedBox(height: 32),

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
 
-import '../../models/child_profile_model.dart';
+import '../../../models/child_profile_model.dart';
 
 class ChildProfileRepository {
   // Right now: loads from local JSON asset.

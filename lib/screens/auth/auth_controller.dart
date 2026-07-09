@@ -1,4 +1,5 @@
 // viewmodels/auth_viewmodel.dart
+import 'package:eduplay/controller/session_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -8,6 +9,7 @@ class AuthViewModel extends GetxController {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final session = Get.find<SessionController>();
 
   var isLoading = false.obs;
   var isPasswordHidden = true.obs;
@@ -23,6 +25,9 @@ class AuthViewModel extends GetxController {
 
       // TODO: replace with real API call
       await Future.delayed(const Duration(seconds: 1));
+
+      // Mark parent as logged in
+      await session.setParentLoggedIn(true);
 
       Get.offAllNamed(AppRoutes.profileSwitcher);
     } catch (e) {
@@ -40,6 +45,8 @@ class AuthViewModel extends GetxController {
 
       // TODO: replace with real API call
       await Future.delayed(const Duration(seconds: 1));
+
+      await session.setParentLoggedIn(true);
 
       Get.offAllNamed(AppRoutes.profileSwitcher);
     } catch (e) {

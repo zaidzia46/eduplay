@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:eduplay/controller/session_controller.dart';
 import 'package:eduplay/screens/home/dashboard/subject_repo.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../models/continue_learning_model.dart';
@@ -19,15 +20,32 @@ class DashboardController extends GetxController {
   var errorSubjectMessage = ''.obs;
   var errorLessonMessage = ''.obs;
 
+  final searchController = TextEditingController();
+  var searchQuery = ''.obs;
+
   @override
   void onInit() {
     super.onInit();
     fetchSubjects();
     fetchLessons();
+    searchController.addListener(() {
+      searchQuery.value = searchController.text;
+    });
     ever(Get.find<SessionController>().currentStandard, (_) {
       fetchSubjects();
       fetchLessons();
     });
+  }
+
+  List<SubjectsModel> get filteredSubjects {
+    if (searchQuery.value.isEmpty) return subjects;
+    return subjects
+        .where(
+          (s) => s.subjectTitle.toLowerCase().contains(
+            searchQuery.value.toLowerCase(),
+          ),
+        )
+        .toList();
   }
 
   Future<void> fetchSubjects() async {
@@ -40,6 +58,17 @@ class DashboardController extends GetxController {
     } finally {
       isSubjectsLoading.value = false;
     }
+  }
+
+  void clearSearch() {
+    searchController.clear();
+    searchQuery.value = '';
+  }
+
+  @override
+  void onClose() {
+    searchController.dispose();
+    super.onClose();
   }
 
   // void onSubjectTap(SubjectsModel subject) {

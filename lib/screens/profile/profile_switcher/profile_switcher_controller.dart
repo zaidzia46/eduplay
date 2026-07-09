@@ -1,11 +1,13 @@
-// viewmodels/profile_switcher_viewmodel.dart
+import 'package:eduplay/controller/session_controller.dart';
 import 'package:get/get.dart';
-import '../../models/child_profile_model.dart';
-import '../../routes/app_routes.dart';
-import 'child_profile_repo.dart';
+
+import '../../../models/child_profile_model.dart';
+import '../../../routes/app_routes.dart';
+import '../create_child_profile/create_child_profile_repo.dart';
 
 class ProfileSwitcherViewModel extends GetxController {
   final ChildProfileRepository _repo = ChildProfileRepository();
+  final session = Get.find<SessionController>();
 
   var children = <ChildProfileModel>[].obs;
   var isLoading = true.obs;
@@ -32,8 +34,8 @@ class ProfileSwitcherViewModel extends GetxController {
     }
   }
 
-  void selectChild(ChildProfileModel child) {
-    activeChild.value = child;
+  void selectChild(ChildProfileModel child) async {
+    await session.setActiveChild(child);
     Get.offAllNamed(AppRoutes.home);
   }
 

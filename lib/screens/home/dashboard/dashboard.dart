@@ -1,6 +1,3 @@
-import 'dart:developer';
-
-import 'package:eduplay/routes/app_pages.dart';
 import 'package:eduplay/routes/app_routes.dart';
 import 'package:eduplay/theme/app_colors.dart';
 import 'package:eduplay/widgets/title_row.dart';
@@ -13,8 +10,6 @@ import '../../../widgets/circular_loader.dart';
 import '../../../widgets/continue_learning_card.dart';
 import '../../../widgets/streak_card.dart';
 import '../../../widgets/subject_card.dart';
-import '../topics/topic_controller.dart';
-import '../topics/topic_screen.dart';
 import 'dashboard_controller.dart';
 
 class DashBoard extends StatelessWidget {
@@ -68,7 +63,7 @@ class DashBoard extends StatelessWidget {
                           child: Center(
                             child: ClipOval(
                               child: Image.asset(
-                                'assets/images/girl.png',
+                                'assets/images/girl1.png',
                                 fit: BoxFit.cover,
                                 height: 50,
                                 width: 50,

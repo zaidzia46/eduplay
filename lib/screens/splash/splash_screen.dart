@@ -1,11 +1,12 @@
+// views/splash/splash_screen.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-
+import '../../controller/session_controller.dart';
 import '../../routes/app_routes.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
+
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
@@ -19,15 +20,19 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _navigate() async {
     await Future.delayed(const Duration(seconds: 2));
+    final session = Get.find<SessionController>();
 
-    final box = GetStorage();
-    final bool isOnboarded = box.read('isOnboarded') ?? false;
-
-    if (isOnboarded) {
-      Get.offNamed(AppRoutes.home);
-    } else {
-      Get.offNamed(AppRoutes.login);
+    if (!session.isParentLoggedIn) {
+      Get.offAllNamed(AppRoutes.login);
+      return;
     }
+
+    if (session.activeChild.value != null) {
+      Get.offAllNamed(AppRoutes.home);
+      return;
+    }
+
+    Get.offAllNamed(AppRoutes.profileSwitcher);
   }
 
   @override
