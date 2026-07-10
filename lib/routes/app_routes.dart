@@ -9,4 +9,5 @@ abstract class AppRoutes {
   static const String createProfile = '/create-profile';
   static const home = '/home';
   static const topics = '/topics';
+  static const String progress = '/progress';
 }

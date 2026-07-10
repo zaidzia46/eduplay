@@ -20,32 +20,46 @@ class DashboardController extends GetxController {
   var errorSubjectMessage = ''.obs;
   var errorLessonMessage = ''.obs;
 
+  // Search/filter for the Subjects screen.
   final searchController = TextEditingController();
   var searchQuery = ''.obs;
+
+  var filteredSubjects = <SubjectsModel>[].obs;
 
   @override
   void onInit() {
     super.onInit();
     fetchSubjects();
     fetchLessons();
-    searchController.addListener(() {
-      searchQuery.value = searchController.text;
-    });
+
     ever(Get.find<SessionController>().currentStandard, (_) {
       fetchSubjects();
       fetchLessons();
     });
+
+    // Keep filteredSubjects in sync whenever the catalog or the query changes.
+    ever(subjects, (_) => _applyFilter());
+    searchController.addListener(() {
+      searchQuery.value = searchController.text;
+      _applyFilter();
+    });
   }
 
-  List<SubjectsModel> get filteredSubjects {
-    if (searchQuery.value.isEmpty) return subjects;
-    return subjects
-        .where(
-          (s) => s.subjectTitle.toLowerCase().contains(
-            searchQuery.value.toLowerCase(),
-          ),
-        )
+  void _applyFilter() {
+    final query = searchQuery.value.trim().toLowerCase();
+    if (query.isEmpty) {
+      filteredSubjects.value = subjects;
+      return;
+    }
+    filteredSubjects.value = subjects
+        .where((s) => s.subjectTitle.toLowerCase().contains(query))
         .toList();
+  }
+
+  void clearSearch() {
+    searchController.clear();
+    searchQuery.value = '';
+    _applyFilter();
   }
 
   Future<void> fetchSubjects() async {
@@ -58,17 +72,6 @@ class DashboardController extends GetxController {
     } finally {
       isSubjectsLoading.value = false;
     }
-  }
-
-  void clearSearch() {
-    searchController.clear();
-    searchQuery.value = '';
-  }
-
-  @override
-  void onClose() {
-    searchController.dispose();
-    super.onClose();
   }
 
   // void onSubjectTap(SubjectsModel subject) {
@@ -91,4 +94,10 @@ class DashboardController extends GetxController {
   // void onLessonTap(ContinueLearningModel lessons) {
   //   Get.toNamed(AppRoutes.lessonsHome, arguments: {'lesson': lesson});
   // }
+
+  @override
+  void onClose() {
+    // searchController.dispose(); uncomment after adding API, cause currently it dispose and cause error
+    super.onClose();
+  }
 }

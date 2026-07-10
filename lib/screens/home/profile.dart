@@ -25,7 +25,7 @@ class ProfileView extends StatelessWidget {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.white,
       appBar: AppBar(
         title: Text(
           'Profile',
@@ -36,15 +36,24 @@ class ProfileView extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          Container(
-            height: topBackgroundHeight,
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              gradient: LinearGradient(
+          ShaderMask(
+            shaderCallback: (Rect bounds) {
+              return const LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [AppColors.primary, Colors.white],
-              ),
+                colors: [
+                  Colors.white,
+                  Colors.white,
+                  Colors.white,
+                  Colors.transparent,
+                ],
+                stops: [0.0, 0.5, 0.85, 1.0],
+              ).createShader(bounds);
+            },
+            blendMode: BlendMode.dstIn,
+            child: Image.asset(
+              'assets/images/profile_bg.png',
+              fit: BoxFit.cover,
             ),
           ),
           SafeArea(

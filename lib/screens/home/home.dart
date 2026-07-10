@@ -1,7 +1,9 @@
 import 'package:eduplay/screens/home/profile.dart';
+import 'package:eduplay/screens/home/progress/progress.dart';
 import 'package:eduplay/screens/home/subjects/subjects.dart';
 import 'package:eduplay/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
 import 'bottom_nav/bottomNavigation_controller.dart';
@@ -18,7 +20,7 @@ class Home extends StatelessWidget {
       body: Obx(() {
         return IndexedStack(
           index: vm.currentIndex.value,
-          children: [DashBoard(), SubjectView(), ProfileView()],
+          children: [DashBoard(), SubjectView(), ProgressView(), ProfileView()],
         );
       }),
 
@@ -32,13 +34,20 @@ class Home extends StatelessWidget {
             backgroundColor: AppColors.primary,
             unselectedItemColor: Color(0xffD1C4E9),
             items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
               BottomNavigationBarItem(
-                icon: Icon(Icons.book),
+                icon: FaIcon(FontAwesomeIcons.warehouse, size: 20),
+                label: 'Home',
+              ),
+              BottomNavigationBarItem(
+                icon: FaIcon(FontAwesomeIcons.book, size: 20),
                 label: 'Subjects',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.person),
+                icon: FaIcon(FontAwesomeIcons.trophy, size: 20),
+                label: 'Progress',
+              ),
+              BottomNavigationBarItem(
+                icon: FaIcon(FontAwesomeIcons.person, size: 20),
                 label: 'Profile',
               ),
             ],

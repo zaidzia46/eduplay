@@ -1,4 +1,4 @@
-import 'package:flutter/animation.dart';
+import 'package:eduplay/screens/home/progress/progress_bin.dart';
 import 'package:get/get.dart';
 import 'package:eduplay/routes/app_routes.dart';
 
@@ -10,6 +10,7 @@ import '../screens/auth/register.dart';
 import '../screens/home/bottom_nav/bottomNavbar_bin.dart';
 import '../screens/home/dashboard/dashboard_bin.dart';
 import '../screens/home/home.dart';
+import '../screens/home/progress/progress.dart';
 import '../screens/home/topics/topic_bin.dart';
 import '../screens/home/topics/topic_screen.dart';
 import '../screens/onboarding/onboarding_bin.dart';
@@ -77,6 +78,7 @@ abstract class AppPages {
       binding: BindingsBuilder(() {
         BottomNavBinding().dependencies();
         DashboardBinding().dependencies();
+        ProgressBinding().dependencies();
       }),
     ),
 

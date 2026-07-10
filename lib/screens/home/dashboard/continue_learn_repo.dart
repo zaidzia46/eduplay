@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/services.dart';
 
 import '../../../fns/hexToColor.dart';
@@ -28,6 +29,12 @@ class LessonRepository {
         await rootBundle.loadString('assets/data/topics.json'),
       );
       final Map<String, dynamic> bySubject = topicsJson['data']['by_subject'];
+      //counting topics of each subject
+      final topicsCount = <int, int>{};
+      bySubject.forEach((subjectIdKey, topicList) {
+        final subjectId = int.parse(subjectIdKey);
+        topicsCount[subjectId] = topicList.length;
+      });
 
       final subjectsJson = jsonDecode(
         await rootBundle.loadString('assets/data/subjects.json'),
@@ -83,6 +90,19 @@ class LessonRepository {
     } catch (e) {
       throw Exception('Failed to load lessons: $e');
     }
+  }
+
+  Future<Map<int, int>> getTotalSubjectsCount() async {
+    final topicsJson = jsonDecode(
+      await rootBundle.loadString('assets/data/topics.json'),
+    );
+    final Map<String, dynamic> bySubject = topicsJson['data']['by_subject'];
+    final topicsCount = <int, int>{};
+    bySubject.forEach((subjectIdKey, topicList) {
+      final subjectId = int.parse(subjectIdKey);
+      topicsCount[subjectId] = topicList.length;
+    });
+    return topicsCount;
   }
 
   // When backend is ready, replace with this: the join and ordering

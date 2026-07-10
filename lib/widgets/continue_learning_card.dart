@@ -29,7 +29,6 @@ class ContinueLearningCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Subject title + percentage row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -64,11 +63,18 @@ class ContinueLearningCard extends StatelessWidget {
 
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
-            child: LinearProgressIndicator(
-              value: item.progressPercent / 100,
-              minHeight: 6,
-              backgroundColor: AppColors.border,
-              valueColor: AlwaysStoppedAnimation<Color>(item.color),
+            child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0, end: item.progressPercent / 100),
+              duration: const Duration(seconds: 2),
+              curve: Curves.easeOutCubic,
+              builder: (context, value, child) {
+                return LinearProgressIndicator(
+                  value: value,
+                  minHeight: 6,
+                  backgroundColor: AppColors.border,
+                  valueColor: AlwaysStoppedAnimation(item.color),
+                );
+              },
             ),
           ),
           SizedBox(height: 10),
