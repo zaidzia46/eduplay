@@ -25,6 +25,7 @@ class DashBoard extends StatefulWidget {
 class _DashBoardState extends State<DashBoard>
     with SingleTickerProviderStateMixin {
   final vm = Get.find<DashboardController>();
+  final bottomNavConn = Get.find<BottomNavController>();
   late final AnimationController _controller;
 
   @override
@@ -265,7 +266,12 @@ class _DashBoardState extends State<DashBoard>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          TitleRow(title: 'Choose a Subject', onTap: () {}),
+                          TitleRow(
+                            title: 'Choose a Subject',
+                            onTap: () {
+                              bottomNavConn.currentIndex.value = 1;
+                            },
+                          ),
                           SizedBox(
                             width: double.infinity,
                             child: Obx(() {

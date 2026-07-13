@@ -14,43 +14,59 @@ class Home extends StatelessWidget {
 
   final vm = Get.find<BottomNavController>();
 
+  Future<bool> _handleBackPressed() async {
+    if (vm.currentIndex.value != 0) {
+      vm.changePage(0);
+      return false;
+    }
+    return true;
+  }
+
   @override
   Widget build(context) {
-    return Scaffold(
-      body: Obx(() {
-        return IndexedStack(
-          index: vm.currentIndex.value,
-          children: [DashBoard(), SubjectView(), ProgressView(), ProfileView()],
-        );
-      }),
-
-      bottomNavigationBar: Obx(
-        () => ClipRRect(
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          child: BottomNavigationBar(
-            currentIndex: vm.currentIndex.value,
-            onTap: (index) => vm.changePage(index),
-            fixedColor: AppColors.white,
-            backgroundColor: AppColors.primary,
-            unselectedItemColor: Color(0xffD1C4E9),
-            items: const [
-              BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.warehouse, size: 20),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.book, size: 20),
-                label: 'Subjects',
-              ),
-              BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.trophy, size: 20),
-                label: 'Progress',
-              ),
-              BottomNavigationBarItem(
-                icon: FaIcon(FontAwesomeIcons.person, size: 20),
-                label: 'Profile',
-              ),
+    return WillPopScope(
+      onWillPop: _handleBackPressed,
+      child: Scaffold(
+        body: Obx(() {
+          return IndexedStack(
+            index: vm.currentIndex.value,
+            children: [
+              DashBoard(),
+              SubjectView(),
+              ProgressView(),
+              ProfileView(),
             ],
+          );
+        }),
+
+        bottomNavigationBar: Obx(
+          () => ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            child: BottomNavigationBar(
+              currentIndex: vm.currentIndex.value,
+              onTap: (index) => vm.changePage(index),
+              fixedColor: AppColors.white,
+              backgroundColor: AppColors.primary,
+              unselectedItemColor: Color(0xffD1C4E9),
+              items: const [
+                BottomNavigationBarItem(
+                  icon: FaIcon(FontAwesomeIcons.warehouse, size: 20),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: FaIcon(FontAwesomeIcons.book, size: 20),
+                  label: 'Subjects',
+                ),
+                BottomNavigationBarItem(
+                  icon: FaIcon(FontAwesomeIcons.trophy, size: 20),
+                  label: 'Progress',
+                ),
+                BottomNavigationBarItem(
+                  icon: FaIcon(FontAwesomeIcons.person, size: 20),
+                  label: 'Profile',
+                ),
+              ],
+            ),
           ),
         ),
       ),
