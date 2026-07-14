@@ -12,15 +12,15 @@ class ProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const double avatarSize = 52;
+    const double avatarSize = 62;
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(15),
           border: Border.all(color: Colors.white, width: 2),
           image: const DecorationImage(
             image: AssetImage('assets/images/profile_sec_bg.png'),
@@ -32,14 +32,15 @@ class ProfileCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(5),
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 5),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.orange.withOpacity(.25),
-                    blurRadius: 12,
-                  ),
-                ],
+                shape: BoxShape.rectangle,
+                // border: Border.all(color: Colors.white, width: 5),
+                // borderRadius: BorderRadius.circular(13),
+                // boxShadow: [
+                //   BoxShadow(
+                //     color: Colors.orange.withOpacity(.25),
+                //     blurRadius: 12,
+                //   ),
+                // ],
               ),
               child: CircleAvatar(
                 radius: avatarSize / 2,
@@ -66,7 +67,7 @@ class ProfileCard extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(width: 18),
+            const SizedBox(width: 9),
 
             Expanded(
               child: Column(
@@ -75,7 +76,7 @@ class ProfileCard extends StatelessWidget {
                   Row(
                     children: [
                       const Icon(Icons.star, color: AppColors.star, size: 20),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 6),
                       Expanded(
                         child: Text(
                           child.name,

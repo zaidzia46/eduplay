@@ -13,9 +13,9 @@ class AddProfileCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 17.0, horizontal: 18.0),
+        padding: const EdgeInsets.symmetric(vertical: 17.0, horizontal: 15.0),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(12),
           image: DecorationImage(
             image: AssetImage('assets/images/profile_sec_null_bg.png'),
             fit: BoxFit.cover,
@@ -33,8 +33,9 @@ class AddProfileCard extends StatelessWidget {
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
+                shape: BoxShape.rectangle,
                 color: AppColors.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(Icons.add, size: 32, color: AppColors.primary),
             ),

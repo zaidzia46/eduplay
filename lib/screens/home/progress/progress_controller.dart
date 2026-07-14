@@ -33,7 +33,6 @@ class ProgressController extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
-      // Subjects fetched first — stats aggregation depends on it.
       subjects.value = await _subjectRepo.getSubjects();
       stats.value = await _statsRepo.getStats(subjects);
       recentActivity.value = await _activityRepo.getRecentActivity(limit: 5);

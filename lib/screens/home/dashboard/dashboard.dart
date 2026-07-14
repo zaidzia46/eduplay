@@ -52,7 +52,7 @@ class _DashBoardState extends State<DashBoard>
 
   @override
   Widget build(BuildContext context) {
-    const double avatarSize = 60;
+    const double avatarSize = 64;
     final media = MediaQuery.of(context);
     final size = media.size;
     final bannerWidth = size.width - 24;
@@ -104,44 +104,28 @@ class _DashBoardState extends State<DashBoard>
                         return Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 5,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.orange.withOpacity(.25),
-                                    blurRadius: 12,
-                                  ),
-                                ],
-                              ),
-                              child: CircleAvatar(
-                                radius: avatarSize / 2,
-                                backgroundColor: const Color(0xffFFD84E),
-                                child: ClipOval(
-                                  child: child?.avatar != null
-                                      ? Image.asset(
-                                          child!.avatar!,
-                                          fit: BoxFit.cover,
-                                          width: avatarSize,
-                                          height: avatarSize,
-                                          errorBuilder: (_, __, ___) =>
-                                              const Icon(
-                                                Icons.person,
-                                                size: 45,
-                                                color: AppColors.primary,
-                                              ),
-                                        )
-                                      : const Icon(
-                                          Icons.person,
-                                          size: 45,
-                                          color: AppColors.primary,
-                                        ),
-                                ),
+                            CircleAvatar(
+                              radius: avatarSize / 2,
+                              backgroundColor: const Color(0xffFFD84E),
+                              child: ClipOval(
+                                child: child?.avatar != null
+                                    ? Image.asset(
+                                        child!.avatar!,
+                                        fit: BoxFit.cover,
+                                        width: avatarSize,
+                                        height: avatarSize,
+                                        errorBuilder: (_, __, ___) =>
+                                            const Icon(
+                                              Icons.person,
+                                              size: 45,
+                                              color: AppColors.primary,
+                                            ),
+                                      )
+                                    : const Icon(
+                                        Icons.person,
+                                        size: 45,
+                                        color: AppColors.primary,
+                                      ),
                               ),
                             ),
                             const SizedBox(width: 8),

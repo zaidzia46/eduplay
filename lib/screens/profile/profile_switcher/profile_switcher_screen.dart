@@ -115,7 +115,7 @@ class _ProfileSwitcherViewState extends State<ProfileSwitcherView>
               final items = [...vm.children, null];
 
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                padding: const EdgeInsets.symmetric(horizontal: 15.0),
                 child: ListView.builder(
                   itemCount: items.length,
                   itemBuilder: (context, index) {

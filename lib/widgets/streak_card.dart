@@ -15,7 +15,7 @@ class StreakCard extends StatelessWidget {
       height: 60,
       width: 40,
       decoration: BoxDecoration(
-        color: AppColors.primaryDark.withOpacity(0.9),
+        color: AppColors.primaryDark.withOpacity(0.7),
         borderRadius: BorderRadius.circular(14),
       ),
       child: Column(

@@ -25,25 +25,18 @@ class TitleRow extends StatelessWidget {
           ),
         ),
         SizedBox(width: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            TextButton(
-              onPressed: onTap,
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.primary,
-                padding: EdgeInsets.symmetric(vertical: 8),
-
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              child: Text(
+        GestureDetector(
+          onTap: onTap,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Text(
                 'View all',
                 style: AppTextStyles.label.copyWith(color: AppColors.primary),
               ),
-            ),
-            Icon(Icons.chevron_right, color: AppColors.primary, size: 18),
-          ],
+              Icon(Icons.chevron_right, color: AppColors.primary, size: 18),
+            ],
+          ),
         ),
       ],
     );

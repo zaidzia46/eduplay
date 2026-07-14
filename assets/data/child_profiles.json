@@ -4,9 +4,9 @@
     "children": [
       {
         "id": 1,
-        "name": "Ayesha",
+        "name": "Darren Watkins Jr",
         "username": "ayesha_k",
-        "avatar_url": "assets/images/girl4.png",
+        "avatar_url": "assets/images/ishow.jpg",
         "standard": { "id": 6, "standard": "4th Standard" },
         "institution": { "id": 1, "name": "Beaconhouse School System", "city": "Lahore" }
       },
