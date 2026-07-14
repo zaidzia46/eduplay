@@ -31,17 +31,7 @@ class ProfileCard extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                // border: Border.all(color: Colors.white, width: 5),
-                // borderRadius: BorderRadius.circular(13),
-                // boxShadow: [
-                //   BoxShadow(
-                //     color: Colors.orange.withOpacity(.25),
-                //     blurRadius: 12,
-                //   ),
-                // ],
-              ),
+              decoration: const BoxDecoration(shape: BoxShape.rectangle),
               child: CircleAvatar(
                 radius: avatarSize / 2,
                 backgroundColor: const Color(0xffFFD84E),
@@ -129,6 +119,35 @@ class ProfileCard extends StatelessWidget {
                             color: AppColors.primaryDark,
                             fontWeight: FontWeight.w600,
                           ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 6),
+
+                  // Overall progress — same number shown on the Progress screen.
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: LinearProgressIndicator(
+                            value: child.overallPercent / 100,
+                            minHeight: 6,
+                            backgroundColor: Colors.white,
+                            valueColor: const AlwaysStoppedAnimation<Color>(
+                              AppColors.primary,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${child.overallPercent}%',
+                        style: AppTextStyles.bodySmall.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.primaryDark,
                         ),
                       ),
                     ],

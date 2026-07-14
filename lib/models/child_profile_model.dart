@@ -9,6 +9,13 @@ class ChildProfileModel {
   final InstitutionModel institution;
   final String? avatar;
 
+  // Derived — NOT part of child_profiles.json. Populated by
+  // ProfileSwitcherViewModel after calling
+  // SubjectRepository.getOverallPercent(childId: id) for each child,
+  // same pattern used for SubjectsModel/TopicModel. Defaults to 0 until
+  // that fetch completes.
+  final int overallPercent;
+
   ChildProfileModel({
     required this.id,
     required this.name,
@@ -16,6 +23,7 @@ class ChildProfileModel {
     required this.standard,
     required this.institution,
     this.avatar,
+    this.overallPercent = 0,
   });
 
   factory ChildProfileModel.fromJson(Map<String, dynamic> json) {
@@ -45,10 +53,25 @@ class ChildProfileModel {
       standard: standard ?? this.standard,
       institution: institution ?? this.institution,
       avatar: avatarUrl ?? this.avatar,
+      overallPercent: overallPercent,
     );
   }
 
-  // models/child_profile_model.dart — add this method
+  // Returns a copy with derived progress merged in, used by
+  // ProfileSwitcherViewModel once it has fetched this child's overall
+  // percent.
+  ChildProfileModel copyWithProgress({required int overallPercent}) {
+    return ChildProfileModel(
+      id: id,
+      name: name,
+      username: username,
+      standard: standard,
+      institution: institution,
+      avatar: avatar,
+      overallPercent: overallPercent,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

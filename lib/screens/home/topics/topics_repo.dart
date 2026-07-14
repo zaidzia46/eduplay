@@ -1,26 +1,32 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:eduplay/controller/session_controller.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
 import '../../../models/topics_model.dart';
 
 class TopicRepository {
   // Right now: loads two local JSON assets and merges them client-side,
   // mimicking the backend's future LEFT JOIN between the topics catalog
-  // table and the per-student topic_progress table. Later: replace this
+  // table and the per-child topic_progress table. Later: replace this
   // method body with a single http.get() — the backend does the join,
   // this method just deserializes the response.
   //
   // `subjectId` is required, the backend has no way to infer which
-  // subject was tapped, unlike `standardId` which it can default from
-  // the student's active standard. `standardId` is accepted but left
+  // subject was tapped, unlike `standardId`/`childId` which it can
+  // default from the active session. `standardId` is accepted but left
   // unused for now, only pass it explicitly later for a "view topics
   // for a past standard" override.
   Future<List<TopicModel>> getTopics({
     required int subjectId,
     int? standardId,
+    int? childId,
   }) async {
     try {
+      final resolvedChildId =
+          childId ?? Get.find<SessionController>().activeChild.value?.id;
+
       final String catalogResponse = await rootBundle.loadString(
         'assets/data/topics.json',
       );
@@ -32,14 +38,17 @@ class TopicRepository {
         'assets/data/topic_progress.json',
       );
       final Map<String, dynamic> progressJson = jsonDecode(progressResponse);
-      final Map<String, dynamic> progressById =
+      final Map<String, dynamic> progressByChild =
           progressJson['data']['progress'];
+      final Map<String, dynamic> progressById = resolvedChildId == null
+          ? {}
+          : (progressByChild['$resolvedChildId'] ?? {});
 
       final topics = catalogTopics.map((item) {
         final topic = TopicModel.fromJson(item);
         final progressRow = progressById['${topic.id}'];
 
-        // No row in topic_progress means this student has never started
+        // No row in topic_progress means this child has never started
         // this topic, so it stays at the model's default: notStarted, 0%.
         if (progressRow == null) return topic;
 
