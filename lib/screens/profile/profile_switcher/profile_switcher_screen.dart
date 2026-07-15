@@ -1,5 +1,6 @@
-// views/profile_switcher/profile_switcher_view.dart
+import 'package:eduplay/controller/session_controller.dart';
 import 'package:eduplay/screens/profile/profile_switcher/profile_switcher_controller.dart';
+import 'package:eduplay/widgets/parent_welcome.dart';
 import 'package:eduplay/widgets/staggered_anime.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -52,6 +53,7 @@ class _ProfileSwitcherViewState extends State<ProfileSwitcherView>
   @override
   Widget build(BuildContext context) {
     final vm = Get.find<ProfileSwitcherViewModel>();
+    final session = Get.find<SessionController>();
     final media = MediaQuery.of(context);
     final size = media.size;
     final bannerWidth = size.width - 24;
@@ -66,26 +68,46 @@ class _ProfileSwitcherViewState extends State<ProfileSwitcherView>
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ShaderMask(
-            shaderCallback: (Rect bounds) {
-              return const LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.white,
-                  Colors.white,
-                  Colors.white,
-                  Colors.transparent,
-                ],
-                stops: [0.0, 0.5, 0.85, 1.0],
-              ).createShader(bounds);
-            },
-            blendMode: BlendMode.dstIn,
+          // ShaderMask(
+          //   shaderCallback: (Rect bounds) {
+          //     return const LinearGradient(
+          //       begin: Alignment.topCenter,
+          //       end: Alignment.bottomCenter,
+          //       colors: [
+          //         Colors.white,
+          //         Colors.white,
+          //         Colors.white,
+          //         Colors.transparent,
+          //       ],
+          //       stops: [0.0, 0.5, 0.85, 1.0],
+          //     ).createShader(bounds);
+          //   },
+          //   blendMode: BlendMode.dstIn,
+          //   child: Image.asset(
+          //     'assets/images/profile_sec_banner.png',
+          //     fit: BoxFit.cover,
+          //   ),
+          // ),
+          ClipRRect(
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20),
+            ),
             child: Image.asset(
               'assets/images/profile_sec_banner.png',
               fit: BoxFit.cover,
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Obx(() {
+              final name = session.parentName.value;
+              return name != null && name.isNotEmpty
+                  ? ParentWelcomeCard(parent: name)
+                  : ParentWelcomeCard(parent: 'User');
+            }),
+          ),
+
           Expanded(
             child: Obx(() {
               if (vm.isLoading.value) {

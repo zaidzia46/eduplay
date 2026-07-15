@@ -23,7 +23,10 @@ class AuthViewModel extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
-      // TODO: replace with real API call
+      // TODO: replace with real API call — a real login response should
+      // include the parent's name/profile, and session.setParentName(...)
+      // should be called with THAT value instead of relying only on
+      // whatever was cached locally at registration time.
       await Future.delayed(const Duration(seconds: 1));
 
       // Mark parent as logged in
@@ -47,6 +50,10 @@ class AuthViewModel extends GetxController {
       await Future.delayed(const Duration(seconds: 1));
 
       await session.setParentLoggedIn(true);
+      // Save the name captured on this form — previously this was
+      // discarded once the controller closed, so "Welcome back" had
+      // nothing to show.
+      await session.setParentName(nameController.text.trim());
 
       Get.offAllNamed(AppRoutes.profileSwitcher);
     } catch (e) {
