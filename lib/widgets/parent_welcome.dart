@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
@@ -10,57 +11,70 @@ class ParentWelcomeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const double avatarSize = 62;
     return Transform.translate(
       offset: const Offset(0, -25),
       child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15),
           image: DecorationImage(
             image: AssetImage('assets/images/profile_sec_bg.png'),
             fit: BoxFit.cover,
           ),
-          borderRadius: BorderRadius.circular(22),
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFFFFFFF), Color(0xFFF9FAFB)],
+          border: Border(
+            bottom: BorderSide(color: AppColors.primary, width: 5),
           ),
-          border: Border.all(color: Colors.white.withOpacity(0.9), width: 1.5),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.12),
-              blurRadius: 30,
-              offset: const Offset(0, 12),
-              spreadRadius: 0,
-            ),
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
-            ),
-          ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Text(
-              'Welcome back,',
-              style: AppTextStyles.bodySecondary.copyWith(
-                fontWeight: FontWeight.w600,
-                color: AppColors.primaryDark,
+            CircleAvatar(
+              radius: avatarSize / 2,
+              backgroundColor: const Color(0xffFFD84E),
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/images/pak_mom2.png',
+                  fit: BoxFit.cover,
+                  width: avatarSize,
+                  height: avatarSize,
+                  errorBuilder: (_, __, ___) => const Icon(
+                    Icons.person,
+                    size: 45,
+                    color: AppColors.primary,
+                  ),
+                ),
               ),
             ),
-            const SizedBox(height: 6),
-            Text(
-              parent!.toUpperCase(),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: AppTextStyles.h2.copyWith(
-                fontWeight: FontWeight.bold,
-                color: AppColors.primaryDark,
+
+            const SizedBox(width: 10),
+
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Welcome Back!",
+                    style: AppTextStyles.h4.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+
+                  const SizedBox(height: 4),
+
+                  Text(
+                    parent!.toUpperCase(),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.h4.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
             ),
+
+            Image.asset("assets/images/purple_planet.png", height: 70),
           ],
         ),
       ),

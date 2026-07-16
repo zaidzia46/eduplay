@@ -41,7 +41,7 @@ class AddProfileCard extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             Text(
-              'Add Profile',
+              'Add Child',
               style: AppTextStyles.h4.copyWith(color: AppColors.primary),
             ),
           ],

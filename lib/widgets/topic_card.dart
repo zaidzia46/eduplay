@@ -14,7 +14,7 @@ class TopicCard extends StatelessWidget {
     required this.topic,
     required this.accentColor,
     this.onTap,
-    required CardtColor,
+    // required CardtColor,
   });
 
   @override
@@ -27,7 +27,14 @@ class TopicCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: accentColor.withOpacity(0.1),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.border),
+          border: Border(
+            left: BorderSide(
+              color: accentColor,
+              width: 5,
+              style: BorderStyle.solid,
+              strokeAlign: BorderSide.strokeAlignInside,
+            ),
+          ),
         ),
         child: Row(
           children: [

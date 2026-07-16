@@ -99,7 +99,7 @@ class _ProfileSwitcherViewState extends State<ProfileSwitcherView>
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Obx(() {
               final name = session.parentName.value;
               return name != null && name.isNotEmpty
@@ -139,6 +139,7 @@ class _ProfileSwitcherViewState extends State<ProfileSwitcherView>
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15.0),
                 child: ListView.builder(
+                  padding: EdgeInsets.zero,
                   itemCount: items.length,
                   itemBuilder: (context, index) {
                     final child = items[index];

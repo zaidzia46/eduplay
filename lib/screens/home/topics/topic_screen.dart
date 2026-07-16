@@ -66,10 +66,22 @@ class TopicScreen extends StatelessWidget {
                           SizedBox(width: 10),
 
                           Expanded(
-                            child: Text(
-                              "Let's Start Learning!",
-                              style: AppTextStyles.h4.copyWith(
-                                color: Colors.white,
+                            child: RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: vm.subject.subjectTitle,
+                                    style: AppTextStyles.h2.copyWith(
+                                      color: AppColors.white,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: "\nLet's start learning!",
+                                    style: AppTextStyles.caption.copyWith(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -111,7 +123,7 @@ class TopicScreen extends StatelessWidget {
                             ];
                             return TopicCard(
                               topic: topic,
-                              CardtColor: colors[index % colors.length],
+                              // CardtColor: colors[index % colors.length],
                               accentColor: vm.subject.buttonColor,
                             );
                           },

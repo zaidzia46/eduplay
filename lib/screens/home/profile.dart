@@ -58,7 +58,7 @@ class ProfileView extends StatelessWidget {
           ),
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 15),
               child: Column(
                 children: [
                   Obx(() {
