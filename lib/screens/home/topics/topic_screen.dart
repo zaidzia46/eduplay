@@ -17,24 +17,13 @@ class TopicScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(30),
-              bottomRight: Radius.circular(30),
-            ),
-            child: TopicBannerBackground(
-              startColor: vm.subject.buttonColor.withOpacity(0.3),
-              endColor: vm.subject.buttonColor.withOpacity(0.5),
-              starColor: vm.subject.buttonColor,
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: Transform.translate(
-                offset: Offset(0, -30),
+      body: SafeArea(
+        child: Column(
+          children: [
+            SizedBox(height: 20),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 child: Column(
                   children: [
                     Container(
@@ -66,26 +55,47 @@ class TopicScreen extends StatelessWidget {
                           SizedBox(width: 10),
 
                           Expanded(
-                            child: RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: vm.subject.subjectTitle,
-                                    style: AppTextStyles.h2.copyWith(
-                                      color: AppColors.white,
-                                    ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  vm.subject.subjectTitle,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTextStyles.h2.copyWith(
+                                    color: AppColors.white,
                                   ),
-                                  TextSpan(
-                                    text: "\nLet's start learning!",
-                                    style: AppTextStyles.caption.copyWith(
-                                      color: Colors.white,
-                                    ),
+                                ),
+                                Text(
+                                  "Let's start learning!",
+                                  style: AppTextStyles.caption.copyWith(
+                                    color: Colors.white,
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
 
+                          // Expanded(
+                          //   child: RichText(
+                          //     text: TextSpan(
+                          //       children: [
+                          //         TextSpan(
+                          //           text: vm.subject.subjectTitle,
+                          //           style: AppTextStyles.h2.copyWith(
+                          //             color: AppColors.white,
+                          //           ),
+                          //         ),
+                          //         TextSpan(
+                          //           text: "\nLet's start learning!",
+                          //           style: AppTextStyles.caption.copyWith(
+                          //             color: Colors.white,
+                          //           ),
+                          //         ),
+                          //       ],
+                          //     ),
+                          //   ),
+                          // ),
                           const SizedBox(width: 10),
 
                           SizedBox(
@@ -97,6 +107,7 @@ class TopicScreen extends StatelessWidget {
                         ],
                       ),
                     ),
+                    SizedBox(height: 30),
                     Expanded(
                       child: Obx(() {
                         if (vm.isLoading.value) {
@@ -134,18 +145,19 @@ class TopicScreen extends StatelessWidget {
                 ),
               ),
             ),
-          ),
-          // ClipRRect(
-          //   borderRadius: BorderRadius.only(
-          //     topLeft: Radius.circular(30),
-          //     topRight: Radius.circular(30),
-          //   ),
-          //   child: Image.asset(
-          //     'assets/images/topics_bg2.png',
-          //     fit: BoxFit.cover,
-          //   ),
-          // ),
-        ],
+            ClipRRect(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(40),
+                topRight: Radius.circular(40),
+              ),
+              child: TopicBannerBackground(
+                startColor: vm.subject.buttonColor.withOpacity(0.3),
+                endColor: vm.subject.buttonColor.withOpacity(0.5),
+                starColor: vm.subject.buttonColor,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

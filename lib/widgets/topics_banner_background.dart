@@ -17,10 +17,9 @@ class TopicBannerBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final random = Random(1);
-    const double starsTopPadding = 25;
 
     return SizedBox(
-      height: 120,
+      height: 70,
       width: double.infinity,
       child: Stack(
         children: [
@@ -48,7 +47,6 @@ class TopicBannerBackground extends StatelessWidget {
             ),
           ),
 
-          // Right hill
           Positioned(
             right: -80,
             bottom: -40,
@@ -64,8 +62,7 @@ class TopicBannerBackground extends StatelessWidget {
 
           ...List.generate(60, (index) {
             final left = random.nextDouble() * 900;
-            final top =
-                random.nextDouble() * (100 - starsTopPadding) + starsTopPadding;
+            final top = random.nextDouble() * 100;
             final size = random.nextDouble() * 18 + 6;
 
             final outlined = random.nextBool();
@@ -81,7 +78,6 @@ class TopicBannerBackground extends StatelessWidget {
             );
           }),
 
-          // Tiny sparkles
           ...List.generate(15, (index) {
             final left = random.nextDouble() * 900;
             final top = random.nextDouble() * 100;
