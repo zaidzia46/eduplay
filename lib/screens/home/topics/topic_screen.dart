@@ -151,7 +151,7 @@ class TopicScreen extends StatelessWidget {
                 topRight: Radius.circular(40),
               ),
               child: TopicBannerBackground(
-                startColor: vm.subject.buttonColor.withOpacity(0.3),
+                startColor: vm.subject.buttonColor.withOpacity(0.5),
                 endColor: vm.subject.buttonColor.withOpacity(0.5),
                 starColor: vm.subject.buttonColor,
               ),

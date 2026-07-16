@@ -7,7 +7,10 @@ import 'package:get/get.dart';
 
 import '../../../models/continue_learning_model.dart';
 import '../../../models/subjects_model.dart';
+import '../../../widgets/filter_sheet.dart';
 import 'continue_learn_repo.dart';
+
+enum SubjectFilter { all, notStarted, inProgress, completed }
 
 class DashboardController extends GetxController {
   final SubjectRepository _subjectRepo = SubjectRepository();
@@ -19,7 +22,7 @@ class DashboardController extends GetxController {
   var isLessonLoading = true.obs;
   var errorSubjectMessage = ''.obs;
   var errorLessonMessage = ''.obs;
-
+  var activeFilter = SubjectFilter.all.obs;
   // Search/filter for the Subjects screen.
   final searchController = TextEditingController();
   var searchQuery = ''.obs;
@@ -37,8 +40,8 @@ class DashboardController extends GetxController {
       fetchLessons();
     });
 
-    // Keep filteredSubjects in sync whenever the catalog or the query changes.
     ever(subjects, (_) => _applyFilter());
+    ever(activeFilter, (_) => _applyFilter());
     searchController.addListener(() {
       searchQuery.value = searchController.text;
       _applyFilter();
@@ -47,13 +50,49 @@ class DashboardController extends GetxController {
 
   void _applyFilter() {
     final query = searchQuery.value.trim().toLowerCase();
-    if (query.isEmpty) {
-      filteredSubjects.value = subjects;
-      return;
+
+    var result = subjects.toList();
+
+    if (query.isNotEmpty) {
+      result = result
+          .where((s) => s.subjectTitle.toLowerCase().contains(query))
+          .toList();
     }
-    filteredSubjects.value = subjects
-        .where((s) => s.subjectTitle.toLowerCase().contains(query))
-        .toList();
+
+    switch (activeFilter.value) {
+      case SubjectFilter.notStarted:
+        result = result.where((s) => (s.progressPercent ?? 0) == 0).toList();
+        break;
+      case SubjectFilter.inProgress:
+        result = result
+            .where(
+              (s) =>
+                  (s.progressPercent ?? 0) > 0 &&
+                  (s.progressPercent ?? 0) < 100,
+            )
+            .toList();
+        break;
+      case SubjectFilter.completed:
+        result = result.where((s) => (s.progressPercent ?? 0) == 100).toList();
+        break;
+      case SubjectFilter.all:
+        break;
+    }
+
+    filteredSubjects.value = result;
+  }
+
+  void setFilter(SubjectFilter filter) {
+    activeFilter.value = filter;
+    _applyFilter();
+  }
+
+  void showFilterSheet() {
+    Get.bottomSheet(
+      FilterSheet(),
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+    );
   }
 
   void clearSearch() {

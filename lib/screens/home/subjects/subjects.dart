@@ -2,9 +2,7 @@ import 'dart:developer';
 
 import 'package:eduplay/widgets/circular_loader.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
-import '../../../models/subjects_model.dart';
 import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
@@ -97,19 +95,49 @@ class _SubjectViewState extends State<SubjectView>
                 ),
                 const SizedBox(width: 12),
 
-                // Filter button
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: AppColors.primarySurface,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Icon(
-                    Icons.filter_alt_outlined,
-                    color: AppColors.primary,
-                  ),
-                ),
+                Obx(() {
+                  final isActive = vm.activeFilter.value != SubjectFilter.all;
+                  return GestureDetector(
+                    onTap: vm.showFilterSheet,
+                    child: Stack(
+                      children: [
+                        Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: isActive
+                                ? AppColors.primarySurface
+                                : AppColors.primarySurface,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: isActive
+                                  ? AppColors.primary
+                                  : Colors.transparent,
+                              width: 1.5,
+                            ),
+                          ),
+                          child: Icon(
+                            Icons.filter_alt_outlined,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        if (isActive)
+                          Positioned(
+                            right: 8,
+                            top: 8,
+                            child: Container(
+                              width: 8,
+                              height: 8,
+                              decoration: const BoxDecoration(
+                                color: AppColors.error,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  );
+                }),
               ],
             ),
           ),
@@ -141,7 +169,10 @@ class _SubjectViewState extends State<SubjectView>
               }
 
               if (vm.filteredSubjects.isEmpty) {
-                return EmptySearch(query: vm.searchQuery.value);
+                return EmptySearch(
+                  query: vm.searchQuery.value,
+                  filter: vm.activeFilter.value,
+                );
               }
 
               return ListView.separated(
