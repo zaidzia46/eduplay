@@ -13,7 +13,9 @@ class SubjectTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final int progress = subject.progressPercent;
-    final bool hasStarted = progress > 0;
+    final bool hasStarted = progress > 0 && progress < 100;
+    final bool progressStared = progress > 0;
+    final bool completed = progress == 100;
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -76,7 +78,7 @@ class SubjectTile extends StatelessWidget {
                 ),
 
                 // Progress bar — only if at least one topic is completed
-                if (hasStarted) ...[
+                if (progressStared) ...[
                   const SizedBox(height: 6),
                   Row(
                     children: [
@@ -127,7 +129,11 @@ class SubjectTile extends StatelessWidget {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                   child: Text(
-                    hasStarted ? 'Continue' : 'Start',
+                    hasStarted
+                        ? 'Continue'
+                        : completed
+                        ? 'Completed'
+                        : 'Start',
                     style: AppTextStyles.buttonMedium.copyWith(fontSize: 13),
                   ),
                 ),
