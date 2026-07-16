@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import '../../../models/subjects_model.dart';
+import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/empty_search.dart';
@@ -148,10 +149,19 @@ class _SubjectViewState extends State<SubjectView>
                 itemCount: vm.filteredSubjects.length,
                 separatorBuilder: (_, __) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
+                  final subject = vm.filteredSubjects[index];
                   return StaggeredAnimation(
                     controller: _controller,
                     index: index,
-                    child: SubjectTile(subject: vm.filteredSubjects[index]),
+                    child: SubjectTile(
+                      subject: subject,
+                      onTap: () {
+                        Get.toNamed(
+                          AppRoutes.topics,
+                          arguments: {'subject': subject},
+                        );
+                      },
+                    ),
                   );
                 },
               );

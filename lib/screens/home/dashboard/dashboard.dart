@@ -205,7 +205,9 @@ class _DashBoardState extends State<DashBoard>
                                 .clamp(32.0, 40.0)
                                 .toDouble(),
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                bottomNavConn.currentIndex.value = 1;
+                              },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primary,
                                 foregroundColor: Colors.white,

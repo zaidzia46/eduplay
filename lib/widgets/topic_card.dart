@@ -25,7 +25,7 @@ class TopicCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: AppColors.background,
+          color: accentColor.withOpacity(0.1),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppColors.border),
         ),
@@ -47,7 +47,7 @@ class TopicCard extends StatelessWidget {
                     child: LinearProgressIndicator(
                       value: topic.progressPercent / 100,
                       minHeight: 6,
-                      backgroundColor: AppColors.border,
+                      backgroundColor: accentColor.withOpacity(0.3),
                       valueColor: AlwaysStoppedAnimation<Color>(accentColor),
                     ),
                   ),
