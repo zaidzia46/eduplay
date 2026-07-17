@@ -207,6 +207,7 @@ class _DashBoardState extends State<DashBoard>
                             child: ElevatedButton(
                               onPressed: () {
                                 bottomNavConn.currentIndex.value = 1;
+                                vm.activeFilter.value = SubjectFilter.all;
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primary,
@@ -256,6 +257,7 @@ class _DashBoardState extends State<DashBoard>
                             title: 'Choose a Subject',
                             onTap: () {
                               bottomNavConn.currentIndex.value = 1;
+                              vm.activeFilter.value = SubjectFilter.all;
                             },
                           ),
                           SizedBox(
@@ -297,7 +299,13 @@ class _DashBoardState extends State<DashBoard>
                             }),
                           ),
                           SizedBox(height: 20),
-                          TitleRow(title: 'Continue Learning', onTap: () {}),
+                          TitleRow(
+                            title: 'Continue Learning',
+                            onTap: () {
+                              bottomNavConn.currentIndex.value = 1;
+                              vm.activeFilter.value = SubjectFilter.inProgress;
+                            },
+                          ),
                           SizedBox(
                             height: 124,
                             child: Obx(() {

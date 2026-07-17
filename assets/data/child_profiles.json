@@ -14,7 +14,7 @@
         "id": 2,
         "name": "Hamza Bilal",
         "username": "hamza123",
-        "avatar_url": "assets/images/pak_child2.jfif",
+        "avatar_url": "assets/images/pak_child2.png",
         "standard": { "id": 3, "standard": "1st Standard" },
         "institution": { "id": 2, "name": "The City School", "city": "Lahore" }
       }

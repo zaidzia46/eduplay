@@ -123,11 +123,11 @@ class _SubjectViewState extends State<SubjectView>
                         ),
                         if (isActive)
                           Positioned(
-                            right: 8,
-                            top: 8,
+                            right: 0,
+                            top: 0,
                             child: Container(
-                              width: 8,
-                              height: 8,
+                              width: 10,
+                              height: 10,
                               decoration: const BoxDecoration(
                                 color: AppColors.error,
                                 shape: BoxShape.circle,
@@ -149,12 +149,17 @@ class _SubjectViewState extends State<SubjectView>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('All Subjects', style: AppTextStyles.sectionHeader),
+                Text('Subjects', style: AppTextStyles.sectionHeader),
                 Obx(
-                  () => Text(
-                    '${vm.filteredSubjects.length} Subjects',
-                    style: AppTextStyles.sectionLink,
-                  ),
+                  () => vm.filteredSubjects.length > 1
+                      ? Text(
+                          '${vm.filteredSubjects.length} Subjects',
+                          style: AppTextStyles.sectionLink,
+                        )
+                      : Text(
+                          '${vm.filteredSubjects.length} Subject',
+                          style: AppTextStyles.sectionLink,
+                        ),
                 ),
               ],
             ),

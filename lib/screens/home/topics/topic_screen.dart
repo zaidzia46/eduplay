@@ -1,7 +1,6 @@
 import 'package:eduplay/screens/home/topics/topic_controller.dart';
 import 'package:eduplay/theme/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 import '../../../theme/app_text_styles.dart';
@@ -29,9 +28,8 @@ class TopicScreen extends StatelessWidget {
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(horizontal: 12),
-                      margin: EdgeInsets.symmetric(horizontal: 12),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(32),
+                        borderRadius: BorderRadius.circular(15),
                         color: vm.subject.buttonColor,
                       ),
                       child: Row(
@@ -53,7 +51,6 @@ class TopicScreen extends StatelessWidget {
                             ),
                           ),
                           SizedBox(width: 10),
-
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,29 +72,7 @@ class TopicScreen extends StatelessWidget {
                               ],
                             ),
                           ),
-
-                          // Expanded(
-                          //   child: RichText(
-                          //     text: TextSpan(
-                          //       children: [
-                          //         TextSpan(
-                          //           text: vm.subject.subjectTitle,
-                          //           style: AppTextStyles.h2.copyWith(
-                          //             color: AppColors.white,
-                          //           ),
-                          //         ),
-                          //         TextSpan(
-                          //           text: "\nLet's start learning!",
-                          //           style: AppTextStyles.caption.copyWith(
-                          //             color: Colors.white,
-                          //           ),
-                          //         ),
-                          //       ],
-                          //     ),
-                          //   ),
-                          // ),
                           const SizedBox(width: 10),
-
                           SizedBox(
                             width: 90,
                             child: Image.asset(
@@ -119,6 +94,7 @@ class TopicScreen extends StatelessWidget {
                         }
 
                         return ListView.separated(
+                          padding: EdgeInsets.zero,
                           itemCount: vm.topics.length,
                           separatorBuilder: (_, __) =>
                               const SizedBox(height: 6),
