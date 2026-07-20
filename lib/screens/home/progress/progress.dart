@@ -7,6 +7,7 @@ import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/activity_breakdown_card.dart';
 import '../../../widgets/circular_loader.dart';
+import '../../../widgets/morphing_progress_indicator.dart';
 import '../../../widgets/recent_act_tile.dart';
 import '../../../widgets/staggered_anime.dart';
 import '../../../widgets/stat_tile.dart';
@@ -23,6 +24,11 @@ class ProgressView extends StatefulWidget {
 class _ProgressViewState extends State<ProgressView>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  late final ScrollController _scrollController;
+  final ValueNotifier<double> _morphT = ValueNotifier(0);
+
+  // Scroll distance (px) over which the ring fully unrolls into a bar.
+  static const double _morphDistance = 140;
 
   @override
   void initState() {
@@ -32,6 +38,8 @@ class _ProgressViewState extends State<ProgressView>
       duration: const Duration(milliseconds: 700),
     );
 
+    _scrollController = ScrollController()..addListener(_handleScroll);
+
     ever(Get.find<BottomNavController>().currentIndex, (index) {
       if (index == 2) {
         _controller.forward(from: 0);
@@ -39,9 +47,17 @@ class _ProgressViewState extends State<ProgressView>
     });
   }
 
+  void _handleScroll() {
+    final offset = _scrollController.offset.clamp(0.0, _morphDistance);
+    _morphT.value = offset / _morphDistance;
+  }
+
   @override
   void dispose() {
     _controller.dispose();
+    _scrollController.removeListener(_handleScroll);
+    _scrollController.dispose();
+    _morphT.dispose();
     super.dispose();
   }
 
@@ -101,44 +117,45 @@ class _ProgressViewState extends State<ProgressView>
                               const SizedBox(height: 16),
                               Column(
                                 children: [
-                                  SizedBox(
-                                    width: 100,
-                                    height: 100,
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        SizedBox(
-                                          width: 100,
-                                          height: 100,
-                                          child: CircularProgressIndicator(
-                                            value:
-                                                (stats?.overallPercent ?? 0) /
-                                                100,
+                                  ValueListenableBuilder<double>(
+                                    valueListenable: _morphT,
+                                    builder: (context, t, _) {
+                                      return Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          MorphingProgressIndicator(
+                                            percent:
+                                                (stats?.overallPercent ?? 0)
+                                                    .toDouble(),
+                                            t: t,
+                                            circleDiameter: 100,
                                             strokeWidth: 10,
-                                            strokeCap: StrokeCap.round,
-                                            backgroundColor:
+                                            trackColor:
                                                 AppColors.primarySurface,
-                                            valueColor:
-                                                const AlwaysStoppedAnimation<
-                                                  Color
-                                                >(AppColors.primary),
+                                            progressColor: AppColors.primary,
                                           ),
-                                        ),
-                                        Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              '${stats?.overallPercent ?? 0}%',
-                                              style: AppTextStyles.h2,
+                                          Opacity(
+                                            opacity: (1 - t * 2).clamp(
+                                              0.0,
+                                              1.0,
                                             ),
-                                            Text(
-                                              'Overall',
-                                              style: AppTextStyles.caption,
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  '${stats?.overallPercent ?? 0}%',
+                                                  style: AppTextStyles.h2,
+                                                ),
+                                                Text(
+                                                  'Overall',
+                                                  style: AppTextStyles.caption,
+                                                ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   ),
                                   const SizedBox(height: 20),
                                   Column(
@@ -219,6 +236,7 @@ class _ProgressViewState extends State<ProgressView>
             ),
             Expanded(
               child: SingleChildScrollView(
+                controller: _scrollController,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(

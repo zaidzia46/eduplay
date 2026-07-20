@@ -3,7 +3,7 @@
   "data": {
     "breakdown": {
       "1": [
-        { "label": "Lessons", "completed": 15, "total": 20 },
+        { "label": "Lessons", "completed": 5, "total": 20 },
         { "label": "Quizzes", "completed": 6, "total": 6 },
         { "label": "Exercises", "completed": 8, "total": 10 }
       ],
