@@ -1,0 +1,17 @@
+{
+  "status": "success",
+  "data": {
+    "breakdown": {
+      "1": [
+        { "label": "Lessons", "completed": 15, "total": 20 },
+        { "label": "Quizzes", "completed": 6, "total": 6 },
+        { "label": "Exercises", "completed": 8, "total": 10 }
+      ],
+      "2": [
+        { "label": "Lessons", "completed": 3, "total": 20 },
+        { "label": "Quizzes", "completed": 0, "total": 6 },
+        { "label": "Exercises", "completed": 1, "total": 8 }
+      ]
+    }
+  }
+}

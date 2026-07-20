@@ -26,7 +26,6 @@ class SubjectTile extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Subject image
           Container(
             width: 64,
             height: 64,

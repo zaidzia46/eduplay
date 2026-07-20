@@ -160,12 +160,7 @@ class ChildDetailView extends StatelessWidget {
               const SizedBox(height: 24),
               Text('Subject Progress', style: AppTextStyles.sectionHeader),
               const SizedBox(height: 12),
-              ...vm.subjects.map(
-                (s) => SubjectProgressRow(
-                  subject: s,
-                  parentDashboard: parentDashboard,
-                ),
-              ),
+              ...vm.subjects.map((s) => SubjectProgressRow(subject: s)),
 
               const SizedBox(height: 12),
               Text('Recent Activity', style: AppTextStyles.sectionHeader),

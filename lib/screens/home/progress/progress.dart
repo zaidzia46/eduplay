@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
+import '../../../widgets/activity_breakdown_card.dart';
 import '../../../widgets/circular_loader.dart';
 import '../../../widgets/recent_act_tile.dart';
 import '../../../widgets/staggered_anime.dart';
@@ -47,7 +48,6 @@ class _ProgressViewState extends State<ProgressView>
   @override
   Widget build(BuildContext context) {
     final vm = Get.find<ProgressController>();
-    final bool parentDashboard = false;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -223,31 +223,10 @@ class _ProgressViewState extends State<ProgressView>
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Subject Progress',
-                            style: AppTextStyles.sectionHeader,
-                          ),
-                          Text('View all', style: AppTextStyles.sectionLink),
-                        ],
-                      ),
                       const SizedBox(height: 12),
-                      ...List.generate(
-                        vm.subjects.length,
-                        (index) => StaggeredAnimation(
-                          controller: _controller,
-                          index: index,
-                          child: SubjectProgressRow(
-                            subject: vm.subjects[index],
-                            parentDashboard: parentDashboard,
-                          ),
-                        ),
-                      ),
+                      ActivityBreakdownCard(categories: vm.activityBreakdown),
 
                       const SizedBox(height: 12),
-
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

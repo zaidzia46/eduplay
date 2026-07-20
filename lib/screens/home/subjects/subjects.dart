@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:eduplay/widgets/circular_loader.dart';
+import 'package:eduplay/widgets/subject_progress_row.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../routes/app_routes.dart';
@@ -180,16 +181,15 @@ class _SubjectViewState extends State<SubjectView>
                 );
               }
 
-              return ListView.separated(
+              return ListView.builder(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
                 itemCount: vm.filteredSubjects.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   final subject = vm.filteredSubjects[index];
                   return StaggeredAnimation(
                     controller: _controller,
                     index: index,
-                    child: SubjectTile(
+                    child: SubjectProgressRow(
                       subject: subject,
                       onTap: () {
                         Get.toNamed(

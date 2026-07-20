@@ -21,8 +21,8 @@ class AddProfileCard extends StatelessWidget {
             fit: BoxFit.cover,
           ),
           border: Border.all(
-            color: AppColors.primary,
-            width: 1.5,
+            color: AppColors.white,
+            width: 2,
             style: BorderStyle.solid,
           ),
         ),
