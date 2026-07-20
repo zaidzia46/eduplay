@@ -1,31 +1,15 @@
 {
   "status": "success",
   "data": {
-    "activity": [
-      {
-        "id": 1,
-        "subject_id": 2,
-        "type": "lesson",
-        "title": "Addition Basics",
-        "stars_awarded": 10,
-        "timestamp": "2026-07-09T14:00:00Z"
-      },
-      {
-        "id": 2,
-        "subject_id": 1,
-        "type": "lesson",
-        "title": "The Little Red Hen",
-        "stars_awarded": 10,
-        "timestamp": "2026-07-08T10:00:00Z"
-      },
-      {
-        "id": 3,
-        "subject_id": 3,
-        "type": "quiz",
-        "title": "Fun with Magnets",
-        "stars_awarded": 15,
-        "timestamp": "2026-07-07T09:00:00Z"
-      }
-    ]
+    "activity": {
+      "1": [
+        { "id": 1, "subject_id": 2, "type": "lesson", "title": "Addition Basics", "stars_awarded": 10, "timestamp": "2026-07-09T14:00:00Z" },
+        { "id": 2, "subject_id": 1, "type": "lesson", "title": "The Little Red Hen", "stars_awarded": 10, "timestamp": "2026-07-08T10:00:00Z" },
+        { "id": 3, "subject_id": 3, "type": "quiz", "title": "Fun with Magnets", "stars_awarded": 15, "timestamp": "2026-07-07T09:00:00Z" }
+      ],
+      "2": [
+        { "id": 4, "subject_id": 2, "type": "lesson", "title": "Counting 1-10", "stars_awarded": 10, "timestamp": "2026-07-08T09:00:00Z" }
+      ]
+    }
   }
 }

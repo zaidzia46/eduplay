@@ -1,14 +1,24 @@
+import 'package:eduplay/screens/profile/profile_switcher/profile_switcher_controller.dart';
 import 'package:flutter/material.dart';
 
 import '../models/child_profile_model.dart';
+import '../screens/parent_dashboard/parent_dashboard_main/parent_dashboard_controller.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 
 class ProfileCard extends StatelessWidget {
   final ChildProfileModel child;
+  final int stars;
+  final int streak;
   final VoidCallback onTap;
 
-  const ProfileCard({super.key, required this.child, required this.onTap});
+  const ProfileCard({
+    super.key,
+    required this.child,
+    required this.stars,
+    required this.streak,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -148,6 +158,36 @@ class ProfileCard extends StatelessWidget {
                         style: AppTextStyles.bodySmall.copyWith(
                           fontWeight: FontWeight.w700,
                           color: AppColors.primaryDark,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 3),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.star_rounded,
+                        color: AppColors.star,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '$stars',
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Icon(
+                        Icons.local_fire_department,
+                        color: AppColors.error,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '$streak day streak',
+                        style: AppTextStyles.caption.copyWith(
+                          color: AppColors.textPrimary,
                         ),
                       ),
                     ],

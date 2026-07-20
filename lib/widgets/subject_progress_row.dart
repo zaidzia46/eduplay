@@ -6,9 +6,15 @@ import '../theme/app_text_styles.dart';
 
 class SubjectProgressRow extends StatelessWidget {
   final SubjectsModel subject;
+  final bool parentDashboard;
   final VoidCallback? onTap;
 
-  const SubjectProgressRow({super.key, required this.subject, this.onTap});
+  const SubjectProgressRow({
+    super.key,
+    required this.subject,
+    required this.parentDashboard,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +90,13 @@ class SubjectProgressRow extends StatelessWidget {
               style: AppTextStyles.h4.copyWith(color: subject.buttonColor),
             ),
             const SizedBox(width: 4),
-            Icon(Icons.chevron_right, color: AppColors.textMuted, size: 20),
+            parentDashboard
+                ? SizedBox()
+                : Icon(
+                    Icons.chevron_right,
+                    color: AppColors.textMuted,
+                    size: 20,
+                  ),
           ],
         ),
       ),

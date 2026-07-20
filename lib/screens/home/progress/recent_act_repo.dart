@@ -1,20 +1,34 @@
 import 'dart:convert';
+import 'package:eduplay/controller/session_controller.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 
 import '../../../fns/hexToColor.dart';
 import '../../../models/recent_act_model.dart';
 
 class RecentActivityRepository {
-  // Right now: loads recent_activity.json and joins it against
-  // subjects.json client-side to resolve subject title/color, mirroring
-  // continue_learn_repo.dart's join pattern. Later: replace with a single
-  // http.get('/progress/recent-activity') — the backend does the join,
-  // this method just deserializes the response.
-  Future<List<RecentActivityModel>> getRecentActivity({int limit = 10}) async {
+  // Right now: loads recent_activity.json (now keyed per child) and
+  // joins it against subjects.json client-side to resolve subject
+  // title/color. Later: replace with a single
+  // http.get('/progress/recent-activity') — the backend does the join
+  // and the child-scoping, this method just deserializes the response.
+  //
+  // `childId` defaults to the active session child if not passed.
+  Future<List<RecentActivityModel>> getRecentActivity({
+    int limit = 10,
+    int? childId,
+  }) async {
+    final resolvedChildId =
+        childId ?? Get.find<SessionController>().activeChild.value?.id;
+
     final activityJson = jsonDecode(
       await rootBundle.loadString('assets/data/recent_activity.json'),
     );
-    final List activity = activityJson['data']['activity'];
+    final Map<String, dynamic> activityByChild =
+        activityJson['data']['activity'];
+    final List activity = resolvedChildId == null
+        ? []
+        : (activityByChild['$resolvedChildId'] ?? []);
 
     final subjectsJson = jsonDecode(
       await rootBundle.loadString('assets/data/subjects.json'),

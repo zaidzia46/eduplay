@@ -33,9 +33,8 @@ class AddProfileCard extends StatelessWidget {
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
+                shape: BoxShape.circle,
                 color: AppColors.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(Icons.add, size: 32, color: AppColors.primary),
             ),

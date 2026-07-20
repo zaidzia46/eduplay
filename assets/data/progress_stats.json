@@ -1,8 +1,9 @@
 {
   "status": "success",
   "data": {
-    "stars_earned": 250,
-    "days_active": 7,
-    "badges_earned": 5
+    "stats": {
+      "1": { "stars_earned": 250, "days_active": 7, "badges_earned": 5 },
+      "2": { "stars_earned": 40, "days_active": 2, "badges_earned": 1 }
+    }
   }
 }

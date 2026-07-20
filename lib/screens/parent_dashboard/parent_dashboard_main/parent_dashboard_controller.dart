@@ -1,28 +1,25 @@
 import 'dart:developer';
 
-import 'package:eduplay/controller/session_controller.dart';
 import 'package:get/get.dart';
 
 import '../../../models/child_profile_model.dart';
 import '../../../routes/app_routes.dart';
 import '../../home/dashboard/subject_repo.dart';
 import '../../home/progress/progress_stats_repo.dart';
-import '../create_child_profile/create_child_profile_repo.dart';
+import '../../profile/create_child_profile/create_child_profile_repo.dart';
 
-class ProfileSwitcherViewModel extends GetxController {
-  final ChildProfileRepository _repo = ChildProfileRepository();
+class ParentDashboardController extends GetxController {
+  final ChildProfileRepository _childRepo = ChildProfileRepository();
   final SubjectRepository _subjectRepo = SubjectRepository();
   final ProgressStatsRepository _statsRepo = ProgressStatsRepository();
-  final session = Get.find<SessionController>();
 
   var children = <ChildProfileModel>[].obs;
   var starsByChild = <int, int>{}.obs;
   var streakByChild = <int, int>{}.obs;
   var totalStars = 0.obs;
+
   var isLoading = true.obs;
   var errorMessage = ''.obs;
-
-  var activeChild = Rxn<ChildProfileModel>();
 
   @override
   void onInit() {
@@ -35,11 +32,10 @@ class ProfileSwitcherViewModel extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
-      final fetchedChildren = await _repo.getChildren();
+      final fetchedChildren = await _childRepo.getChildren();
 
-      // Each child needs their own overall percent (not just whoever is
-      // currently active), so fetch them in parallel rather than one
-      // at a time.
+      // Each child needs their own overall percent + stars/streak,
+      // fetched in parallel rather than one at a time.
       final withProgress = await Future.wait(
         fetchedChildren.map((child) async {
           final percent = await _subjectRepo.getOverallPercent(
@@ -49,26 +45,23 @@ class ProfileSwitcherViewModel extends GetxController {
           final subjects = await _subjectRepo.getSubjects(childId: child.id);
           final stats = await _statsRepo.getStats(subjects, childId: child.id);
           totalStars.value += stats.starsEarned;
+          log("Total Stars: ${totalStars.value}");
           starsByChild[child.id] = stats.starsEarned;
           streakByChild[child.id] = stats.daysActive;
+
           return child.copyWithProgress(overallPercent: percent);
         }),
       );
 
       children.value = withProgress;
     } catch (e) {
-      errorMessage.value = 'Could not load profiles.';
+      errorMessage.value = 'Could not load children.';
     } finally {
       isLoading.value = false;
     }
   }
 
-  void selectChild(ChildProfileModel child) async {
-    await session.setActiveChild(child);
-    Get.offAllNamed(AppRoutes.home);
-  }
-
-  void goToCreateProfile() {
-    Get.toNamed(AppRoutes.createProfile);
+  void openChildDetail(ChildProfileModel child) {
+    Get.toNamed(AppRoutes.childDetail, arguments: {'child': child});
   }
 }

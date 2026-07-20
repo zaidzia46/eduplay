@@ -6,11 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 
+import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/add_profile_card.dart';
 import '../../../widgets/circular_loader.dart';
 import '../../../widgets/profile_card.dart';
+import '../../../widgets/welcome_bg_parent_dashboard.dart';
 
 class ProfileSwitcherView extends StatefulWidget {
   const ProfileSwitcherView({super.key});
@@ -68,45 +70,45 @@ class _ProfileSwitcherViewState extends State<ProfileSwitcherView>
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ShaderMask(
-          //   shaderCallback: (Rect bounds) {
-          //     return const LinearGradient(
-          //       begin: Alignment.topCenter,
-          //       end: Alignment.bottomCenter,
-          //       colors: [
-          //         Colors.white,
-          //         Colors.white,
-          //         Colors.white,
-          //         Colors.transparent,
-          //       ],
-          //       stops: [0.0, 0.5, 0.85, 1.0],
-          //     ).createShader(bounds);
-          //   },
-          //   blendMode: BlendMode.dstIn,
-          //   child: Image.asset(
-          //     'assets/images/profile_sec_banner.png',
-          //     fit: BoxFit.cover,
-          //   ),
-          // ),
-          ClipRRect(
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(20),
-              bottomRight: Radius.circular(20),
-            ),
+          ShaderMask(
+            shaderCallback: (Rect bounds) {
+              return const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.white,
+                  Colors.white,
+                  Colors.white,
+                  Colors.transparent,
+                ],
+                stops: [0.0, 0.5, 0.9, 1.0],
+              ).createShader(bounds);
+            },
+            blendMode: BlendMode.dstIn,
             child: Image.asset(
-              'assets/images/profile_sec_banner.png',
+              'assets/images/profile_switch_bg.png',
               fit: BoxFit.cover,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: Obx(() {
-              final name = session.parentName.value;
-              return name != null && name.isNotEmpty
-                  ? ParentWelcomeCard(parent: name)
-                  : ParentWelcomeCard(parent: 'User');
-            }),
+          SizedBox(height: 13),
+          GestureDetector(
+            onTap: () {},
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: Obx(() {
+                return WelcomeBackground(
+                  welcomeText: 'Welcome',
+                  subtitleText:
+                      "You're doing a wonderful job supporting your children's journey.",
+                  childrenCount: vm.children.length,
+                  starsCount: vm.totalStars.value,
+                  userName: session.parentName.value ?? 'User',
+                );
+              }),
+            ),
           ),
+
+          SizedBox(height: 12),
 
           Expanded(
             child: Obx(() {
@@ -136,26 +138,25 @@ class _ProfileSwitcherViewState extends State<ProfileSwitcherView>
 
               final items = [...vm.children, null];
 
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                child: ListView.builder(
-                  padding: EdgeInsets.zero,
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    final child = items[index];
+              return ListView.builder(
+                padding: EdgeInsets.symmetric(horizontal: 12),
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  final child = items[index];
 
-                    return StaggeredAnimation(
-                      controller: _controller,
-                      index: index,
-                      child: child == null
-                          ? AddProfileCard(onTap: vm.goToCreateProfile)
-                          : ProfileCard(
-                              child: child,
-                              onTap: () => vm.selectChild(child),
-                            ),
-                    );
-                  },
-                ),
+                  return StaggeredAnimation(
+                    controller: _controller,
+                    index: index,
+                    child: child == null
+                        ? AddProfileCard(onTap: vm.goToCreateProfile)
+                        : ProfileCard(
+                            child: child,
+                            stars: vm.starsByChild[child.id] ?? 0,
+                            streak: vm.streakByChild[child.id] ?? 0,
+                            onTap: () => vm.selectChild(child),
+                          ),
+                  );
+                },
               );
             }),
           ),

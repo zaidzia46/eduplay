@@ -27,10 +27,10 @@ class _SplashScreenState extends State<SplashScreen> {
       return;
     }
 
-    if (session.activeChild.value != null) {
-      Get.offAllNamed(AppRoutes.home);
-      return;
-    }
+    // if (session.activeChild.value != null) {
+    //   Get.offAllNamed(AppRoutes.home);
+    //   return;
+    // }
 
     Get.offAllNamed(AppRoutes.profileSwitcher);
   }

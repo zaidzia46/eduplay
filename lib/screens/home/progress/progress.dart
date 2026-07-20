@@ -47,6 +47,7 @@ class _ProgressViewState extends State<ProgressView>
   @override
   Widget build(BuildContext context) {
     final vm = Get.find<ProgressController>();
+    final bool parentDashboard = false;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -240,6 +241,7 @@ class _ProgressViewState extends State<ProgressView>
                           index: index,
                           child: SubjectProgressRow(
                             subject: vm.subjects[index],
+                            parentDashboard: parentDashboard,
                           ),
                         ),
                       ),
