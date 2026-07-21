@@ -1,5 +1,4 @@
 import 'package:eduplay/screens/home/progress/progress_bin.dart';
-import 'package:eduplay/screens/parent_dashboard/parent_dashboard_home.dart';
 import 'package:get/get.dart';
 import 'package:eduplay/routes/app_routes.dart';
 
@@ -18,11 +17,6 @@ import '../screens/onboarding/onboarding_bin.dart';
 import '../screens/onboarding/onborading_screens/age_view.dart';
 import '../screens/onboarding/onborading_screens/name_view.dart';
 import '../screens/onboarding/onborading_screens/standard_view.dart';
-import '../screens/parent_dashboard/parentBottomNavBin.dart';
-import '../screens/parent_dashboard/parent_dashboard_main/child_detail_bin.dart';
-import '../screens/parent_dashboard/parent_dashboard_main/child_detail_screen.dart';
-import '../screens/parent_dashboard/parent_dashboard_main/parent_dashboard_bin.dart';
-import '../screens/parent_dashboard/parent_dashboard_main/parent_dashboard_screen.dart';
 import '../screens/profile/create_child_profile/create_child_profile_bin.dart';
 import '../screens/profile/create_child_profile/create_child_profile_screen.dart';
 import '../screens/profile/profile_switcher/profile_switcher_bin.dart';
@@ -93,30 +87,6 @@ abstract class AppPages {
       name: AppRoutes.topics,
       page: () => TopicScreen(),
       binding: TopicBinding(),
-      transition: Transition.fadeIn,
-    ),
-
-    GetPage(
-      name: AppRoutes.parentDashboard,
-      page: () => const ParentDashboardScreen(),
-      binding: ParentDashboardBinding(),
-      transition: Transition.rightToLeft,
-      transitionDuration: const Duration(milliseconds: 400),
-    ),
-    GetPage(
-      name: AppRoutes.childDetail,
-      page: () => const ChildDetailView(),
-      binding: ChildDetailBinding(),
-      transition: Transition.rightToLeft,
-      transitionDuration: const Duration(milliseconds: 400),
-    ),
-    GetPage(
-      name: AppRoutes.parentHome,
-      page: () => ParentDashboardHome(),
-      binding: BindingsBuilder(() {
-        ParentBottomNavBinding().dependencies();
-        ParentDashboardBinding().dependencies();
-      }),
       transition: Transition.fadeIn,
     ),
   ];

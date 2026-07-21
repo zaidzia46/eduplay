@@ -1,8 +1,6 @@
-import 'package:eduplay/screens/profile/profile_switcher/profile_switcher_controller.dart';
 import 'package:flutter/material.dart';
 
 import '../models/child_profile_model.dart';
-import '../screens/parent_dashboard/parent_dashboard_main/parent_dashboard_controller.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 
