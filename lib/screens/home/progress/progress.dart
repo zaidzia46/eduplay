@@ -11,7 +11,6 @@ import '../../../widgets/morphing_progress_indicator.dart';
 import '../../../widgets/recent_act_tile.dart';
 import '../../../widgets/staggered_anime.dart';
 import '../../../widgets/stat_tile.dart';
-import '../../../widgets/subject_progress_row.dart';
 import '../bottom_nav/bottomNavigation_controller.dart';
 
 class ProgressView extends StatefulWidget {
@@ -240,7 +239,12 @@ class _ProgressViewState extends State<ProgressView>
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      Text(
+                        'Activity Breakdown',
+                        style: AppTextStyles.sectionHeader,
+                      ),
                       const SizedBox(height: 12),
                       ActivityBreakdownCard(categories: vm.activityBreakdown),
 

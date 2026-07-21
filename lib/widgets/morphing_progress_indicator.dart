@@ -1,14 +1,11 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
-/// Draws a progress indicator that morphs between a circular ring (t = 0)
-/// and a horizontal linear bar (t = 1) by lerping matching points sampled
-/// on a circle and on a line.
 class MorphingProgressIndicator extends StatelessWidget {
   const MorphingProgressIndicator({
     super.key,
-    required this.percent, // 0-100
-    required this.t, // 0 = circle, 1 = line
+    required this.percent,
+    required this.t,
     this.circleDiameter = 100,
     this.strokeWidth = 10,
     required this.trackColor,
@@ -118,7 +115,6 @@ class _MorphPainter extends CustomPainter {
     }
     canvas.drawPath(trackPath, trackPaint);
 
-    // Colored progress: only the leading fraction of points.
     final progressSteps = (pointCount * percent).round().clamp(0, pointCount);
     if (progressSteps > 0) {
       final progressPath = Path();
@@ -138,105 +134,5 @@ class _MorphPainter extends CustomPainter {
         oldDelegate.t != t ||
         oldDelegate.trackColor != trackColor ||
         oldDelegate.progressColor != progressColor;
-  }
-}
-
-/// -----------------------------------------------------------------------
-/// Example integration. Assumes `scrollController` is the SAME controller
-/// attached to the outer ListView/CustomScrollView that this card lives in.
-/// -----------------------------------------------------------------------
-class OverallProgressCard extends StatefulWidget {
-  const OverallProgressCard({
-    super.key,
-    required this.stats,
-    required this.scrollController,
-  });
-
-  final dynamic stats; // replace with your Stats type
-  final ScrollController scrollController;
-
-  @override
-  State<OverallProgressCard> createState() => _OverallProgressCardState();
-}
-
-class _OverallProgressCardState extends State<OverallProgressCard> {
-  final ValueNotifier<double> _morphT = ValueNotifier(0);
-
-  // Scroll distance (px) over which the circle fully unrolls into a bar.
-  static const double _morphDistance = 140;
-
-  @override
-  void initState() {
-    super.initState();
-    widget.scrollController.addListener(_handleScroll);
-  }
-
-  void _handleScroll() {
-    final offset = widget.scrollController.offset.clamp(0.0, _morphDistance);
-    _morphT.value = offset / _morphDistance;
-  }
-
-  @override
-  void dispose() {
-    widget.scrollController.removeListener(_handleScroll);
-    _morphT.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          // border: Border.all(color: AppColors.border),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Overall Progress',
-            ), // swap in AppTextStyles.sectionHeader
-            const SizedBox(height: 16),
-            ValueListenableBuilder<double>(
-              valueListenable: _morphT,
-              builder: (context, t, _) {
-                return Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    MorphingProgressIndicator(
-                      percent: (widget.stats?.overallPercent ?? 0).toDouble(),
-                      t: t,
-                      circleDiameter: 100,
-                      strokeWidth: 10,
-                      trackColor: const Color(
-                        0xFFE9ECFB,
-                      ), // AppColors.primarySurface
-                      progressColor: const Color(
-                        0xFF5B6EF5,
-                      ), // AppColors.primary
-                    ),
-                    Opacity(
-                      opacity: (1 - t * 2).clamp(0.0, 1.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('${widget.stats?.overallPercent ?? 0}%'),
-                          const Text('Overall'),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }
