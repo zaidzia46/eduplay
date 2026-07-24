@@ -159,43 +159,9 @@ class ProfileView extends StatelessWidget {
                       Get.toNamed(AppRoutes.profileSwitcher);
                     },
                   ),
-
-                  const SizedBox(height: 12),
-
-                  ActionTile(
-                    icon: Icons.logout_outlined,
-                    label: 'Log Out',
-                    subtitle: 'Sign out of your parent account',
-                    color: AppColors.error,
-                    onTap: () => _showLogoutDialog(context, session),
-                  ),
                 ],
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showLogoutDialog(BuildContext context, SessionController session) {
-    Get.dialog(
-      AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Log Out?', style: AppTextStyles.h3),
-        content: Text(
-          'You\'ll need to sign in again to access EduPlay.',
-          style: AppTextStyles.bodySecondary,
-        ),
-        actions: [
-          ElevatedButton(
-            onPressed: () async {
-              Get.back();
-              await session.logout();
-              Get.offAllNamed(AppRoutes.login);
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            child: const Text('Log Out'),
           ),
         ],
       ),

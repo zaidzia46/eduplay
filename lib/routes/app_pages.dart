@@ -17,6 +17,8 @@ import '../screens/onboarding/onboarding_bin.dart';
 import '../screens/onboarding/onborading_screens/age_view.dart';
 import '../screens/onboarding/onborading_screens/name_view.dart';
 import '../screens/onboarding/onborading_screens/standard_view.dart';
+import '../screens/parent_settings/parent_settings_bin.dart';
+import '../screens/parent_settings/parent_settings_screen.dart';
 import '../screens/profile/create_child_profile/create_child_profile_bin.dart';
 import '../screens/profile/create_child_profile/create_child_profile_screen.dart';
 import '../screens/profile/profile_switcher/profile_switcher_bin.dart';
@@ -88,6 +90,14 @@ abstract class AppPages {
       page: () => TopicScreen(),
       binding: TopicBinding(),
       transition: Transition.fadeIn,
+    ),
+
+    GetPage(
+      name: AppRoutes.parentSettings,
+      page: () => const ParentSettingsView(),
+      binding: ParentSettingsBinding(),
+      transition: Transition.rightToLeft,
+      transitionDuration: const Duration(milliseconds: 400),
     ),
   ];
 }

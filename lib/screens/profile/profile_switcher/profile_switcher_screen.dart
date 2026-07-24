@@ -92,7 +92,9 @@ class _ProfileSwitcherViewState extends State<ProfileSwitcherView>
           ),
           SizedBox(height: 13),
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              Get.toNamed(AppRoutes.parentSettings);
+            },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Obx(() {

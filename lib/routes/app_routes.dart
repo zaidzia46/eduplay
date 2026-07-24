@@ -10,7 +10,5 @@ abstract class AppRoutes {
   static const home = '/home';
   static const topics = '/topics';
   static const String progress = '/progress';
-  static const String parentDashboard = '/parent-dashboard';
-  static const String childDetail = '/parent-dashboard/child-detail';
-  static const parentHome = '/parentHome';
+  static const String parentSettings = '/parent-settings';
 }

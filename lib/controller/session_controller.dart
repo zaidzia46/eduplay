@@ -8,15 +8,14 @@ class SessionController extends GetxController {
   var currentStandard = Rxn<StandardModel>();
   var activeChild = Rxn<ChildProfileModel>();
 
-  // Minimal for now — just the name, since that's all the "Welcome back"
-  // greeting needs. Replace with a full ParentModel (id, name, email)
-  // once real backend auth returns a parent object on login/register.
   var parentName = Rxn<String>();
+  var parentAvatar = Rxn<String>();
 
   static const _standardKey = 'currentStandard';
   static const _authKey = 'isParentLoggedIn';
   static const _activeChildKey = 'activeChild';
   static const _parentNameKey = 'parentName';
+  static const _parentAvatarKey = 'parentAvatar';
 
   final _box = GetStorage();
 
@@ -24,7 +23,6 @@ class SessionController extends GetxController {
   void onInit() {
     super.onInit();
 
-    // Restore standard
     final savedStandard = _box.read(_standardKey);
     if (savedStandard != null) {
       currentStandard.value = StandardModel.fromJson(
@@ -43,6 +41,11 @@ class SessionController extends GetxController {
     if (savedParentName != null) {
       parentName.value = savedParentName;
     }
+
+    final savedParentAvatar = _box.read(_parentAvatarKey);
+    if (savedParentAvatar != null) {
+      parentAvatar.value = savedParentAvatar;
+    }
   }
 
   Future<void> setParentLoggedIn(bool value) async {
@@ -51,12 +54,14 @@ class SessionController extends GetxController {
 
   bool get isParentLoggedIn => _box.read(_authKey) ?? false;
 
-  // Called once, right after registration — a real login later should
-  // instead read this from the backend's response, not rely on what
-  // was cached locally at signup time.
   Future<void> setParentName(String name) async {
     parentName.value = name;
     await _box.write(_parentNameKey, name);
+  }
+
+  Future<void> setParentAvatar(String avatarPath) async {
+    parentAvatar.value = avatarPath;
+    await _box.write(_parentAvatarKey, avatarPath);
   }
 
   Future<void> setActiveChild(ChildProfileModel child) async {
@@ -85,10 +90,5 @@ class SessionController extends GetxController {
   Future<void> logout() async {
     await clearActiveChild();
     await setParentLoggedIn(false);
-    // Parent name is intentionally kept even after logout — a returning
-    // parent on the same device should still see their name pre-filled/
-    // greeted next time, same reasoning as most apps not forgetting who
-    // last used them locally. Clear explicitly elsewhere if you'd rather
-    // wipe it on logout.
   }
 }
