@@ -146,48 +146,17 @@ class _ProfileSwitcherViewState extends State<ProfileSwitcherView>
                 itemCount: items.length,
                 itemBuilder: (context, index) {
                   final child = items[index];
-
                   return StaggeredAnimation(
                     controller: _controller,
                     index: index,
                     child: child == null
                         ? AddProfileCard(onTap: vm.goToCreateProfile)
-                        : Obx(() {
-                            final isThisLoading =
-                                vm.loadingChildId.value == child.id;
-                            final isAnyLoading =
-                                vm.loadingChildId.value != null;
-
-                            log("isThisLoading: $isThisLoading");
-                            log("isAnyLoading: $isAnyLoading");
-
-                            return Stack(
-                              children: [
-                                ProfileCard(
-                                  child: child,
-                                  stars: vm.starsByChild[child.id] ?? 0,
-                                  streak: vm.streakByChild[child.id] ?? 0,
-                                  onTap: isAnyLoading
-                                      ? () {}
-                                      : () => vm.selectChild(child),
-                                ),
-                                if (isThisLoading)
-                                  Positioned.fill(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.6),
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      child: const Center(
-                                        child: CircularProgressIndicator(
-                                          color: AppColors.primary,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            );
-                          }),
+                        : ProfileCard(
+                            child: child,
+                            stars: vm.starsByChild[child.id] ?? 0,
+                            streak: vm.streakByChild[child.id] ?? 0,
+                            onTap: () => vm.selectChild(child),
+                          ),
                   );
                 },
               );

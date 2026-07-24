@@ -81,6 +81,7 @@ abstract class AppPages {
         BottomNavBinding().dependencies();
         DashboardBinding().dependencies();
         ProgressBinding().dependencies();
+        // ProfileSwitcherBinding.dependencies();
       }),
     ),
 

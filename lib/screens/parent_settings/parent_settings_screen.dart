@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/action_tile.dart';
+import '../../widgets/parent_welcome_bg.dart';
 
 class ParentSettingsView extends StatelessWidget {
   const ParentSettingsView({super.key});
@@ -32,12 +33,11 @@ class ParentSettingsView extends StatelessWidget {
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(24),
-              bottomRight: Radius.circular(24),
+          WelcomeBackgroundContainer(
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height * 0.29,
+              width: double.infinity,
             ),
-            child: Image.asset('assets/images/profile_bg.png'),
           ),
           SingleChildScrollView(
             padding: const EdgeInsets.all(20),

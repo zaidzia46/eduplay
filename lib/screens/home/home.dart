@@ -22,7 +22,6 @@ class Home extends StatelessWidget {
     return true;
   }
 
-  @override
   Widget build(context) {
     return WillPopScope(
       onWillPop: _handleBackPressed,

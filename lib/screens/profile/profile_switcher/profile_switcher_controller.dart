@@ -22,11 +22,9 @@ class ProfileSwitcherViewModel extends GetxController {
   var isLoading = true.obs;
   var errorMessage = ''.obs;
 
-  var activeChild = Rxn<ChildProfileModel>();
-
-  // Which card is currently mid-selection — used to show a spinner on
-  // just that card, and disable taps on the others until it resolves.
   var loadingChildId = Rxn<int>();
+
+  // var activeChild = Rxn<ChildProfileModel>();
 
   @override
   void onInit() {
@@ -41,6 +39,9 @@ class ProfileSwitcherViewModel extends GetxController {
 
       final fetchedChildren = await _repo.getChildren();
 
+      final newStarsByChild = <int, int>{};
+      final newStreakByChild = <int, int>{};
+
       final withProgress = await Future.wait(
         fetchedChildren.map((child) async {
           final percent = await _subjectRepo.getOverallPercent(
@@ -49,13 +50,18 @@ class ProfileSwitcherViewModel extends GetxController {
 
           final subjects = await _subjectRepo.getSubjects(childId: child.id);
           final stats = await _statsRepo.getStats(subjects, childId: child.id);
-          totalStars.value += stats.starsEarned;
-          starsByChild[child.id] = stats.starsEarned;
-          streakByChild[child.id] = stats.daysActive;
+          newStarsByChild[child.id] = stats.starsEarned;
+          newStreakByChild[child.id] = stats.daysActive;
           return child.copyWithProgress(overallPercent: percent);
         }),
       );
 
+      starsByChild.value = newStarsByChild;
+      streakByChild.value = newStreakByChild;
+      totalStars.value = newStarsByChild.values.fold(
+        0,
+        (sum, stars) => sum + stars,
+      );
       children.value = withProgress;
     } catch (e) {
       errorMessage.value = 'Could not load profiles.';
@@ -65,14 +71,8 @@ class ProfileSwitcherViewModel extends GetxController {
   }
 
   Future<void> selectChild(ChildProfileModel child) async {
-    if (loadingChildId.value != null) return; // ignore taps mid-selection
-    try {
-      loadingChildId.value = child.id;
-      await session.setActiveChild(child);
-      Get.offAllNamed(AppRoutes.home);
-    } finally {
-      loadingChildId.value = null;
-    }
+    await session.setActiveChild(child);
+    Get.offAllNamed(AppRoutes.home);
   }
 
   void goToCreateProfile() {
