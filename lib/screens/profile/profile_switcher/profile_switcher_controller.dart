@@ -24,6 +24,10 @@ class ProfileSwitcherViewModel extends GetxController {
 
   var activeChild = Rxn<ChildProfileModel>();
 
+  // Which card is currently mid-selection — used to show a spinner on
+  // just that card, and disable taps on the others until it resolves.
+  var loadingChildId = Rxn<int>();
+
   @override
   void onInit() {
     super.onInit();
@@ -37,9 +41,6 @@ class ProfileSwitcherViewModel extends GetxController {
 
       final fetchedChildren = await _repo.getChildren();
 
-      // Each child needs their own overall percent (not just whoever is
-      // currently active), so fetch them in parallel rather than one
-      // at a time.
       final withProgress = await Future.wait(
         fetchedChildren.map((child) async {
           final percent = await _subjectRepo.getOverallPercent(
@@ -63,9 +64,15 @@ class ProfileSwitcherViewModel extends GetxController {
     }
   }
 
-  void selectChild(ChildProfileModel child) async {
-    await session.setActiveChild(child);
-    Get.offAllNamed(AppRoutes.home);
+  Future<void> selectChild(ChildProfileModel child) async {
+    if (loadingChildId.value != null) return; // ignore taps mid-selection
+    try {
+      loadingChildId.value = child.id;
+      await session.setActiveChild(child);
+      Get.offAllNamed(AppRoutes.home);
+    } finally {
+      loadingChildId.value = null;
+    }
   }
 
   void goToCreateProfile() {

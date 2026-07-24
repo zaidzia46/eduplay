@@ -32,6 +32,8 @@ class _SubjectViewState extends State<SubjectView>
       duration: const Duration(milliseconds: 700),
     );
 
+    _controller.forward();
+
     ever(Get.find<BottomNavController>().currentIndex, (index) {
       if (index == 1) {
         _controller.forward(from: 0);

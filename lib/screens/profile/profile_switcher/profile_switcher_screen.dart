@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:eduplay/controller/session_controller.dart';
 import 'package:eduplay/screens/profile/profile_switcher/profile_switcher_controller.dart';
 import 'package:eduplay/widgets/parent_welcome.dart';
@@ -64,7 +66,6 @@ class _ProfileSwitcherViewState extends State<ProfileSwitcherView>
       250.0,
       size.height * 0.45,
     );
-    // const double avatarSize = 60;
 
     return Scaffold(
       body: Column(
@@ -93,7 +94,7 @@ class _ProfileSwitcherViewState extends State<ProfileSwitcherView>
           SizedBox(height: 13),
           GestureDetector(
             onTap: () {
-              Get.toNamed(AppRoutes.parentSettings);
+              Get.toNamed('/parent-settings');
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -151,12 +152,42 @@ class _ProfileSwitcherViewState extends State<ProfileSwitcherView>
                     index: index,
                     child: child == null
                         ? AddProfileCard(onTap: vm.goToCreateProfile)
-                        : ProfileCard(
-                            child: child,
-                            stars: vm.starsByChild[child.id] ?? 0,
-                            streak: vm.streakByChild[child.id] ?? 0,
-                            onTap: () => vm.selectChild(child),
-                          ),
+                        : Obx(() {
+                            final isThisLoading =
+                                vm.loadingChildId.value == child.id;
+                            final isAnyLoading =
+                                vm.loadingChildId.value != null;
+
+                            log("isThisLoading: $isThisLoading");
+                            log("isAnyLoading: $isAnyLoading");
+
+                            return Stack(
+                              children: [
+                                ProfileCard(
+                                  child: child,
+                                  stars: vm.starsByChild[child.id] ?? 0,
+                                  streak: vm.streakByChild[child.id] ?? 0,
+                                  onTap: isAnyLoading
+                                      ? () {}
+                                      : () => vm.selectChild(child),
+                                ),
+                                if (isThisLoading)
+                                  Positioned.fill(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.6),
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: const Center(
+                                        child: CircularProgressIndicator(
+                                          color: AppColors.primary,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            );
+                          }),
                   );
                 },
               );

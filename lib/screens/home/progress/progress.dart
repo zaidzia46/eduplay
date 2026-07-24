@@ -37,6 +37,8 @@ class _ProgressViewState extends State<ProgressView>
       duration: const Duration(milliseconds: 700),
     );
 
+    _controller.forward();
+
     _scrollController = ScrollController()..addListener(_handleScroll);
 
     ever(Get.find<BottomNavController>().currentIndex, (index) {

@@ -82,7 +82,6 @@ abstract class AppPages {
         DashboardBinding().dependencies();
         ProgressBinding().dependencies();
       }),
-      transition: Transition.fadeIn,
     ),
 
     GetPage(
