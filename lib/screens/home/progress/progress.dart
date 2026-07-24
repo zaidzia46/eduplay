@@ -11,6 +11,7 @@ import '../../../widgets/morphing_progress_indicator.dart';
 import '../../../widgets/recent_act_tile.dart';
 import '../../../widgets/staggered_anime.dart';
 import '../../../widgets/stat_tile.dart';
+import '../../../widgets/subject_progress_row.dart';
 import '../bottom_nav/bottomNavigation_controller.dart';
 
 class ProgressView extends StatefulWidget {
@@ -26,8 +27,14 @@ class _ProgressViewState extends State<ProgressView>
   late final ScrollController _scrollController;
   final ValueNotifier<double> _morphT = ValueNotifier(0);
 
-  // Scroll distance (px) over which the ring fully unrolls into a bar.
-  static const double _morphDistance = 140;
+  static const double _maxMorphDistance = 140;
+
+  double get _effectiveMorphDistance {
+    if (!_scrollController.hasClients) return _maxMorphDistance;
+    final maxExtent = _scrollController.position.maxScrollExtent;
+    if (maxExtent <= 0) return _maxMorphDistance;
+    return maxExtent < _maxMorphDistance ? maxExtent : _maxMorphDistance;
+  }
 
   @override
   void initState() {
@@ -38,7 +45,6 @@ class _ProgressViewState extends State<ProgressView>
     );
 
     _controller.forward();
-
     _scrollController = ScrollController()..addListener(_handleScroll);
 
     ever(Get.find<BottomNavController>().currentIndex, (index) {
@@ -49,8 +55,13 @@ class _ProgressViewState extends State<ProgressView>
   }
 
   void _handleScroll() {
-    final offset = _scrollController.offset.clamp(0.0, _morphDistance);
-    _morphT.value = offset / _morphDistance;
+    final distance = _effectiveMorphDistance;
+    if (distance <= 0) {
+      _morphT.value = 0;
+      return;
+    }
+    final offset = _scrollController.offset.clamp(0.0, distance);
+    _morphT.value = offset / distance;
   }
 
   @override
@@ -241,12 +252,7 @@ class _ProgressViewState extends State<ProgressView>
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Activity Breakdown',
-                        style: AppTextStyles.sectionHeader,
-                      ),
                       const SizedBox(height: 12),
                       ActivityBreakdownCard(categories: vm.activityBreakdown),
 

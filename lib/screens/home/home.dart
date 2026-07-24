@@ -28,15 +28,13 @@ class Home extends StatelessWidget {
       onWillPop: _handleBackPressed,
       child: Scaffold(
         body: Obx(() {
-          final visited = vm.visitedIndices;
-
           return IndexedStack(
             index: vm.currentIndex.value,
             children: [
-              visited.contains(0) ? DashBoard() : const SizedBox.shrink(),
-              visited.contains(1) ? SubjectView() : const SizedBox.shrink(),
-              visited.contains(2) ? ProgressView() : const SizedBox.shrink(),
-              visited.contains(3) ? ProfileView() : const SizedBox.shrink(),
+              DashBoard(),
+              SubjectView(),
+              ProgressView(),
+              ProfileView(),
             ],
           );
         }),
