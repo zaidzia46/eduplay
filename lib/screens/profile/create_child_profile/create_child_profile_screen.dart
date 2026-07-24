@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../models/institution_model.dart';
+import '../../../models/standards_model.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import 'create_child_profile_controller.dart';
@@ -28,65 +32,46 @@ class CreateProfileView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Pick an avatar', style: AppTextStyles.label),
+            Text('Profile picture', style: AppTextStyles.label),
             const SizedBox(height: 12),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 1,
-              ),
-              itemCount: vm.avatars.length,
-              itemBuilder: (context, index) {
-                final avatar = vm.avatars[index];
-
-                return Center(
-                  child: Obx(() {
-                    final isSelected = vm.selectedAvatar.value == avatar;
-
-                    return GestureDetector(
-                      onTap: () => vm.selectAvatar(avatar),
-                      child: SizedBox(
-                        width: avatarSize,
-                        height: avatarSize,
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
+            Center(
+              child: GestureDetector(
+                onTap: vm.pickProfileImage,
+                child: Obx(() {
+                  final path = vm.profileImagePath.value;
+                  return Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: avatarSize / 2,
+                        backgroundColor: AppColors.primaryDark,
+                        backgroundImage: path != null
+                            ? FileImage(File(path))
+                            : null,
+                        child: path == null
+                            ? Icon(Icons.person, size: avatarSize * 0.5)
+                            : null,
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
                           decoration: BoxDecoration(
+                            color: AppColors.primary,
                             shape: BoxShape.circle,
-                            border: Border.all(
-                              color: isSelected
-                                  ? Colors.yellow.shade600
-                                  : AppColors.border,
-                              width: isSelected ? 4 : 3,
-                            ),
-                            color: isSelected ? Colors.yellow : Colors.white,
+                            border: Border.all(color: Colors.white, width: 2),
                           ),
-                          child: Center(
-                            child: ClipOval(
-                              child: Image.asset(
-                                avatar,
-                                width: avatarSize * 0.83,
-                                height: avatarSize * 0.83,
-                                fit: BoxFit.contain,
-                                errorBuilder: (_, __, ___) => Icon(
-                                  Icons.person,
-                                  size: avatarSize * 0.5,
-                                  color: isSelected
-                                      ? AppColors.primary
-                                      : AppColors.textMuted,
-                                ),
-                              ),
-                            ),
+                          child: const Icon(
+                            Icons.camera_alt,
+                            size: 16,
+                            color: Colors.white,
                           ),
                         ),
                       ),
-                    );
-                  }),
-                );
-              },
+                    ],
+                  );
+                }),
+              ),
             ),
             const SizedBox(height: 24),
 
@@ -95,7 +80,7 @@ class CreateProfileView extends StatelessWidget {
             TextField(
               controller: vm.nameController,
               decoration: const InputDecoration(
-                hintText: 'e.g. Ayesha',
+                hintText: 'e.g. John Elijah',
                 prefixIcon: Icon(Icons.person_outline),
               ),
             ),
@@ -106,151 +91,84 @@ class CreateProfileView extends StatelessWidget {
             TextField(
               controller: vm.usernameController,
               decoration: const InputDecoration(
-                hintText: 'e.g. ayesha123',
+                hintText: 'e.g. john123',
                 prefixIcon: Icon(Icons.alternate_email),
               ),
             ),
             const SizedBox(height: 24),
 
-            Text('Grade / Standard', style: AppTextStyles.label),
-            const SizedBox(height: 12),
+            Text('City', style: AppTextStyles.label),
+            const SizedBox(height: 6),
             Obx(
-              () => Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: vm.standards.map((s) {
-                  final isSelected = vm.selectedStandard.value?.id == s.id;
-                  return GestureDetector(
-                    onTap: () => vm.selectStandard(s),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected ? AppColors.primary : Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: isSelected
-                              ? AppColors.primary
-                              : AppColors.border,
-                        ),
-                      ),
-                      child: Text(
-                        s.standard,
-                        style: AppTextStyles.label.copyWith(
-                          color: isSelected
-                              ? Colors.white
-                              : AppColors.textPrimary,
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
+              () => DropdownButtonFormField<String>(
+                value: vm.selectedCity.value,
+                decoration: InputDecoration(
+                  hintText: vm.isLoadingInst.value
+                      ? 'Loading cities...'
+                      : 'Select city',
+                  prefixIcon: const Icon(Icons.location_city_outlined),
+                ),
+                items: vm.cities
+                    .map(
+                      (city) =>
+                          DropdownMenuItem(value: city, child: Text(city)),
+                    )
+                    .toList(),
+                onChanged: vm.isLoadingInst.value
+                    ? null
+                    : (value) => vm.selectCity(value),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
 
+            // --- Institution (unlocked after city) ---
             Text('Institution', style: AppTextStyles.label),
             const SizedBox(height: 6),
-            TextField(
-              controller: vm.searchController,
-              decoration: const InputDecoration(
-                hintText: 'Search your school...',
-                prefixIcon: Icon(Icons.search),
-              ),
-            ),
-            const SizedBox(height: 10),
-
             Obx(() {
-              if (vm.isLoadingInst.value) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (vm.institutions.isEmpty) {
-                return Center(
-                  child: Text(
-                    'No institutions found.',
-                    style: AppTextStyles.bodySecondary,
-                  ),
-                );
-              }
-              return SizedBox(
-                height: MediaQuery.of(context).size.height * 0.35,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: vm.institutions.length,
-                  itemBuilder: (context, index) {
-                    final inst = vm.institutions[index];
-
-                    return Obx(() {
-                      final isSelected =
-                          vm.selectedInstitution.value?.id == inst.id;
-
-                      return GestureDetector(
-                        onTap: () => vm.selectInstitution(inst),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          margin: const EdgeInsets.only(bottom: 8),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 14,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? AppColors.primarySurface
-                                : Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: isSelected
-                                  ? AppColors.primary
-                                  : AppColors.border,
-                              width: isSelected ? 1.5 : 1,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.school_outlined,
-                                color: isSelected
-                                    ? AppColors.primary
-                                    : AppColors.textMuted,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      inst.name,
-                                      style: AppTextStyles.body.copyWith(
-                                        color: isSelected
-                                            ? AppColors.primary
-                                            : AppColors.textPrimary,
-                                      ),
-                                    ),
-                                    if (inst.city != null)
-                                      Text(
-                                        inst.city!,
-                                        style: AppTextStyles.bodySmall,
-                                      ),
-                                  ],
-                                ),
-                              ),
-                              if (isSelected)
-                                const Icon(
-                                  Icons.check_circle,
-                                  color: AppColors.primary,
-                                  size: 20,
-                                ),
-                            ],
-                          ),
-                        ),
-                      );
-                    });
-                  },
+              final cityChosen = vm.selectedCity.value != null;
+              return DropdownButtonFormField<InstitutionModel>(
+                value: vm.selectedInstitution.value,
+                decoration: InputDecoration(
+                  hintText: cityChosen
+                      ? 'Select your school'
+                      : 'Select a city first',
+                  prefixIcon: const Icon(Icons.school),
                 ),
+                items: vm.filteredInstitutions
+                    .map(
+                      (inst) =>
+                          DropdownMenuItem(value: inst, child: Text(inst.name)),
+                    )
+                    .toList(),
+                onChanged: cityChosen
+                    ? (value) => vm.selectInstitution(value)
+                    : null,
+              );
+            }),
+            const SizedBox(height: 16),
+
+            // --- Grade / Standard (unlocked after institution) ---
+            Text('Grade / Standard', style: AppTextStyles.label),
+            const SizedBox(height: 6),
+            Obx(() {
+              final institutionChosen = vm.selectedInstitution.value != null;
+              return DropdownButtonFormField<StandardModel>(
+                value: vm.selectedStandard.value,
+                decoration: InputDecoration(
+                  hintText: institutionChosen
+                      ? 'Select grade'
+                      : 'Select a school first',
+                  prefixIcon: const Icon(Icons.library_books_rounded),
+                ),
+                items: vm.standards
+                    .map(
+                      (s) =>
+                          DropdownMenuItem(value: s, child: Text(s.standard)),
+                    )
+                    .toList(),
+                onChanged: institutionChosen
+                    ? (value) => vm.selectStandard(value)
+                    : null,
               );
             }),
             const SizedBox(height: 24),
@@ -286,7 +204,7 @@ class CreateProfileView extends StatelessWidget {
                           strokeWidth: 2,
                         ),
                       )
-                    : const Text('Create Profile'),
+                    : const Text('Add Child'),
               ),
             ),
             const SizedBox(height: 32),

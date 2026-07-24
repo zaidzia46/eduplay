@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
+import '../../../fns/image_picker_service.dart';
 import '../../../models/institution_model.dart';
 import '../../../models/standards_model.dart';
 import '../../../routes/app_routes.dart';
@@ -11,13 +13,19 @@ class CreateProfileViewModel extends GetxController {
 
   final nameController = TextEditingController();
   final usernameController = TextEditingController();
-  final searchController = TextEditingController();
 
-  var institutions = <InstitutionModel>[].obs;
+  // Full list fetched once; filteredInstitutions is derived per selected city.
+  var allInstitutions = <InstitutionModel>[].obs;
+  var filteredInstitutions = <InstitutionModel>[].obs;
+  var cities = <String>[].obs;
   var isLoadingInst = false.obs;
-  var selectedStandard = Rxn<StandardModel>();
+
+  var selectedCity = Rxn<String>();
   var selectedInstitution = Rxn<InstitutionModel>();
-  var selectedAvatar = ''.obs; // asset path
+  var selectedStandard = Rxn<StandardModel>();
+
+  var profileImagePath = Rxn<String>(); // local file path from image picker
+
   var isLoading = false.obs;
   var errorMessage = ''.obs;
 
@@ -33,33 +41,26 @@ class CreateProfileViewModel extends GetxController {
     StandardModel(id: 8, standard: 'Grade 5'),
   ];
 
-  // Avatar option
-  final avatars = [
-    'assets/images/boy1.png',
-    'assets/images/boy2.png',
-    'assets/images/boy3.png',
-    'assets/images/boy4.png',
-    'assets/images/girl1.png',
-    'assets/images/girl2.png',
-    'assets/images/girl3.png',
-    'assets/images/girl4.png',
-  ];
-
   @override
   void onInit() {
     super.onInit();
     fetchInstitutions();
-    searchController.addListener(() {
-      fetchInstitutions(search: searchController.text);
-    });
   }
 
-  Future<void> fetchInstitutions({String? search}) async {
+  Future<void> fetchInstitutions() async {
     try {
       isLoadingInst.value = true;
-      institutions.value = await _institutionRepo.getInstitutions(
-        search: search,
-      );
+      final result = await _institutionRepo.getInstitutions();
+      allInstitutions.value = result;
+
+      cities.value =
+          result
+              .map((e) => e.city)
+              .whereType<String>()
+              .where((c) => c.trim().isNotEmpty)
+              .toSet()
+              .toList()
+            ..sort();
     } catch (e) {
       errorMessage.value = 'Could not load institutions.';
     } finally {
@@ -67,19 +68,35 @@ class CreateProfileViewModel extends GetxController {
     }
   }
 
-  void selectStandard(StandardModel s) => selectedStandard.value = s;
-  void selectInstitution(InstitutionModel i) => selectedInstitution.value = i;
-  void selectAvatar(String path) => selectedAvatar.value = path;
+  Future<void> pickProfileImage() async {
+    final imagePath = await ImagePickerService.pickImage(ImageSource.gallery);
+    if (imagePath != null) {
+      profileImagePath.value = imagePath;
+    }
+  }
+
+  void selectCity(String? city) {
+    if (city == selectedCity.value) return;
+    selectedCity.value = city;
+    selectedInstitution.value = null;
+    selectedStandard.value = null;
+
+    filteredInstitutions.value = city == null
+        ? []
+        : allInstitutions.where((inst) => inst.city == city).toList();
+  }
+
+  void selectInstitution(InstitutionModel? inst) {
+    selectedInstitution.value = inst;
+    selectedStandard.value = null;
+  }
+
+  void selectStandard(StandardModel? s) => selectedStandard.value = s;
 
   Future<void> createProfile() async {
     if (!_validate()) return;
     try {
       isLoading.value = true;
-
-      // TODO: replace with real API call
-      await Future.delayed(const Duration(seconds: 1));
-
-      // Go back to switcher and refresh
       Get.offAllNamed(AppRoutes.profileSwitcher);
     } catch (e) {
       errorMessage.value = 'Could not create profile. Try again.';
@@ -97,12 +114,16 @@ class CreateProfileViewModel extends GetxController {
       errorMessage.value = 'Please enter a username.';
       return false;
     }
-    if (selectedStandard.value == null) {
-      errorMessage.value = 'Please select a grade.';
+    if (selectedCity.value == null) {
+      errorMessage.value = 'Please select a city.';
       return false;
     }
     if (selectedInstitution.value == null) {
       errorMessage.value = 'Please select an institution.';
+      return false;
+    }
+    if (selectedStandard.value == null) {
+      errorMessage.value = 'Please select a grade.';
       return false;
     }
     return true;
@@ -112,7 +133,6 @@ class CreateProfileViewModel extends GetxController {
   void onClose() {
     nameController.dispose();
     usernameController.dispose();
-    searchController.dispose();
     super.onClose();
   }
 }

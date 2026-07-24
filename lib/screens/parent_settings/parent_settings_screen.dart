@@ -2,13 +2,13 @@ import 'dart:developer';
 
 import 'package:eduplay/screens/parent_settings/parent_settings_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_custom_clippers/flutter_custom_clippers.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
 
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/action_tile.dart';
+import '../../fns/image_picker_service.dart';
 import '../../widgets/parent_welcome_bg.dart';
 
 class ParentSettingsView extends StatelessWidget {
@@ -140,12 +140,26 @@ class ParentSettingsView extends StatelessWidget {
             ListTile(
               leading: const Icon(Icons.photo_camera_outlined),
               title: const Text('Take a photo'),
-              onTap: () => _pickAndSetImage(vm, ImageSource.camera),
+              onTap: () async {
+                final imagePath = await ImagePickerService.pickImage(
+                  ImageSource.camera,
+                );
+                if (imagePath != null) {
+                  vm.selectAvatar(imagePath);
+                }
+              },
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
               title: const Text('Choose from gallery'),
-              onTap: () => _pickAndSetImage(vm, ImageSource.gallery),
+              onTap: () async {
+                final imagePath = await ImagePickerService.pickImage(
+                  ImageSource.gallery,
+                );
+                if (imagePath != null) {
+                  vm.selectAvatar(imagePath);
+                }
+              },
             ),
           ],
         ),
@@ -153,23 +167,23 @@ class ParentSettingsView extends StatelessWidget {
     );
   }
 
-  Future<void> _pickAndSetImage(
-    ParentSettingsController vm,
-    ImageSource source,
-  ) async {
-    final picker = ImagePicker();
-
-    final XFile? picked = await picker.pickImage(
-      source: source,
-      imageQuality: 85, // compress a bit, optional
-      maxWidth: 1024, // avoid huge files, optional
-    );
-    log("Picked Path${picked?.path}");
-
-    if (picked == null) return; // user cancelled
-
-    vm.selectAvatar(picked.path);
-  }
+  // Future<void> _pickAndSetImage(
+  //   ParentSettingsController vm,
+  //   ImageSource source,
+  // ) async {
+  //   final picker = ImagePicker();
+  //
+  //   final XFile? picked = await picker.pickImage(
+  //     source: source,
+  //     imageQuality: 85, // compress a bit, optional
+  //     maxWidth: 1024, // avoid huge files, optional
+  //   );
+  //   log("Picked Path${picked?.path}");
+  //
+  //   if (picked == null) return; // user cancelled
+  //
+  //   vm.selectAvatar(picked.path);
+  // }
 
   void _showChangePasswordSheet(
     BuildContext context,
