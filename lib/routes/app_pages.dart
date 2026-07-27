@@ -23,10 +23,15 @@ import '../screens/profile/create_child_profile/create_child_profile_bin.dart';
 import '../screens/profile/create_child_profile/create_child_profile_screen.dart';
 import '../screens/profile/profile_switcher/profile_switcher_bin.dart';
 import '../screens/profile/profile_switcher/profile_switcher_screen.dart';
+import '../screens/splash/splash_bin.dart';
 
 abstract class AppPages {
   static final pages = [
-    GetPage(name: AppRoutes.splash, page: () => const SplashScreen()),
+    GetPage(
+      name: AppRoutes.splash,
+      page: () => const SplashScreen(),
+      binding: SplashBinding(),
+    ),
     // GetPage(
     //   name: AppRoutes.onboardingName,
     //   page: () => Name(),
