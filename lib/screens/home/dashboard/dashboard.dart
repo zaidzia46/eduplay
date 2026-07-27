@@ -11,6 +11,7 @@ import '../../../widgets/circular_loader.dart';
 import '../../../widgets/continue_learning_card.dart';
 import '../../../widgets/streak_card.dart';
 import '../../../widgets/subject_card.dart';
+import '../../../widgets/subject_progress_row.dart';
 import '../bottom_nav/bottomNavigation_controller.dart';
 import '../progress/progress_controller.dart';
 import 'dashboard_controller.dart';
@@ -261,7 +262,6 @@ class _DashBoardState extends State<DashBoard>
                             },
                           ),
                           SizedBox(
-                            width: double.infinity,
                             child: Obx(() {
                               if (vm.isSubjectsLoading.value) {
                                 return CircularLoader();
@@ -272,22 +272,14 @@ class _DashBoardState extends State<DashBoard>
                                   child: Text(vm.errorSubjectMessage.value),
                                 );
                               }
-                              return GridView.builder(
+                              return ListView.builder(
                                 shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 3,
-                                      crossAxisSpacing: 12,
-                                      mainAxisSpacing: 12,
-                                      childAspectRatio: 0.85,
-                                    ),
-                                itemCount: vm.subjects.length,
+                                itemCount: vm.dashboardSubjects.length,
                                 itemBuilder: (context, index) {
-                                  final subject = vm.subjects[index];
-                                  return SubjectCard(
+                                  final subject = vm.dashboardSubjects[index];
+                                  return SubjectProgressRow(
                                     subject: subject,
-                                    onPressed: () {
+                                    onTap: () {
                                       Get.toNamed(
                                         AppRoutes.topics,
                                         arguments: {'subject': subject},

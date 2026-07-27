@@ -1,22 +1,14 @@
 import 'package:eduplay/controller/session_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../routes/app_routes.dart';
+import '../../fns/image_picker_service.dart';
 
 class ParentSettingsController extends GetxController {
   final session = Get.find<SessionController>();
-
-  final avatars = [
-    'assets/images/boy1.png',
-    'assets/images/boy2.png',
-    'assets/images/boy3.png',
-    'assets/images/boy4.png',
-    'assets/images/girl1.png',
-    'assets/images/girl2.png',
-    'assets/images/girl3.png',
-    'assets/images/girl4.png',
-  ];
+  var profileImagePath = Rxn<String>();
 
   final currentPasswordController = TextEditingController();
   final newPasswordController = TextEditingController();
@@ -25,9 +17,11 @@ class ParentSettingsController extends GetxController {
   var isChangingPassword = false.obs;
   var passwordErrorMessage = ''.obs;
 
-  void selectAvatar(String path) {
-    session.setParentAvatar(path);
-    Get.back();
+  Future<void> selectAvatar() async {
+    final imagePath = await ImagePickerService.pickImage(ImageSource.gallery);
+    if (imagePath != null) {
+      session.setParentAvatar(imagePath);
+    }
   }
 
   bool _validatePasswordForm() {

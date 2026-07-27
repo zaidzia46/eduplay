@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:eduplay/screens/parent_settings/parent_settings_controller.dart';
 import 'package:flutter/material.dart';
@@ -44,11 +45,11 @@ class ParentSettingsView extends StatelessWidget {
             child: Column(
               children: [
                 SizedBox(height: 90),
-                Obx(() {
-                  final avatar = session.parentAvatar.value;
-                  return GestureDetector(
-                    onTap: () => _imagePicker(context, vm),
-                    child: Stack(
+                GestureDetector(
+                  onTap: vm.selectAvatar,
+                  child: Obx(() {
+                    final avatar = session.parentAvatar.value;
+                    return Stack(
                       children: [
                         Container(
                           width: avatarSize,
@@ -58,16 +59,15 @@ class ParentSettingsView extends StatelessWidget {
                             color: const Color(0xffFFD84E),
                             border: Border.all(color: Colors.white, width: 4),
                           ),
-                          child: ClipOval(
-                            child: Image.asset(
-                              'assets/images/pak_mom2.png',
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => const Icon(
-                                Icons.person,
-                                size: 40,
-                                color: AppColors.primary,
-                              ),
-                            ),
+                          child: CircleAvatar(
+                            radius: avatarSize / 2,
+                            backgroundColor: AppColors.primaryDark,
+                            backgroundImage: avatar != null
+                                ? FileImage(File(avatar))
+                                : null,
+                            child: avatar == null
+                                ? Icon(Icons.person, size: avatarSize * 0.5)
+                                : null,
                           ),
                         ),
                         Positioned(
@@ -80,16 +80,16 @@ class ParentSettingsView extends StatelessWidget {
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
-                              Icons.edit,
+                              Icons.camera_alt,
                               size: 14,
                               color: Colors.white,
                             ),
                           ),
                         ),
                       ],
-                    ),
-                  );
-                }),
+                    );
+                  }),
+                ),
                 const SizedBox(height: 12),
                 Obx(
                   () => Text(
@@ -122,68 +122,6 @@ class ParentSettingsView extends StatelessWidget {
       ),
     );
   }
-
-  void _imagePicker(BuildContext context, ParentSettingsController vm) {
-    Get.bottomSheet(
-      Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Choose an avatar', style: AppTextStyles.h4),
-            const SizedBox(height: 16),
-            ListTile(
-              leading: const Icon(Icons.photo_camera_outlined),
-              title: const Text('Take a photo'),
-              onTap: () async {
-                final imagePath = await ImagePickerService.pickImage(
-                  ImageSource.camera,
-                );
-                if (imagePath != null) {
-                  vm.selectAvatar(imagePath);
-                }
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Choose from gallery'),
-              onTap: () async {
-                final imagePath = await ImagePickerService.pickImage(
-                  ImageSource.gallery,
-                );
-                if (imagePath != null) {
-                  vm.selectAvatar(imagePath);
-                }
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Future<void> _pickAndSetImage(
-  //   ParentSettingsController vm,
-  //   ImageSource source,
-  // ) async {
-  //   final picker = ImagePicker();
-  //
-  //   final XFile? picked = await picker.pickImage(
-  //     source: source,
-  //     imageQuality: 85, // compress a bit, optional
-  //     maxWidth: 1024, // avoid huge files, optional
-  //   );
-  //   log("Picked Path${picked?.path}");
-  //
-  //   if (picked == null) return; // user cancelled
-  //
-  //   vm.selectAvatar(picked.path);
-  // }
 
   void _showChangePasswordSheet(
     BuildContext context,

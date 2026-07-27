@@ -184,6 +184,7 @@ class _SubjectViewState extends State<SubjectView>
               }
 
               return ListView.builder(
+                physics: BouncingScrollPhysics(),
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
                 itemCount: vm.filteredSubjects.length,
                 itemBuilder: (context, index) {

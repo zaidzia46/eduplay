@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:math';
 
 import 'package:eduplay/controller/session_controller.dart';
 import 'package:eduplay/screens/home/dashboard/subject_repo.dart';
@@ -17,6 +18,7 @@ class DashboardController extends GetxController {
   final LessonRepository _lessonRepo = LessonRepository();
 
   var subjects = <SubjectsModel>[].obs;
+  var dashboardSubjects = <SubjectsModel>[].obs;
   var continueLearning = <ContinueLearningModel>[].obs;
   var isSubjectsLoading = true.obs;
   var isLessonLoading = true.obs;
@@ -105,7 +107,14 @@ class DashboardController extends GetxController {
     try {
       isSubjectsLoading.value = true;
       errorSubjectMessage.value = '';
-      subjects.value = await _subjectRepo.getSubjects();
+      final allSubjects = await _subjectRepo.getSubjects();
+
+      subjects.value = allSubjects;
+
+      dashboardSubjects.value = List.of(allSubjects)
+        ..sort((a, b) => b.progressPercent.compareTo(a.progressPercent));
+
+      dashboardSubjects.value = dashboardSubjects.take(3).toList();
     } catch (e) {
       errorSubjectMessage.value = 'Could not load subjects';
     } finally {
@@ -124,7 +133,6 @@ class DashboardController extends GetxController {
       continueLearning.value = await _lessonRepo.getContinueLearning();
     } catch (e) {
       errorLessonMessage.value = 'Could not load lessons';
-      log('Error in lessons: $e');
     } finally {
       isLessonLoading.value = false;
     }
