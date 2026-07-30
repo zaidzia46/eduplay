@@ -21,21 +21,46 @@ class SubjectView extends StatefulWidget {
 }
 
 class _SubjectViewState extends State<SubjectView>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late final AnimationController _controller;
+  late final Worker _tabWorker;
+  late final Worker _loadingWorker;
+  bool _hasAnimated = false;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
     super.initState();
+    final vm = Get.find<DashboardController>();
+
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 700),
     );
 
-    _controller.forward();
+    // fire once data finishes loading (covers first load)
+    _loadingWorker = ever(vm.isSubjectsLoading, (isLoading) {
+      if (!isLoading && !_hasAnimated) {
+        _controller.forward(from: 0);
+        _hasAnimated = true;
+      }
+    });
 
-    ever(Get.find<BottomNavController>().currentIndex, (index) {
-      if (index == 1) {
+    // if data was already loaded before this screen was built, catch that case
+    if (!vm.isSubjectsLoading.value) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!_hasAnimated) {
+          _controller.forward(from: 0);
+          _hasAnimated = true;
+        }
+      });
+    }
+
+    // replay stagger every time user comes back to this tab
+    _tabWorker = ever(Get.find<BottomNavController>().currentIndex, (index) {
+      if (index == 1 && !vm.isSubjectsLoading.value) {
         _controller.forward(from: 0);
       }
     });
@@ -43,14 +68,16 @@ class _SubjectViewState extends State<SubjectView>
 
   @override
   void dispose() {
+    _tabWorker.dispose();
+    _loadingWorker.dispose();
     _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final vm = Get.find<DashboardController>();
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(

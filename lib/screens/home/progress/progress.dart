@@ -22,10 +22,13 @@ class ProgressView extends StatefulWidget {
 }
 
 class _ProgressViewState extends State<ProgressView>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late final AnimationController _controller;
   late final ScrollController _scrollController;
   final ValueNotifier<double> _morphT = ValueNotifier(0);
+  late final Worker _tabWorker;
+  late final Worker _loadingWorker;
+  bool _hasAnimated = false;
 
   static const double _maxMorphDistance = 140;
 
@@ -37,8 +40,12 @@ class _ProgressViewState extends State<ProgressView>
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   void initState() {
     super.initState();
+    final vm = Get.find<ProgressController>();
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 700),
@@ -47,7 +54,23 @@ class _ProgressViewState extends State<ProgressView>
     _controller.forward();
     _scrollController = ScrollController()..addListener(_handleScroll);
 
-    ever(Get.find<BottomNavController>().currentIndex, (index) {
+    _loadingWorker = ever(vm.isLoading, (isLoading) {
+      if (!isLoading && !_hasAnimated) {
+        _controller.forward(from: 0);
+        _hasAnimated = true;
+      }
+    });
+
+    if (!vm.isLoading.value) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!_hasAnimated) {
+          _controller.forward(from: 0);
+          _hasAnimated = true;
+        }
+      });
+    }
+
+    _tabWorker = ever(Get.find<BottomNavController>().currentIndex, (index) {
       if (index == 2) {
         _controller.forward(from: 0);
       }
@@ -70,11 +93,14 @@ class _ProgressViewState extends State<ProgressView>
     _scrollController.removeListener(_handleScroll);
     _scrollController.dispose();
     _morphT.dispose();
+    _tabWorker.dispose();
+    _loadingWorker.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final vm = Get.find<ProgressController>();
 
     return Scaffold(

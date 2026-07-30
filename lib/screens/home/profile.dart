@@ -7,11 +7,20 @@ import '../../theme/app_text_styles.dart';
 import '../../widgets/action_tile.dart';
 import '../../widgets/info_chip.dart';
 
-class ProfileView extends StatelessWidget {
+class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
 
   @override
+  State<ProfileView> createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends State<ProfileView>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     final session = Get.find<SessionController>();
     const double avatarSize = 70;
     final media = MediaQuery.of(context);

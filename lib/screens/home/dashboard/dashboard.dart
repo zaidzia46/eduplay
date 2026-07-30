@@ -10,7 +10,6 @@ import '../../../theme/app_text_styles.dart';
 import '../../../widgets/circular_loader.dart';
 import '../../../widgets/continue_learning_card.dart';
 import '../../../widgets/streak_card.dart';
-import '../../../widgets/subject_card.dart';
 import '../../../widgets/subject_progress_row.dart';
 import '../bottom_nav/bottomNavigation_controller.dart';
 import '../progress/progress_controller.dart';
@@ -24,10 +23,14 @@ class DashBoard extends StatefulWidget {
 }
 
 class _DashBoardState extends State<DashBoard>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   final vm = Get.find<DashboardController>();
   final bottomNavConn = Get.find<BottomNavController>();
   late final AnimationController _controller;
+  late final Worker _worker;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -38,7 +41,11 @@ class _DashBoardState extends State<DashBoard>
       duration: const Duration(milliseconds: 700),
     );
 
-    ever(Get.find<BottomNavController>().currentIndex, (index) {
+    if (bottomNavConn.currentIndex.value == 0) {
+      _controller.forward(from: 0);
+    }
+
+    _worker = ever(bottomNavConn.currentIndex, (index) {
       if (index == 0) {
         _controller.forward(from: 0);
       }
@@ -48,11 +55,13 @@ class _DashBoardState extends State<DashBoard>
   @override
   void dispose() {
     _controller.dispose();
+    _worker.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     const double avatarSize = 64;
     final media = MediaQuery.of(context);
     final size = media.size;

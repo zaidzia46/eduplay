@@ -9,10 +9,22 @@ import 'package:get/get.dart';
 import 'bottom_nav/bottomNavigation_controller.dart';
 import 'dashboard/dashboard.dart';
 
+//okay for now we are using built once functionality to improve navigation speed.
+// We are keeping this until we integrate real APIs to test how much delay it cause.
+// After that if this things won't work right, we'll replace it with loader on profile and
+// showing that your profile is being set up. Also can cache the data later for better performance.
+
 class Home extends StatelessWidget {
   Home({super.key});
 
   final vm = Get.find<BottomNavController>();
+  final List<bool> _builtOnce = [true, false, false, false];
+  final List<Widget> _screens = [
+    DashBoard(),
+    SubjectView(),
+    ProgressView(),
+    ProfileView(),
+  ];
 
   Future<bool> _handleBackPressed() async {
     if (vm.currentIndex.value != 0) {
@@ -27,14 +39,13 @@ class Home extends StatelessWidget {
       onWillPop: _handleBackPressed,
       child: Scaffold(
         body: Obx(() {
+          final index = vm.currentIndex.value;
+          _builtOnce[index] = true;
           return IndexedStack(
             index: vm.currentIndex.value,
-            children: [
-              DashBoard(),
-              SubjectView(),
-              ProgressView(),
-              ProfileView(),
-            ],
+            children: List.generate(_screens.length, (i) {
+              return _builtOnce[i] ? _screens[i] : const SizedBox.shrink();
+            }),
           );
         }),
 
