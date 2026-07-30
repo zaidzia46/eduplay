@@ -145,6 +145,7 @@ class _ProgressViewState extends State<ProgressView>
                                             trackColor:
                                                 AppColors.primarySurface,
                                             progressColor: AppColors.primary,
+                                            bubbleColor: AppColors.primaryDark,
                                           ),
                                           Opacity(
                                             opacity: (1 - t * 2).clamp(
