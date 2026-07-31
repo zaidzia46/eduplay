@@ -2,14 +2,10 @@ import 'dart:developer';
 
 import 'package:eduplay/controller/session_controller.dart';
 import 'package:eduplay/screens/profile/profile_switcher/profile_switcher_controller.dart';
-import 'package:eduplay/widgets/parent_welcome.dart';
 import 'package:eduplay/widgets/staggered_anime.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 
-import '../../../routes/app_routes.dart';
-import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/add_profile_card.dart';
 import '../../../widgets/circular_loader.dart';

@@ -1,15 +1,12 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:eduplay/screens/parent_settings/parent_settings_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
 
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/action_tile.dart';
-import '../../fns/image_picker_service.dart';
 import '../../widgets/parent_welcome_bg.dart';
 
 class ParentSettingsView extends StatelessWidget {

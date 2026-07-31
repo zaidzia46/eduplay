@@ -1,6 +1,6 @@
 name: eduplay
 description: "A new Flutter project."
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: 'none'
 version: 1.0.0+1
 
 environment:
@@ -24,6 +24,7 @@ dependencies:
   visibility_detector: ^0.4.0+2
   image_picker: ^1.2.1
   flutter_custom_clippers: ^2.1.0
+  audioplayers: ^6.6.0
 
 dev_dependencies:
   flutter_test:
@@ -39,6 +40,7 @@ flutter:
     - assets/images/
     - assets/animations/
     - assets/data/
+    - assets/sounds/
 
   fonts:
     - family: Nunito

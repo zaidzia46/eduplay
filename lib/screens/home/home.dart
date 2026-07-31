@@ -59,20 +59,17 @@ class Home extends StatelessWidget {
               backgroundColor: AppColors.primary,
               unselectedItemColor: Color(0xffD1C4E9),
               items: const [
+                BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
                 BottomNavigationBarItem(
-                  icon: FaIcon(FontAwesomeIcons.warehouse, size: 20),
-                  label: 'Home',
-                ),
-                BottomNavigationBarItem(
-                  icon: FaIcon(FontAwesomeIcons.book, size: 20),
+                  icon: Icon(Icons.menu_book_sharp),
                   label: 'Subjects',
                 ),
                 BottomNavigationBarItem(
-                  icon: FaIcon(FontAwesomeIcons.trophy, size: 20),
+                  icon: Icon(Icons.emoji_events),
                   label: 'Progress',
                 ),
                 BottomNavigationBarItem(
-                  icon: FaIcon(FontAwesomeIcons.person, size: 20),
+                  icon: Icon(Icons.person),
                   label: 'Profile',
                 ),
               ],

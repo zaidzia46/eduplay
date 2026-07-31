@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:eduplay/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../controller/session_controller.dart';
 import '../theme/app_colors.dart';
 
 class WelcomeBackground extends StatelessWidget {
@@ -159,45 +163,43 @@ class WelcomeBackground extends StatelessWidget {
   }
 
   Widget _buildAvatar() {
+    final session = Get.find<SessionController>();
     double avatarSize = 65;
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        CircleAvatar(
-          radius: avatarSize / 2,
-          backgroundColor: const Color(0xffFFD84E),
-          child: ClipOval(
-            child: Image.asset(
-              'assets/images/pak_mom2.png',
-              fit: BoxFit.cover,
-              width: avatarSize,
-              height: avatarSize,
-              errorBuilder: (_, __, ___) =>
-                  const Icon(Icons.person, size: 45, color: AppColors.primary),
-            ),
+    return Obx(() {
+      final avatar = session.parentAvatar.value;
+      return Stack(
+        clipBehavior: Clip.none,
+        children: [
+          CircleAvatar(
+            radius: avatarSize / 2,
+            backgroundColor: AppColors.primaryLight,
+            backgroundImage: avatar != null ? FileImage(File(avatar)) : null,
+            child: avatar == null
+                ? Icon(Icons.person, size: avatarSize * 0.5)
+                : null,
           ),
-        ),
-        Positioned(
-          right: -2,
-          bottom: -2,
-          child: Container(
-            width: 22,
-            height: 22,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Color(0xFFF6C544),
-            ),
-            child: Center(
-              child: FaIcon(
-                FontAwesomeIcons.crown,
-                color: Colors.white,
-                size: 14,
+          Positioned(
+            right: -2,
+            bottom: -2,
+            child: Container(
+              width: 22,
+              height: 22,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Color(0xFFF6C544),
+              ),
+              child: Center(
+                child: FaIcon(
+                  FontAwesomeIcons.crown,
+                  color: Colors.white,
+                  size: 14,
+                ),
               ),
             ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    });
   }
 }
 

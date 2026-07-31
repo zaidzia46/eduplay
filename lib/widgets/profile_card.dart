@@ -1,6 +1,5 @@
-import 'package:eduplay/widgets/circular_loader.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-
 import '../models/child_profile_model.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
@@ -27,7 +26,7 @@ class _ProfileCardState extends State<ProfileCard>
     with SingleTickerProviderStateMixin {
   static const _scaleDownMs = 120;
   static const _ringMs = 900;
-  static const _scaleUpMs = 100;
+  static const _scaleUpMs = 120;
   static const _totalMs = _scaleDownMs + _ringMs + _scaleUpMs;
 
   late final AnimationController _controller;
@@ -82,8 +81,6 @@ class _ProfileCardState extends State<ProfileCard>
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         widget.onTap(); // navigate now, after the sequence finishes
-        // reset so the card looks normal if the user navigates back to it
-        _controller.value = 0;
       }
     });
   }
@@ -104,7 +101,10 @@ class _ProfileCardState extends State<ProfileCard>
     const double avatarSize = 62;
 
     return GestureDetector(
-      onTap: _handleTap,
+      onTap: () {
+        _handleTap();
+        HapticFeedback.selectionClick();
+      },
       child: AnimatedBuilder(
         animation: _controller,
         builder: (context, child) {
