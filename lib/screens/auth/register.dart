@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'dart:ui';
 
+import 'package:eduplay/controller/session_controller.dart';
 import 'package:eduplay/screens/auth/widgets/auth_bg.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,6 +15,9 @@ class RegisterView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = Get.find<AuthViewModel>();
+    final session = Get.find<SessionController>();
+    final authConn = Get.find<AuthViewModel>();
+    const double avatarSize = 84;
 
     return Scaffold(
       appBar: AppBar(
@@ -78,9 +83,61 @@ class RegisterView extends StatelessWidget {
                               fontWeight: FontWeight.w800,
                             ),
                           ),
-                          const SizedBox(height: 32),
-
-                          // Full name
+                          const SizedBox(height: 12),
+                          Center(
+                            child: GestureDetector(
+                              onTap: session.setParentAvatar,
+                              child: Obx(() {
+                                final avatar = session.parentAvatar.value;
+                                return Stack(
+                                  children: [
+                                    Container(
+                                      width: avatarSize,
+                                      height: avatarSize,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: const Color(0xffFFD84E),
+                                        border: Border.all(
+                                          color: Colors.white,
+                                          width: 4,
+                                        ),
+                                      ),
+                                      child: CircleAvatar(
+                                        radius: avatarSize / 2,
+                                        backgroundColor: AppColors.primaryDark,
+                                        backgroundImage: avatar != null
+                                            ? FileImage(File(avatar))
+                                            : null,
+                                        child: avatar == null
+                                            ? Icon(
+                                                Icons.person,
+                                                size: avatarSize * 0.5,
+                                              )
+                                            : null,
+                                      ),
+                                    ),
+                                    Positioned(
+                                      bottom: 0,
+                                      right: 0,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(6),
+                                        decoration: const BoxDecoration(
+                                          color: AppColors.textPrimary,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(
+                                          Icons.camera_alt,
+                                          size: 14,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
                           _buildLabel('Full Name'),
                           const SizedBox(height: 6),
                           TextField(

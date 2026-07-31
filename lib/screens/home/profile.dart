@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:eduplay/controller/session_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -22,7 +24,7 @@ class _ProfileViewState extends State<ProfileView>
   Widget build(BuildContext context) {
     super.build(context);
     final session = Get.find<SessionController>();
-    const double avatarSize = 70;
+    const double avatarSize = 90;
     final media = MediaQuery.of(context);
     final size = media.size;
     final bannerWidth = size.width - 24;
@@ -72,6 +74,7 @@ class _ProfileViewState extends State<ProfileView>
                 children: [
                   Obx(() {
                     final child = session.activeChild.value;
+                    final avatar = session.childAvatar.value;
                     if (child == null) return const SizedBox.shrink();
 
                     return Container(
@@ -88,41 +91,52 @@ class _ProfileViewState extends State<ProfileView>
                       ),
                       child: Column(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 5),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.orange.withOpacity(.25),
-                                  blurRadius: 12,
+                          GestureDetector(
+                            onTap: session.setChildAvatar,
+                            child: Stack(
+                              children: [
+                                Container(
+                                  width: avatarSize,
+                                  height: avatarSize,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: const Color(0xffFFD84E),
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 4,
+                                    ),
+                                  ),
+                                  child: CircleAvatar(
+                                    radius: avatarSize / 2,
+                                    backgroundColor: AppColors.primaryDark,
+                                    backgroundImage: avatar != null
+                                        ? FileImage(File(avatar))
+                                        : null,
+                                    child: avatar == null
+                                        ? Icon(
+                                            Icons.person,
+                                            size: avatarSize * 0.5,
+                                          )
+                                        : null,
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: const BoxDecoration(
+                                      color: AppColors.textPrimary,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                      Icons.camera_alt,
+                                      size: 14,
+                                      color: Colors.white,
+                                    ),
+                                  ),
                                 ),
                               ],
-                            ),
-                            child: CircleAvatar(
-                              radius: avatarSize / 2,
-                              backgroundColor: const Color(0xffFFD84E),
-                              child: ClipOval(
-                                child: child.avatar != null
-                                    ? Image.asset(
-                                        child.avatar!,
-                                        fit: BoxFit.cover,
-                                        width: avatarSize,
-                                        height: avatarSize,
-                                        errorBuilder: (_, __, ___) =>
-                                            const Icon(
-                                              Icons.person,
-                                              size: 45,
-                                              color: AppColors.primary,
-                                            ),
-                                      )
-                                    : const Icon(
-                                        Icons.person,
-                                        size: 45,
-                                        color: AppColors.primary,
-                                      ),
-                              ),
                             ),
                           ),
                           const SizedBox(height: 12),

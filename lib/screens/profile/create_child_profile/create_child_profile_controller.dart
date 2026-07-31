@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../controller/session_controller.dart';
 import '../../../fns/image_picker_service.dart';
 import '../../../models/institution_model.dart';
 import '../../../models/standards_model.dart';
@@ -10,6 +11,7 @@ import '../institution_repo.dart';
 
 class CreateProfileViewModel extends GetxController {
   final InstitutionRepository _institutionRepo = InstitutionRepository();
+  final session = Get.find<SessionController>();
 
   final nameController = TextEditingController();
   final usernameController = TextEditingController();
@@ -65,13 +67,6 @@ class CreateProfileViewModel extends GetxController {
       errorMessage.value = 'Could not load institutions.';
     } finally {
       isLoadingInst.value = false;
-    }
-  }
-
-  Future<void> pickProfileImage() async {
-    final imagePath = await ImagePickerService.pickImage(ImageSource.gallery);
-    if (imagePath != null) {
-      profileImagePath.value = imagePath;
     }
   }
 

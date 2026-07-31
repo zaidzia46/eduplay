@@ -2,7 +2,9 @@
 import 'package:eduplay/controller/session_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
+import '../../fns/image_picker_service.dart';
 import '../../routes/app_routes.dart';
 
 class AuthViewModel extends GetxController {

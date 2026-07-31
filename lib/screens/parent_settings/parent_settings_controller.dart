@@ -17,13 +17,6 @@ class ParentSettingsController extends GetxController {
   var isChangingPassword = false.obs;
   var passwordErrorMessage = ''.obs;
 
-  Future<void> selectAvatar() async {
-    final imagePath = await ImagePickerService.pickImage(ImageSource.gallery);
-    if (imagePath != null) {
-      session.setParentAvatar(imagePath);
-    }
-  }
-
   bool _validatePasswordForm() {
     if (currentPasswordController.text.isEmpty) {
       passwordErrorMessage.value = 'Enter your current password.';

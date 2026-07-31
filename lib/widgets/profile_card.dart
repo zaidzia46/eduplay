@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../controller/session_controller.dart';
 import '../models/child_profile_model.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
@@ -99,6 +103,7 @@ class _ProfileCardState extends State<ProfileCard>
   @override
   Widget build(BuildContext context) {
     const double avatarSize = 62;
+    final session = Get.find<SessionController>();
 
     return GestureDetector(
       onTap: () {
@@ -142,35 +147,25 @@ class _ProfileCardState extends State<ProfileCard>
                 ),
                 child: Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(5),
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.rectangle,
-                      ),
-                      child: CircleAvatar(
-                        radius: avatarSize / 2,
-                        backgroundColor: const Color(0xffFFD84E),
-                        child: ClipOval(
-                          child: widget.child.avatar != null
-                              ? Image.asset(
-                                  widget.child.avatar!,
-                                  fit: BoxFit.cover,
-                                  width: avatarSize,
-                                  height: avatarSize,
-                                  errorBuilder: (_, __, ___) => const Icon(
-                                    Icons.person,
-                                    size: 45,
-                                    color: AppColors.primary,
-                                  ),
-                                )
-                              : const Icon(
-                                  Icons.person,
-                                  size: 45,
-                                  color: AppColors.primary,
-                                ),
+                    Obx(() {
+                      final avatar = session.childAvatar.value;
+                      return Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.rectangle,
                         ),
-                      ),
-                    ),
+                        child: CircleAvatar(
+                          radius: avatarSize / 2,
+                          backgroundColor: const Color(0xffFFD84E),
+                          backgroundImage: avatar != null
+                              ? FileImage(File(avatar))
+                              : null,
+                          child: avatar == null
+                              ? Icon(Icons.person, size: avatarSize * 0.5)
+                              : null,
+                        ),
+                      );
+                    }),
                     const SizedBox(width: 9),
                     Expanded(
                       child: Column(

@@ -1,6 +1,8 @@
 // session_controller.dart
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import '../fns/image_picker_service.dart';
 import '../models/child_profile_model.dart';
 import '../models/standards_model.dart';
 
@@ -10,12 +12,14 @@ class SessionController extends GetxController {
 
   var parentName = Rxn<String>();
   var parentAvatar = Rxn<String>();
+  var childAvatar = Rxn<String>();
 
   static const _standardKey = 'currentStandard';
   static const _authKey = 'isParentLoggedIn';
   static const _activeChildKey = 'activeChild';
   static const _parentNameKey = 'parentName';
   static const _parentAvatarKey = 'parentAvatar';
+  static const _childAvatarKey = 'childAvatar';
 
   final _box = GetStorage();
 
@@ -59,9 +63,20 @@ class SessionController extends GetxController {
     await _box.write(_parentNameKey, name);
   }
 
-  Future<void> setParentAvatar(String avatarPath) async {
-    parentAvatar.value = avatarPath;
-    await _box.write(_parentAvatarKey, avatarPath);
+  Future<void> setParentAvatar() async {
+    final imagePath = await ImagePickerService.pickImage(ImageSource.gallery);
+    if (imagePath != null) {
+      parentAvatar.value = imagePath;
+      await _box.write(_childAvatarKey, imagePath);
+    }
+  }
+
+  Future<void> setChildAvatar() async {
+    final imagePath = await ImagePickerService.pickImage(ImageSource.gallery);
+    if (imagePath != null) {
+      childAvatar.value = imagePath;
+      await _box.write(_childAvatarKey, imagePath);
+    }
   }
 
   Future<void> setActiveChild(ChildProfileModel child) async {

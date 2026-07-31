@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import '../../../controller/session_controller.dart';
 import '../../../models/institution_model.dart';
 import '../../../models/standards_model.dart';
 import '../../../theme/app_colors.dart';
@@ -16,6 +17,7 @@ class CreateProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = Get.find<CreateProfileViewModel>();
+    final session = Get.find<SessionController>();
     const double avatarSize = 84;
 
     return Scaffold(
@@ -38,7 +40,7 @@ class CreateProfileView extends StatelessWidget {
               children: [
                 Center(
                   child: GestureDetector(
-                    onTap: vm.pickProfileImage,
+                    onTap: session.setChildAvatar,
                     child: Obx(() {
                       final path = vm.profileImagePath.value;
                       return Stack(

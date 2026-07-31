@@ -8,6 +8,7 @@ import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/action_tile.dart';
 import '../../widgets/parent_welcome_bg.dart';
+import '../auth/auth_controller.dart';
 
 class ParentSettingsView extends StatelessWidget {
   const ParentSettingsView({super.key});
@@ -43,7 +44,7 @@ class ParentSettingsView extends StatelessWidget {
               children: [
                 SizedBox(height: 90),
                 GestureDetector(
-                  onTap: vm.selectAvatar,
+                  onTap: session.setParentAvatar,
                   child: Obx(() {
                     final avatar = session.parentAvatar.value;
                     return Stack(

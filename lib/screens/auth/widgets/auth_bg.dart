@@ -46,10 +46,6 @@ class _EduPlayBackgroundPainter extends CustomPainter {
 
     canvas.drawRect(Offset.zero & size, backgroundPaint);
 
-    // ------------------------------------------------------------
-    // 2. Large purple circle — top left
-    // ------------------------------------------------------------
-
     final topLeftCircle = Paint()
       ..shader =
           RadialGradient(
