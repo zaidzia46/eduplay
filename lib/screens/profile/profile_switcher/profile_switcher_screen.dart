@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:animations/animations.dart';
 import 'package:eduplay/controller/session_controller.dart';
 import 'package:eduplay/screens/profile/profile_switcher/profile_switcher_controller.dart';
 import 'package:eduplay/widgets/staggered_anime.dart';
@@ -11,6 +12,8 @@ import '../../../widgets/add_profile_card.dart';
 import '../../../widgets/circular_loader.dart';
 import '../../../widgets/profile_card.dart';
 import '../../../widgets/welcome_bg_parent_dashboard.dart';
+import '../../parent_settings/parent_settings_bin.dart';
+import '../../parent_settings/parent_settings_screen.dart';
 
 class ProfileSwitcherView extends StatefulWidget {
   const ProfileSwitcherView({super.key});
@@ -88,23 +91,42 @@ class _ProfileSwitcherViewState extends State<ProfileSwitcherView>
             ),
           ),
           SizedBox(height: 13),
-          GestureDetector(
-            onTap: () {
-              Get.toNamed('/parent-settings');
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Obx(() {
-                return WelcomeBackground(
-                  welcomeText: 'Welcome',
-                  subtitleText:
-                      "You're doing a wonderful job supporting your children's journey.",
-                  childrenCount: vm.children.length,
-                  starsCount: vm.totalStars.value,
-                  userName: session.parentName.value ?? 'User',
-                );
-              }),
+          OpenContainer(
+            transitionDuration: const Duration(milliseconds: 600),
+            transitionType: ContainerTransitionType.fade,
+
+            closedElevation: 0,
+            openElevation: 0,
+
+            closedShape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
             ),
+
+            openShape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.zero,
+            ),
+
+            closedBuilder: (context, openContainer) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Obx(() {
+                  return WelcomeBackground(
+                    welcomeText: 'Welcome',
+                    subtitleText:
+                        "You're doing a wonderful job supporting your children's journey.",
+                    childrenCount: vm.children.length,
+                    starsCount: vm.totalStars.value,
+                    userName: session.parentName.value ?? 'User',
+                  );
+                }),
+              );
+            },
+
+            openBuilder: (context, _) {
+              ParentSettingsBinding().dependencies();
+
+              return ParentSettingsView();
+            },
           ),
 
           SizedBox(height: 12),

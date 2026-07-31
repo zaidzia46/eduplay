@@ -96,13 +96,5 @@ abstract class AppPages {
       binding: TopicBinding(),
       transition: Transition.fadeIn,
     ),
-
-    GetPage(
-      name: AppRoutes.parentSettings,
-      page: () => const ParentSettingsView(),
-      binding: ParentSettingsBinding(),
-      transition: Transition.rightToLeft,
-      transitionDuration: const Duration(milliseconds: 400),
-    ),
   ];
 }

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:eduplay/screens/auth/widgets/auth_bg.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../routes/app_routes.dart';
@@ -15,225 +16,230 @@ class LoginView extends StatelessWidget {
     final vm = Get.find<AuthViewModel>();
 
     return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset('assets/images/splash.png', fit: BoxFit.cover),
-          SafeArea(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: constraints.maxHeight,
-                    ),
-                    child: IntrinsicHeight(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Center(
-                            child: Image.asset(
-                              'assets/images/logo.png',
-                              height: 100,
-                            ),
+      body: AuthBackground(
+        child: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: Image.asset(
+                            'assets/images/logo.png',
+                            height: 100,
                           ),
-                          const SizedBox(height: 22),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(15),
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 5,
-                                  vertical: 25,
+                        ),
+                        const SizedBox(height: 22),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 5,
+                                vertical: 25,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(
+                                  0.50,
+                                ), // 80% opacity
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.1),
+                                  width: 2,
                                 ),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(
-                                    0.50,
-                                  ), // 80% opacity
-                                  border: Border.all(
-                                    color: Colors.white.withOpacity(0.1),
-                                    width: 2,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 10),
                                   ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 20,
-                                      offset: const Offset(0, 10),
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Welcome back!',
-                                      style: AppTextStyles.h1,
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      'Sign in to continue your child\'s learning journey.',
-                                      style: AppTextStyles.bodySecondary
-                                          .copyWith(
-                                            color: AppColors.textPrimary,
-                                            fontWeight: FontWeight.w800,
-                                          ),
-                                    ),
-                                    const SizedBox(height: 32),
-
-                                    // Email
-                                    _buildLabel('Email'),
-                                    const SizedBox(height: 6),
-                                    TextField(
-                                      controller: vm.emailController,
-                                      keyboardType: TextInputType.emailAddress,
-                                      decoration: const InputDecoration(
-                                        hintText: 'parent@email.com',
-                                        prefixIcon: Icon(Icons.email_outlined),
+                                ],
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Welcome back!',
+                                    style: AppTextStyles.h1,
+                                  ),
+                                  const SizedBox(height: 5),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 3.0),
+                                    child: Container(
+                                      height: 4.5,
+                                      width: 45,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: AppColors.primary,
                                       ),
                                     ),
-                                    const SizedBox(height: 16),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    'Sign in to continue your child\'s learning journey.',
+                                    style: AppTextStyles.bodySecondary.copyWith(
+                                      color: AppColors.textPrimary,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 32),
 
-                                    // Password
-                                    _buildLabel('Password'),
-                                    const SizedBox(height: 6),
-                                    Obx(
-                                      () => TextField(
-                                        controller: vm.passwordController,
-                                        obscureText: vm.isPasswordHidden.value,
-                                        decoration: InputDecoration(
-                                          hintText: '123456',
-                                          prefixIcon: const Icon(
-                                            Icons.lock_outline,
-                                          ),
-                                          suffixIcon: GestureDetector(
-                                            onTap: vm.togglePassword,
-                                            child: Icon(
-                                              vm.isPasswordHidden.value
-                                                  ? Icons
-                                                        .visibility_off_outlined
-                                                  : Icons.visibility_outlined,
-                                            ),
+                                  // Email
+                                  _buildLabel('Email'),
+                                  const SizedBox(height: 6),
+                                  TextField(
+                                    controller: vm.emailController,
+                                    keyboardType: TextInputType.emailAddress,
+                                    decoration: const InputDecoration(
+                                      hintText: 'parent@email.com',
+                                      prefixIcon: Icon(Icons.email_outlined),
+                                      prefixIconColor: AppColors.primaryDark,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+
+                                  // Password
+                                  _buildLabel('Password'),
+                                  const SizedBox(height: 6),
+                                  Obx(
+                                    () => TextField(
+                                      controller: vm.passwordController,
+                                      obscureText: vm.isPasswordHidden.value,
+                                      decoration: InputDecoration(
+                                        hintText: '123456',
+                                        prefixIcon: const Icon(
+                                          Icons.lock_outline,
+                                        ),
+                                        prefixIconColor: AppColors.primaryDark,
+                                        suffixIcon: GestureDetector(
+                                          onTap: vm.togglePassword,
+                                          child: Icon(
+                                            vm.isPasswordHidden.value
+                                                ? Icons.visibility_off_outlined
+                                                : Icons.visibility_outlined,
+                                            color: AppColors.primaryDark,
                                           ),
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(height: 8),
+                                  ),
+                                  const SizedBox(height: 8),
 
-                                    // Forgot password
-                                    Align(
-                                      alignment: Alignment.centerRight,
-                                      child: TextButton(
-                                        onPressed: () {},
-                                        child: const Text('Forgot password?'),
-                                      ),
+                                  // Forgot password
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: TextButton(
+                                      onPressed: () {},
+                                      child: const Text('Forgot password?'),
                                     ),
-                                    const SizedBox(height: 8),
+                                  ),
+                                  const SizedBox(height: 8),
 
-                                    // Error message
-                                    Obx(
-                                      () => vm.errorMessage.isNotEmpty
-                                          ? Container(
-                                              padding: const EdgeInsets.all(12),
-                                              decoration: BoxDecoration(
-                                                color: AppColors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              child: Row(
-                                                children: [
-                                                  const Icon(
-                                                    Icons.error_outline,
-                                                    color: AppColors.error,
-                                                    size: 18,
+                                  // Error message
+                                  Obx(
+                                    () => vm.errorMessage.isNotEmpty
+                                        ? Container(
+                                            padding: const EdgeInsets.all(12),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                const Icon(
+                                                  Icons.error_outline,
+                                                  color: AppColors.error,
+                                                  size: 18,
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Expanded(
+                                                  child: Text(
+                                                    vm.errorMessage.value,
+                                                    style: AppTextStyles
+                                                        .bodySmall
+                                                        .copyWith(
+                                                          color:
+                                                              AppColors.error,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                        ),
                                                   ),
-                                                  const SizedBox(width: 8),
-                                                  Expanded(
-                                                    child: Text(
-                                                      vm.errorMessage.value,
-                                                      style: AppTextStyles
-                                                          .bodySmall
-                                                          .copyWith(
-                                                            color:
-                                                                AppColors.error,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                          ),
-                                                    ),
-                                                  ),
-                                                ],
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                        : const SizedBox.shrink(),
+                                  ),
+                                  const SizedBox(height: 20),
+
+                                  // Login button
+                                  Obx(
+                                    () => ElevatedButton(
+                                      onPressed: vm.isLoading.value
+                                          ? null
+                                          : vm.login,
+                                      child: vm.isLoading.value
+                                          ? const SizedBox(
+                                              height: 20,
+                                              width: 20,
+                                              child: CircularProgressIndicator(
+                                                color: Colors.white,
+                                                strokeWidth: 2,
                                               ),
                                             )
-                                          : const SizedBox.shrink(),
+                                          : const Text('Sign In'),
                                     ),
-                                    const SizedBox(height: 20),
+                                  ),
+                                  const SizedBox(height: 20),
 
-                                    // Login button
-                                    Obx(
-                                      () => ElevatedButton(
-                                        onPressed: vm.isLoading.value
-                                            ? null
-                                            : vm.login,
-                                        child: vm.isLoading.value
-                                            ? const SizedBox(
-                                                height: 20,
-                                                width: 20,
-                                                child:
-                                                    CircularProgressIndicator(
-                                                      color: Colors.white,
-                                                      strokeWidth: 2,
-                                                    ),
-                                              )
-                                            : const Text('Sign In'),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 20),
-
-                                    // Register link
-                                    Center(
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            "Don't have an account? ",
-                                            style: AppTextStyles.bodySecondary
-                                                .copyWith(
-                                                  color: AppColors.textPrimary,
-                                                  fontWeight: FontWeight.w800,
-                                                ),
-                                          ),
-                                          GestureDetector(
-                                            onTap: () =>
-                                                Get.toNamed(AppRoutes.register),
-                                            child: Text(
-                                              'Sign Up',
-                                              style: AppTextStyles.body
-                                                  .copyWith(
-                                                    color: AppColors.primary,
-                                                    fontWeight: FontWeight.w700,
-                                                  ),
+                                  // Register link
+                                  Center(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "Don't have an account? ",
+                                          style: AppTextStyles.bodySecondary
+                                              .copyWith(
+                                                color: AppColors.textPrimary,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () =>
+                                              Get.toNamed(AppRoutes.register),
+                                          child: Text(
+                                            'Sign Up',
+                                            style: AppTextStyles.body.copyWith(
+                                              color: AppColors.primary,
+                                              fontWeight: FontWeight.w700,
                                             ),
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
-        ],
+        ),
       ),
     );
   }
