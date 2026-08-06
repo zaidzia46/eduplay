@@ -1,10 +1,9 @@
-// viewmodels/auth_viewmodel.dart
+import 'package:dio/dio.dart';
 import 'package:eduplay/controller/session_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 
-import '../../fns/image_picker_service.dart';
+import '../../core/api_client.dart';
 import '../../routes/app_routes.dart';
 
 class AuthViewModel extends GetxController {
@@ -25,16 +24,19 @@ class AuthViewModel extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
-      // TODO: replace with real API call — a real login response should
-      // include the parent's name/profile, and session.setParentName(...)
-      // should be called with THAT value instead of relying only on
-      // whatever was cached locally at registration time.
-      await Future.delayed(const Duration(seconds: 1));
+      final response = await ApiClient.instance.post(
+        '/api/v1/auth/login',
+        data: {
+          'email': emailController.text.trim(),
+          'password': passwordController.text,
+        },
+      );
 
-      // Mark parent as logged in
-      await session.setParentLoggedIn(true);
+      await _handleAuthSuccess(response.data['data']);
 
       Get.offAllNamed(AppRoutes.profileSwitcher);
+    } on DioException catch (e) {
+      errorMessage.value = _extractErrorMessage(e);
     } catch (e) {
       errorMessage.value = 'Login failed. Please try again.';
     } finally {
@@ -48,21 +50,46 @@ class AuthViewModel extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
-      // TODO: replace with real API call
-      await Future.delayed(const Duration(seconds: 1));
+      final response = await ApiClient.instance.post(
+        '/api/v1/auth/register',
+        data: {
+          'name': nameController.text.trim(),
+          'email': emailController.text.trim(),
+          'password': passwordController.text,
+        },
+      );
 
-      await session.setParentLoggedIn(true);
-      // Save the name captured on this form — previously this was
-      // discarded once the controller closed, so "Welcome back" had
-      // nothing to show.
-      await session.setParentName(nameController.text.trim());
+      await _handleAuthSuccess(response.data['data']);
 
       Get.offAllNamed(AppRoutes.profileSwitcher);
+    } on DioException catch (e) {
+      errorMessage.value = _extractErrorMessage(e);
     } catch (e) {
       errorMessage.value = 'Registration failed. Please try again.';
     } finally {
       isLoading.value = false;
     }
+  }
+
+  Future<void> _handleAuthSuccess(Map<String, dynamic> data) async {
+    final parent = data['parent'];
+    final token = data['token'];
+
+    await session.setAuthToken(token);
+    await session.setParentName(parent['name']);
+    await session.setParentLoggedIn(true);
+  }
+
+  String _extractErrorMessage(DioException e) {
+    final data = e.response?.data;
+    if (data is Map && data['message'] != null) {
+      return data['message'];
+    }
+    if (e.type == DioExceptionType.connectionError ||
+        e.type == DioExceptionType.connectionTimeout) {
+      return 'Could not reach the server. Check your connection and try again.';
+    }
+    return 'Something went wrong. Please try again.';
   }
 
   bool _validateLoginForm() {

@@ -13,6 +13,7 @@ class SessionController extends GetxController {
   var parentName = Rxn<String>();
   var parentAvatar = Rxn<String>();
   var childAvatar = Rxn<String>();
+  var authToken = Rxn<String>();
 
   static const _standardKey = 'currentStandard';
   static const _authKey = 'isParentLoggedIn';
@@ -20,6 +21,7 @@ class SessionController extends GetxController {
   static const _parentNameKey = 'parentName';
   static const _parentAvatarKey = 'parentAvatar';
   static const _childAvatarKey = 'childAvatar';
+  static const _authTokenKey = 'authToken';
 
   final _box = GetStorage();
 
@@ -50,6 +52,11 @@ class SessionController extends GetxController {
     if (savedParentAvatar != null) {
       parentAvatar.value = savedParentAvatar;
     }
+
+    final savedToken = _box.read(_authTokenKey);
+    if (savedToken != null) {
+      authToken.value = savedToken;
+    }
   }
 
   Future<void> setParentLoggedIn(bool value) async {
@@ -61,6 +68,16 @@ class SessionController extends GetxController {
   Future<void> setParentName(String name) async {
     parentName.value = name;
     await _box.write(_parentNameKey, name);
+  }
+
+  Future<void> setAuthToken(String token) async {
+    authToken.value = token;
+    await _box.write(_authTokenKey, token);
+  }
+
+  Future<void> clearAuthToken() async {
+    authToken.value = null;
+    await _box.remove(_authTokenKey);
   }
 
   Future<void> setParentAvatar() async {
@@ -104,6 +121,7 @@ class SessionController extends GetxController {
 
   Future<void> logout() async {
     await clearActiveChild();
+    await clearAuthToken();
     await setParentLoggedIn(false);
   }
 }
