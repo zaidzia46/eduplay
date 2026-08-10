@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:eduplay/screens/parent_settings/parent_settings_controller.dart';
 import 'package:eduplay/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -163,18 +164,22 @@ class WelcomeBackground extends StatelessWidget {
   }
 
   Widget _buildAvatar() {
-    final session = Get.find<SessionController>();
+    final vm = Get.find<ParentSettingsController>();
     double avatarSize = 65;
     return Obx(() {
-      final avatar = session.parentAvatar.value;
+      final avatar = vm.profileImagePath.value;
       return Stack(
         clipBehavior: Clip.none,
         children: [
           CircleAvatar(
             radius: avatarSize / 2,
             backgroundColor: AppColors.primaryLight,
-            backgroundImage: avatar != null ? FileImage(File(avatar)) : null,
-            child: avatar == null
+            backgroundImage: avatar != null
+                ? (avatar.startsWith('http://') || avatar.startsWith('https://')
+                      ? NetworkImage(avatar)
+                      : FileImage(File(avatar)))
+                : null,
+            child: avatar == null || avatar.isEmpty
                 ? Icon(Icons.person, size: avatarSize * 0.5)
                 : null,
           ),

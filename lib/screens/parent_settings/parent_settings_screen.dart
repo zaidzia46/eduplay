@@ -44,9 +44,9 @@ class ParentSettingsView extends StatelessWidget {
               children: [
                 SizedBox(height: 90),
                 GestureDetector(
-                  onTap: session.setParentAvatar,
+                  onTap: vm.setParentAvatar,
                   child: Obx(() {
-                    final avatar = session.parentAvatar.value;
+                    final avatar = vm.profileImagePath.value;
                     return Stack(
                       children: [
                         Container(
@@ -61,9 +61,12 @@ class ParentSettingsView extends StatelessWidget {
                             radius: avatarSize / 2,
                             backgroundColor: AppColors.primaryDark,
                             backgroundImage: avatar != null
-                                ? FileImage(File(avatar))
+                                ? (avatar.startsWith('http://') ||
+                                          avatar.startsWith('https://')
+                                      ? NetworkImage(avatar)
+                                      : FileImage(File(avatar)))
                                 : null,
-                            child: avatar == null
+                            child: avatar == null || avatar.isEmpty
                                 ? Icon(Icons.person, size: avatarSize * 0.5)
                                 : null,
                           ),

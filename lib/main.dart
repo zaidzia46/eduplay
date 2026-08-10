@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'controller/session_controller.dart';
 
@@ -13,6 +14,10 @@ Future<void> main() async {
   await GetStorage.init();
   Get.put(SessionController(), permanent: true);
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  await Supabase.initialize(
+    url: 'https://pcsakhjnxvgdwanpabcc.supabase.co',
+    publishableKey: 'sb_publishable_egQbToPx_NIxe3UahTVfAw_UHuoJnAC',
+  );
   runApp(const MyApp());
 }
 

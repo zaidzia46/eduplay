@@ -1,25 +1,30 @@
 // session_controller.dart
+import 'dart:developer';
+
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import '../core/api_client.dart';
 import '../fns/image_picker_service.dart';
 import '../models/child_profile_model.dart';
 import '../models/standards_model.dart';
+import '../screens/parent_settings/parent_settings_repo.dart';
 
 class SessionController extends GetxController {
   var currentStandard = Rxn<StandardModel>();
   var activeChild = Rxn<ChildProfileModel>();
 
   var parentName = Rxn<String>();
-  var parentAvatar = Rxn<String>();
+  // var parentAvatar = Rxn<String>();
   var childAvatar = Rxn<String>();
+
   var authToken = Rxn<String>();
 
   static const _standardKey = 'currentStandard';
   static const _authKey = 'isParentLoggedIn';
   static const _activeChildKey = 'activeChild';
   static const _parentNameKey = 'parentName';
-  static const _parentAvatarKey = 'parentAvatar';
+  // static const _parentAvatarKey = 'parentAvatar';
   static const _childAvatarKey = 'childAvatar';
   static const _authTokenKey = 'authToken';
 
@@ -48,10 +53,10 @@ class SessionController extends GetxController {
       parentName.value = savedParentName;
     }
 
-    final savedParentAvatar = _box.read(_parentAvatarKey);
-    if (savedParentAvatar != null) {
-      parentAvatar.value = savedParentAvatar;
-    }
+    // final savedParentAvatar = _box.read(_parentAvatarKey);
+    // if (savedParentAvatar != null) {
+    //   parentAvatar.value = savedParentAvatar;
+    // }
 
     final savedToken = _box.read(_authTokenKey);
     if (savedToken != null) {
@@ -80,14 +85,7 @@ class SessionController extends GetxController {
     await _box.remove(_authTokenKey);
   }
 
-  Future<void> setParentAvatar() async {
-    final imagePath = await ImagePickerService.pickImage(ImageSource.gallery);
-    if (imagePath != null) {
-      parentAvatar.value = imagePath;
-      await _box.write(_childAvatarKey, imagePath);
-    }
-  }
-
+  //
   Future<void> setChildAvatar() async {
     final imagePath = await ImagePickerService.pickImage(ImageSource.gallery);
     if (imagePath != null) {

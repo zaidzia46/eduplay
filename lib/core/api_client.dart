@@ -10,12 +10,18 @@ class ApiClient {
     const backendPath = '/practice_updated';
 
     if (kIsWeb) {
-      return 'http://localhost:8000';
+      return 'http://192.168.0.210/eduplay-api';
     }
     if (defaultTargetPlatform == TargetPlatform.android) {
       return 'http://10.0.2.2$backendPath';
     }
-    return 'http://localhost$backendPath';
+    return 'http://192.168.0.210/eduplay-api';
+  }
+
+  static String get baseUrl => _baseUrl;
+
+  static String resolveMediaUrl(String relativePath) {
+    return '$baseUrl/$relativePath';
   }
 
   static Dio get instance {
