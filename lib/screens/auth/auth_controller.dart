@@ -1,9 +1,9 @@
-import 'package:dio/dio.dart';
-import 'package:eduplay/controller/session_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../core/api_client.dart';
+import 'package:eduplay/controller/session_controller.dart';
+import '../../core/supabase_client.dart';
 import '../../routes/app_routes.dart';
 
 class AuthViewModel extends GetxController {
@@ -24,18 +24,15 @@ class AuthViewModel extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
-      final response = await ApiClient.instance.post(
-        '/api/v1/auth/login',
-        data: {
-          'email': emailController.text.trim(),
-          'password': passwordController.text,
-        },
+      final response = await supabase.auth.signInWithPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text,
       );
 
-      await _handleAuthSuccess(response.data['data']);
+      await _handleAuthSuccess(response);
 
       Get.offAllNamed(AppRoutes.profileSwitcher);
-    } on DioException catch (e) {
+    } on AuthException catch (e) {
       errorMessage.value = _extractErrorMessage(e);
     } catch (e) {
       errorMessage.value = 'Login failed. Please try again.';
@@ -50,19 +47,16 @@ class AuthViewModel extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
-      final response = await ApiClient.instance.post(
-        '/api/v1/auth/register',
-        data: {
-          'name': nameController.text.trim(),
-          'email': emailController.text.trim(),
-          'password': passwordController.text,
-        },
+      final response = await supabase.auth.signUp(
+        email: emailController.text.trim(),
+        password: passwordController.text,
+        data: {'name': nameController.text.trim()},
       );
 
-      await _handleAuthSuccess(response.data['data']);
+      await _handleAuthSuccess(response);
 
       Get.offAllNamed(AppRoutes.profileSwitcher);
-    } on DioException catch (e) {
+    } on AuthException catch (e) {
       errorMessage.value = _extractErrorMessage(e);
     } catch (e) {
       errorMessage.value = 'Registration failed. Please try again.';
@@ -71,25 +65,37 @@ class AuthViewModel extends GetxController {
     }
   }
 
-  Future<void> _handleAuthSuccess(Map<String, dynamic> data) async {
-    final parent = data['parent'];
-    final token = data['token'];
+  Future<void> _handleAuthSuccess(AuthResponse response) async {
+    final user = response.user;
+    final accessToken = response.session?.accessToken;
 
-    await session.setAuthToken(token);
-    await session.setParentName(parent['name']);
+    if (user == null || accessToken == null) {
+      errorMessage.value = 'Something went wrong. Please try again.';
+      return;
+    }
+
+    String parentName = (user.userMetadata?['name'] as String?) ?? '';
+    if (parentName.isEmpty) {
+      final row = await supabase
+          .from('parents')
+          .select('name')
+          .eq('id', user.id)
+          .single();
+      parentName = (row['name'] as String?) ?? '';
+    }
+
+    // Note: supabase_flutter already persists the session locally and
+    // auto-refreshes the token for you (Supabase.instance.client.auth
+    // restores it on app restart). Keeping setAuthToken here only if
+    // SessionController is used elsewhere for quick, synchronous reads —
+    // otherwise this can likely be dropped later.
+    await session.setAuthToken(accessToken);
+    await session.setParentName(parentName);
     await session.setParentLoggedIn(true);
   }
 
-  String _extractErrorMessage(DioException e) {
-    final data = e.response?.data;
-    if (data is Map && data['message'] != null) {
-      return data['message'];
-    }
-    if (e.type == DioExceptionType.connectionError ||
-        e.type == DioExceptionType.connectionTimeout) {
-      return 'Could not reach the server. Check your connection and try again.';
-    }
-    return 'Something went wrong. Please try again.';
+  String _extractErrorMessage(AuthException e) {
+    return e.message;
   }
 
   bool _validateLoginForm() {
