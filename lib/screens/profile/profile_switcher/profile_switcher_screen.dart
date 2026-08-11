@@ -10,10 +10,10 @@ import 'package:get/get.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/add_profile_card.dart';
 import '../../../widgets/circular_loader.dart';
-import '../../../widgets/profile_card.dart';
 import '../../../widgets/welcome_bg_parent_dashboard.dart';
 import '../../parent_settings/parent_settings_bin.dart';
 import '../../parent_settings/parent_settings_screen.dart';
+import '../widgets/profile_card.dart';
 
 class ProfileSwitcherView extends StatefulWidget {
   const ProfileSwitcherView({super.key});

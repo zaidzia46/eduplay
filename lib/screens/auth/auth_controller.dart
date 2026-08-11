@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -35,7 +37,9 @@ class AuthViewModel extends GetxController {
     } on AuthException catch (e) {
       errorMessage.value = _extractErrorMessage(e);
     } catch (e) {
-      errorMessage.value = 'Login failed. Please try again.';
+      errorMessage.value = e is Exception
+          ? e.toString().replaceFirst('Exception: ', '')
+          : 'Login failed. Please try again.';
     } finally {
       isLoading.value = false;
     }
@@ -59,20 +63,17 @@ class AuthViewModel extends GetxController {
     } on AuthException catch (e) {
       errorMessage.value = _extractErrorMessage(e);
     } catch (e) {
-      errorMessage.value = 'Registration failed. Please try again.';
+      errorMessage.value = e is Exception
+          ? e.toString().replaceFirst('Exception: ', '')
+          : 'Registration failed. Please try again.';
     } finally {
       isLoading.value = false;
     }
   }
 
   Future<void> _handleAuthSuccess(AuthResponse response) async {
-    final user = response.user;
+    final user = response.user!;
     final accessToken = response.session?.accessToken;
-
-    if (user == null || accessToken == null) {
-      errorMessage.value = 'Something went wrong. Please try again.';
-      return;
-    }
 
     String parentName = (user.userMetadata?['name'] as String?) ?? '';
     if (parentName.isEmpty) {
@@ -83,13 +84,6 @@ class AuthViewModel extends GetxController {
           .single();
       parentName = (row['name'] as String?) ?? '';
     }
-
-    // Note: supabase_flutter already persists the session locally and
-    // auto-refreshes the token for you (Supabase.instance.client.auth
-    // restores it on app restart). Keeping setAuthToken here only if
-    // SessionController is used elsewhere for quick, synchronous reads —
-    // otherwise this can likely be dropped later.
-    await session.setAuthToken(accessToken);
     await session.setParentName(parentName);
     await session.setParentLoggedIn(true);
   }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../controller/session_controller.dart';
+import '../../core/supabase_client.dart';
 import '../../routes/app_routes.dart';
 
 class SplashController extends GetxController
@@ -69,7 +71,12 @@ class SplashController extends GetxController
     //   return;
     // }
 
-    Get.offAllNamed(AppRoutes.profileSwitcher);
+    supabase.auth.onAuthStateChange.listen((data) {
+      final event = data.event;
+      if (event == AuthChangeEvent.signedIn) {
+        Get.offAllNamed(AppRoutes.parentSettings);
+      }
+    });
   }
 
   @override

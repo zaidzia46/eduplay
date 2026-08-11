@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controller/session_controller.dart';
-import '../models/child_profile_model.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
+import '../../../controller/session_controller.dart';
+import '../../../models/child_profile_model.dart';
+import '../../../theme/app_colors.dart';
+import '../../../theme/app_text_styles.dart';
 
 class ProfileCard extends StatefulWidget {
   final ChildProfileModel child;
@@ -308,14 +308,14 @@ class _CardProgressRingPainter extends CustomPainter {
   final Color color;
   final double strokeWidth;
   final double borderRadius;
-  final EdgeInsets margin; // NEW
+  final EdgeInsets margin;
 
   _CardProgressRingPainter({
     required this.progress,
     required this.color,
     this.strokeWidth = 3,
     this.borderRadius = 15,
-    this.margin = EdgeInsets.zero, // NEW
+    this.margin = EdgeInsets.zero,
   });
 
   @override
@@ -334,13 +334,31 @@ class _CardProgressRingPainter extends CustomPainter {
     final metric = fullPath.computeMetrics().first;
     final drawPath = metric.extractPath(0, metric.length * progress);
 
-    final paint = Paint()
+    // 1. Outer soft glow (wide blur, low opacity)
+    final outerGlowPaint = Paint()
+      ..color = color.withOpacity(0.35)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth * 3
+      ..strokeCap = StrokeCap.round
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
+    canvas.drawPath(drawPath, outerGlowPaint);
+
+    // 2. Inner tighter glow (medium blur, more opacity)
+    final innerGlowPaint = Paint()
+      ..color = color.withOpacity(0.6)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth * 1.8
+      ..strokeCap = StrokeCap.round
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3);
+    canvas.drawPath(drawPath, innerGlowPaint);
+
+    // 3. Crisp bright core stroke on top
+    final corePaint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
       ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.round;
-
-    canvas.drawPath(drawPath, paint);
+    canvas.drawPath(drawPath, corePaint);
   }
 
   @override
