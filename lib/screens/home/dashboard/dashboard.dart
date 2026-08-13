@@ -91,7 +91,7 @@ class _DashBoardState extends State<DashBoard>
             },
             blendMode: BlendMode.dstIn,
             child: Image.asset(
-              'assets/images/profile_bg.png',
+              'assets/images/dashboard_bg.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -150,6 +150,7 @@ class _DashBoardState extends State<DashBoard>
                                     style: AppTextStyles.bodyLarge.copyWith(
                                       color: AppColors.white,
                                       fontWeight: FontWeight.bold,
+                                      height: 1.2,
                                     ),
                                   ),
                                   Text(

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
 
-import '../../models/institution_model.dart';
+import 'create_child_profile/models/institution_model.dart';
 
 class InstitutionRepository {
   // Right now: loads from local JSON asset.

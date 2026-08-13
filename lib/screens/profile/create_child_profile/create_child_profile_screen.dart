@@ -1,15 +1,17 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import '../../../controller/session_controller.dart';
-import '../../../models/institution_model.dart';
-import '../../../models/standards_model.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/add_child_profile_bg.dart';
 import 'create_child_profile_controller.dart';
+import 'models/city_model.dart';
+import 'models/curriculam_option_model.dart';
+import 'models/institution_model.dart';
+import 'models/standard_model.dart';
 
 class CreateProfileView extends StatelessWidget {
   const CreateProfileView({super.key});
@@ -17,7 +19,6 @@ class CreateProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = Get.find<CreateProfileViewModel>();
-    final session = Get.find<SessionController>();
     const double avatarSize = 84;
 
     return Scaffold(
@@ -40,9 +41,10 @@ class CreateProfileView extends StatelessWidget {
               children: [
                 Center(
                   child: GestureDetector(
-                    onTap: session.setChildAvatar,
+                    onTap: vm.pickAvatar,
                     child: Obx(() {
                       final path = vm.profileImagePath.value;
+                      log("Child image path: $path");
                       return Stack(
                         children: [
                           Container(
@@ -116,21 +118,23 @@ class CreateProfileView extends StatelessWidget {
                 Text('City', style: AppTextStyles.label),
                 const SizedBox(height: 6),
                 Obx(
-                  () => DropdownButtonFormField<String>(
+                  () => DropdownButtonFormField<CityModel>(
                     value: vm.selectedCity.value,
                     decoration: InputDecoration(
-                      hintText: vm.isLoadingInst.value
+                      hintText: vm.isLoadingCities.value
                           ? 'Loading cities...'
                           : 'Select city',
                       prefixIcon: _prefixIcon(FontAwesomeIcons.city),
                     ),
                     items: vm.cities
                         .map(
-                          (city) =>
-                              DropdownMenuItem(value: city, child: Text(city)),
+                          (city) => DropdownMenuItem(
+                            value: city,
+                            child: Text(city.name),
+                          ),
                         )
                         .toList(),
-                    onChanged: vm.isLoadingInst.value
+                    onChanged: vm.isLoadingCities.value
                         ? null
                         : (value) => vm.selectCity(value),
                   ),
@@ -144,12 +148,14 @@ class CreateProfileView extends StatelessWidget {
                   return DropdownButtonFormField<InstitutionModel>(
                     value: vm.selectedInstitution.value,
                     decoration: InputDecoration(
-                      hintText: cityChosen
-                          ? 'Select your school'
-                          : 'Select a city first',
+                      hintText: !cityChosen
+                          ? 'Select a city first'
+                          : vm.isLoadingInstitutions.value
+                          ? 'Loading institutions...'
+                          : 'Select your school',
                       prefixIcon: _prefixIcon(FontAwesomeIcons.school),
                     ),
-                    items: vm.filteredInstitutions
+                    items: vm.institutions
                         .map(
                           (inst) => DropdownMenuItem(
                             value: inst,
@@ -157,36 +163,64 @@ class CreateProfileView extends StatelessWidget {
                           ),
                         )
                         .toList(),
-                    onChanged: cityChosen
+                    onChanged: (cityChosen && !vm.isLoadingInstitutions.value)
                         ? (value) => vm.selectInstitution(value)
                         : null,
                   );
                 }),
                 const SizedBox(height: 16),
 
-                // --- Grade / Standard (unlocked after institution) ---
-                Text('Grade / Standard', style: AppTextStyles.label),
+                Text('Curriculum', style: AppTextStyles.label),
                 const SizedBox(height: 6),
                 Obx(() {
                   final institutionChosen =
                       vm.selectedInstitution.value != null;
+                  return DropdownButtonFormField<CurriculumOptionModel>(
+                    value: vm.selectedCurriculum.value,
+                    decoration: InputDecoration(
+                      hintText: !institutionChosen
+                          ? 'Select a school first'
+                          : vm.isLoadingCurricula.value
+                          ? 'Loading curricula...'
+                          : 'Select curriculum',
+                      prefixIcon: _prefixIcon(FontAwesomeIcons.bookOpen),
+                    ),
+                    items: vm.curricula
+                        .map(
+                          (c) =>
+                              DropdownMenuItem(value: c, child: Text(c.name)),
+                        )
+                        .toList(),
+                    onChanged:
+                        (institutionChosen && !vm.isLoadingCurricula.value)
+                        ? (value) => vm.selectCurriculum(value)
+                        : null,
+                  );
+                }),
+                const SizedBox(height: 16),
+
+                Text('Grade / Standard', style: AppTextStyles.label),
+                const SizedBox(height: 6),
+                Obx(() {
+                  final curriculumChosen = vm.selectedCurriculum.value != null;
                   return DropdownButtonFormField<StandardModel>(
                     value: vm.selectedStandard.value,
                     decoration: InputDecoration(
-                      hintText: institutionChosen
-                          ? 'Select grade'
-                          : 'Select a school first',
+                      hintText: !curriculumChosen
+                          ? 'Select a curriculum first'
+                          : vm.isLoadingStandards.value
+                          ? 'Loading grades...'
+                          : 'Select grade',
                       prefixIcon: _prefixIcon(FontAwesomeIcons.graduationCap),
                     ),
                     items: vm.standards
                         .map(
-                          (s) => DropdownMenuItem(
-                            value: s,
-                            child: Text(s.standard),
-                          ),
+                          (s) =>
+                              DropdownMenuItem(value: s, child: Text(s.name)),
                         )
                         .toList(),
-                    onChanged: institutionChosen
+                    onChanged:
+                        (curriculumChosen && !vm.isLoadingStandards.value)
                         ? (value) => vm.selectStandard(value)
                         : null,
                   );

@@ -6,8 +6,8 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
-import '../../models/standards_model.dart';
 import '../../routes/app_routes.dart';
+import '../profile/create_child_profile/models/standard_model.dart';
 
 class OnboardingController extends GetxController {
   StandardRepository _standardRepo = StandardRepository();

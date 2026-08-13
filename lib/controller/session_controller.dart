@@ -1,30 +1,22 @@
-// session_controller.dart
-import 'dart:developer';
-
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
-import '../core/api_client.dart';
+
+import '../core/supabase_client.dart';
 import '../fns/image_picker_service.dart';
-import '../models/child_profile_model.dart';
-import '../models/standards_model.dart';
-import '../screens/parent_settings/parent_settings_repo.dart';
+import '../screens/profile/create_child_profile/models/standard_model.dart';
+import '../screens/profile/profile_switcher/models/child_profile_model.dart';
 
 class SessionController extends GetxController {
   var currentStandard = Rxn<StandardModel>();
   var activeChild = Rxn<ChildProfileModel>();
 
   var parentName = Rxn<String>();
-  // var parentAvatar = Rxn<String>();
   var childAvatar = Rxn<String>();
 
-  var authToken = Rxn<String>();
-
   static const _standardKey = 'currentStandard';
-  static const _authKey = 'isParentLoggedIn';
   static const _activeChildKey = 'activeChild';
   static const _parentNameKey = 'parentName';
-  // static const _parentAvatarKey = 'parentAvatar';
   static const _childAvatarKey = 'childAvatar';
 
   final _box = GetStorage();
@@ -42,7 +34,7 @@ class SessionController extends GetxController {
 
     final savedChild = _box.read(_activeChildKey);
     if (savedChild != null) {
-      activeChild.value = ChildProfileModel.fromJson(
+      activeChild.value = ChildProfileModel.fromCacheJson(
         Map<String, dynamic>.from(savedChild),
       );
     }
@@ -51,25 +43,13 @@ class SessionController extends GetxController {
     if (savedParentName != null) {
       parentName.value = savedParentName;
     }
-
-    // final savedParentAvatar = _box.read(_parentAvatarKey);
-    // if (savedParentAvatar != null) {
-    //   parentAvatar.value = savedParentAvatar;
-    // }
   }
-
-  Future<void> setParentLoggedIn(bool value) async {
-    await _box.write(_authKey, value);
-  }
-
-  bool get isParentLoggedIn => _box.read(_authKey) ?? false;
 
   Future<void> setParentName(String name) async {
     parentName.value = name;
     await _box.write(_parentNameKey, name);
   }
 
-  //
   Future<void> setChildAvatar() async {
     final imagePath = await ImagePickerService.pickImage(ImageSource.gallery);
     if (imagePath != null) {
@@ -80,8 +60,10 @@ class SessionController extends GetxController {
 
   Future<void> setActiveChild(ChildProfileModel child) async {
     activeChild.value = child;
-    await setCurrentStandard(child.standard);
-    await _box.write(_activeChildKey, child.toJson());
+    if (child.standard != null) {
+      await setCurrentStandard(child.standard!);
+    }
+    await _box.write(_activeChildKey, child.toCacheJson());
   }
 
   Future<void> clearActiveChild() async {
@@ -95,14 +77,17 @@ class SessionController extends GetxController {
     currentStandard.value = standard;
     await _box.write(_standardKey, {
       'id': standard.id,
-      'standard': standard.standard,
+      'name': standard.name,
+      'sort_order': standard.sortOrder,
     });
   }
 
   int? get currentStandardId => currentStandard.value?.id;
 
   Future<void> logout() async {
+    await supabase.auth.signOut();
     await clearActiveChild();
-    await setParentLoggedIn(false);
+    parentName.value = null;
+    await _box.remove(_parentNameKey);
   }
 }

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -51,11 +49,23 @@ class AuthViewModel extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
+      // `data` here becomes `raw_user_meta_data` on the new auth.users row.
+      // Our `handle_new_parent()` Postgres trigger reads data['name'] from
+      // it to fill in public.parents.name automatically.
       final response = await supabase.auth.signUp(
         email: emailController.text.trim(),
         password: passwordController.text,
         data: {'name': nameController.text.trim()},
       );
+
+      // Supabase won't throw an error for a duplicate email (avoids leaking
+      // which emails exist) — instead it returns a user with an empty
+      // `identities` list. This is the only reliable way to detect it.
+      if (response.user?.identities?.isEmpty ?? false) {
+        errorMessage.value =
+            'This email is already registered. Please log in instead.';
+        return;
+      }
 
       await _handleAuthSuccess(response);
 
@@ -72,9 +82,20 @@ class AuthViewModel extends GetxController {
   }
 
   Future<void> _handleAuthSuccess(AuthResponse response) async {
-    final user = response.user!;
+    final user = response.user;
     final accessToken = response.session?.accessToken;
 
+    if (user == null || accessToken == null) {
+      // No session usually means email confirmation is required — not a
+      // failure. Throw so callers stop and don't navigate forward.
+      throw Exception(
+        'Please check your email to confirm your account before logging in.',
+      );
+    }
+
+    // Right after signUp, the name is still sitting in user metadata.
+    // On a plain login (no metadata payload sent), fall back to reading
+    // it from the `parents` row the trigger created at signup time.
     String parentName = (user.userMetadata?['name'] as String?) ?? '';
     if (parentName.isEmpty) {
       final row = await supabase
@@ -84,11 +105,17 @@ class AuthViewModel extends GetxController {
           .single();
       parentName = (row['name'] as String?) ?? '';
     }
+
+    // Note: supabase_flutter already persists the session locally and
+    // auto-refreshes the token for you — no need to cache it ourselves.
+    // isParentLoggedIn was also removed — check supabase.auth.currentSession
+    // instead of a separately-cached flag.
     await session.setParentName(parentName);
-    await session.setParentLoggedIn(true);
   }
 
   String _extractErrorMessage(AuthException e) {
+    // Supabase's AuthException.message is already user-presentable
+    // (e.g. "Invalid login credentials", "User already registered").
     return e.message;
   }
 

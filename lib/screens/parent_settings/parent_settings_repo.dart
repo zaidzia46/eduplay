@@ -1,18 +1,36 @@
-import 'package:dio/dio.dart';
+import 'dart:io';
 
-import '../../core/api_client.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../core/supabase_client.dart';
 
 class ParentRepository {
-  Future<String> uploadAvatar(String filePath) async {
-    final formData = FormData.fromMap({
-      'avatar': await MultipartFile.fromFile(filePath),
-    });
+  Future<String> uploadAvatar(String localFilePath) async {
+    final parentId = supabase.auth.currentUser!.id;
+    final path = '$parentId/parent.png';
 
-    final response = await ApiClient.instance.post(
-      '/api/v1/parent/avatar',
-      data: formData,
-    );
+    await supabase.storage
+        .from('avatars')
+        .upload(
+          path,
+          File(localFilePath),
+          fileOptions: const FileOptions(upsert: true),
+        );
 
-    return response.data['data']['avatar_path'];
+    await supabase
+        .from('parents')
+        .update({'avatar_path': path})
+        .eq('id', parentId);
+
+    return path;
+  }
+
+  Future<String> getAvatarSignedUrl(String storagePath) async {
+    return supabase.storage
+        .from('avatars')
+        .createSignedUrl(
+          storagePath,
+          60 * 60, // 1 hour
+        );
   }
 }

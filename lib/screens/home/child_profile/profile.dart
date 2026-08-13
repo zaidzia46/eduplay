@@ -1,13 +1,15 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eduplay/controller/session_controller.dart';
+import 'package:eduplay/screens/home/child_profile/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../routes/app_routes.dart';
-import '../../theme/app_colors.dart';
-import '../../theme/app_text_styles.dart';
-import '../../widgets/action_tile.dart';
-import '../../widgets/info_chip.dart';
+import '../../../routes/app_routes.dart';
+import '../../../theme/app_colors.dart';
+import '../../../theme/app_text_styles.dart';
+import '../../../widgets/action_tile.dart';
+import '../../../widgets/info_chip.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -24,6 +26,7 @@ class _ProfileViewState extends State<ProfileView>
   Widget build(BuildContext context) {
     super.build(context);
     final session = Get.find<SessionController>();
+    final vm = Get.find<ProfileViewModel>();
     const double avatarSize = 90;
     final media = MediaQuery.of(context);
     final size = media.size;
@@ -37,14 +40,6 @@ class _ProfileViewState extends State<ProfileView>
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        title: Text(
-          'Profile',
-          style: AppTextStyles.h1.copyWith(color: AppColors.white),
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
       body: Stack(
         children: [
           ShaderMask(
@@ -63,7 +58,7 @@ class _ProfileViewState extends State<ProfileView>
             },
             blendMode: BlendMode.dstIn,
             child: Image.asset(
-              'assets/images/profile_bg.png',
+              'assets/images/profile_bg2.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -72,9 +67,9 @@ class _ProfileViewState extends State<ProfileView>
               padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 15),
               child: Column(
                 children: [
+                  SizedBox(height: 40),
                   Obx(() {
                     final child = session.activeChild.value;
-                    final avatar = session.childAvatar.value;
                     if (child == null) return const SizedBox.shrink();
 
                     return Container(
@@ -92,34 +87,45 @@ class _ProfileViewState extends State<ProfileView>
                       child: Column(
                         children: [
                           GestureDetector(
-                            onTap: session.setChildAvatar,
+                            onTap: vm.changeAvatar,
                             child: Stack(
                               children: [
-                                Container(
-                                  width: avatarSize,
-                                  height: avatarSize,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: const Color(0xffFFD84E),
-                                    border: Border.all(
-                                      color: Colors.white,
-                                      width: 4,
+                                Obx(() {
+                                  final localPath = vm.localPreviewPath.value;
+                                  final url = vm.avatarUrl.value;
+
+                                  ImageProvider? imageProvider;
+                                  if (localPath != null) {
+                                    imageProvider = FileImage(File(localPath));
+                                  } else if (url != null) {
+                                    imageProvider = CachedNetworkImageProvider(
+                                      url,
+                                    );
+                                  }
+                                  return Container(
+                                    width: avatarSize,
+                                    height: avatarSize,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: const Color(0xffFFD84E),
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 4,
+                                      ),
                                     ),
-                                  ),
-                                  child: CircleAvatar(
-                                    radius: avatarSize / 2,
-                                    backgroundColor: AppColors.primaryDark,
-                                    backgroundImage: avatar != null
-                                        ? FileImage(File(avatar))
-                                        : null,
-                                    child: avatar == null
-                                        ? Icon(
-                                            Icons.person,
-                                            size: avatarSize * 0.5,
-                                          )
-                                        : null,
-                                  ),
-                                ),
+                                    child: CircleAvatar(
+                                      radius: avatarSize / 2,
+                                      backgroundColor: AppColors.primaryDark,
+                                      backgroundImage: imageProvider,
+                                      child: url == null
+                                          ? Icon(
+                                              Icons.person,
+                                              size: avatarSize * 0.5,
+                                            )
+                                          : null,
+                                    ),
+                                  );
+                                }),
                                 Positioned(
                                   bottom: 0,
                                   right: 0,
@@ -141,14 +147,18 @@ class _ProfileViewState extends State<ProfileView>
                           ),
                           const SizedBox(height: 12),
 
-                          // Name
-                          Text(child.name, style: AppTextStyles.h2),
+                          Text(
+                            child.name,
+                            style: AppTextStyles.h2,
+                            textAlign: TextAlign.center,
+                          ),
                           const SizedBox(height: 4),
 
                           // Username
                           Text(
                             '@${child.username}',
                             style: AppTextStyles.bodySecondary,
+                            textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 12),
 
@@ -157,12 +167,13 @@ class _ProfileViewState extends State<ProfileView>
                             children: [
                               InfoChip(
                                 icon: Icons.school_outlined,
-                                label: child.standard.standard,
+                                label: child.standard?.name ?? 'No standard',
                               ),
                               const SizedBox(height: 8),
                               InfoChip(
                                 icon: Icons.location_city_outlined,
-                                label: child.institution.name,
+                                label:
+                                    child.institution?.name ?? 'No institution',
                               ),
                             ],
                           ),

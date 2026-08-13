@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:eduplay/widgets/circular_loader.dart';
 import 'package:eduplay/widgets/subject_progress_row.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +7,6 @@ import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/empty_search.dart';
 import '../../../widgets/staggered_anime.dart';
-import '../../../widgets/subject_tile.dart';
 import '../bottom_nav/bottomNavigation_controller.dart';
 import '../dashboard/dashboard_controller.dart';
 
@@ -82,7 +79,13 @@ class _SubjectViewState extends State<SubjectView>
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          Image.asset('assets/images/subjects_banner.png'),
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(24),
+              bottomRight: Radius.circular(24),
+            ),
+            child: Image.asset('assets/images/subjects_bg.png'),
+          ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: Row(
@@ -95,9 +98,12 @@ class _SubjectViewState extends State<SubjectView>
                     ),
                     child: TextField(
                       controller: vm.searchController,
+                      cursorColor: AppColors.primary,
                       decoration: InputDecoration(
                         hintText: 'Search subjects...',
                         hintStyle: AppTextStyles.bodySecondary,
+                        filled: true,
+                        fillColor: AppColors.primarySurface,
                         prefixIcon: Icon(
                           Icons.search,
                           color: AppColors.primary,

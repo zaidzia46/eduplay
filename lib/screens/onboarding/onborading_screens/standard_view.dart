@@ -142,7 +142,7 @@ class _StandardViewState extends State<StandardView> {
 
                                     return Center(
                                       child: Text(
-                                        vm.standards[index].standard,
+                                        vm.standards[index].name,
                                         style: isSelected
                                             ? AppTextStyles.bodyLarge.copyWith(
                                                 color: AppColors.white,

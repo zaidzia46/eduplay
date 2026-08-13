@@ -59,24 +59,25 @@ class SplashController extends GetxController
         context,
       ),
     ]);
-    final session = Get.find<SessionController>();
-
-    if (!session.isParentLoggedIn) {
-      Get.offAllNamed(AppRoutes.login);
-      return;
-    }
 
     // if (session.activeChild.value != null) {
     //   Get.offAllNamed(AppRoutes.home);
     //   return;
     // }
+    // supabase.auth.onAuthStateChange.listen((data) {
+    //   final event = data.event;
+    //   if (event == AuthChangeEvent.signedIn) {
+    //     Get.offAllNamed(AppRoutes.profileSwitcher);
+    //   }
+    // });
 
-    supabase.auth.onAuthStateChange.listen((data) {
-      final event = data.event;
-      if (event == AuthChangeEvent.signedIn) {
-        Get.offAllNamed(AppRoutes.parentSettings);
-      }
-    });
+    final session = supabase.auth.currentSession;
+
+    if (session != null) {
+      Get.offAllNamed(AppRoutes.profileSwitcher);
+    } else {
+      Get.offAllNamed(AppRoutes.login);
+    }
   }
 
   @override

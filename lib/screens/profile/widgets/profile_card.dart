@@ -1,17 +1,16 @@
-import 'dart:io';
-
+import 'package:eduplay/screens/profile/widgets/skeleton_avatar_loader.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import '../../../controller/session_controller.dart';
-import '../../../models/child_profile_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
+import '../profile_switcher/models/child_profile_model.dart';
 
 class ProfileCard extends StatefulWidget {
   final ChildProfileModel child;
   final int stars;
   final int streak;
+  final String? avatarUrl;
   final VoidCallback onTap;
 
   const ProfileCard({
@@ -19,6 +18,7 @@ class ProfileCard extends StatefulWidget {
     required this.child,
     required this.stars,
     required this.streak,
+    required this.avatarUrl,
     required this.onTap,
   });
 
@@ -103,7 +103,6 @@ class _ProfileCardState extends State<ProfileCard>
   @override
   Widget build(BuildContext context) {
     const double avatarSize = 62;
-    final session = Get.find<SessionController>();
 
     return GestureDetector(
       onTap: () {
@@ -147,25 +146,43 @@ class _ProfileCardState extends State<ProfileCard>
                 ),
                 child: Row(
                   children: [
-                    Obx(() {
-                      final avatar = session.childAvatar.value;
-                      return Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.rectangle,
-                        ),
-                        child: CircleAvatar(
-                          radius: avatarSize / 2,
-                          backgroundColor: const Color(0xffFFD84E),
-                          backgroundImage: avatar != null
-                              ? FileImage(File(avatar))
-                              : null,
-                          child: avatar == null
-                              ? Icon(Icons.person, size: avatarSize * 0.5)
-                              : null,
-                        ),
-                      );
-                    }),
+                    Container(
+                      padding: const EdgeInsets.all(5),
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.rectangle,
+                      ),
+                      child: ClipOval(
+                        child: widget.avatarUrl != null
+                            ? CachedNetworkImage(
+                                imageUrl: widget.avatarUrl!,
+                                width: avatarSize,
+                                height: avatarSize,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) =>
+                                    SkeletonAvatarLoader(
+                                      avatarSize: avatarSize,
+                                    ),
+                                errorWidget: (context, url, error) => Container(
+                                  width: avatarSize,
+                                  height: avatarSize,
+                                  color: const Color(0xffFFD84E),
+                                  child: Icon(
+                                    Icons.person,
+                                    size: avatarSize * 0.5,
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                width: avatarSize,
+                                height: avatarSize,
+                                color: const Color(0xffFFD84E),
+                                child: Icon(
+                                  Icons.person,
+                                  size: avatarSize * 0.5,
+                                ),
+                              ),
+                      ),
+                    ),
                     const SizedBox(width: 9),
                     Expanded(
                       child: Column(
@@ -203,7 +220,9 @@ class _ProfileCardState extends State<ProfileCard>
                               borderRadius: BorderRadius.circular(30),
                             ),
                             child: Text(
-                              widget.child.standard.standard,
+                              // Was widget.child.standard!.name — crashed on
+                              // any child with no current enrollment row.
+                              widget.child.standard?.name ?? 'Not enrolled yet',
                               style: AppTextStyles.bodySmall.copyWith(
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.white,
@@ -221,7 +240,9 @@ class _ProfileCardState extends State<ProfileCard>
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  widget.child.institution.name,
+                                  // Was widget.child.institution!.name — same crash.
+                                  widget.child.institution?.name ??
+                                      'No institution set',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: AppTextStyles.bodySmall.copyWith(
@@ -334,7 +355,6 @@ class _CardProgressRingPainter extends CustomPainter {
     final metric = fullPath.computeMetrics().first;
     final drawPath = metric.extractPath(0, metric.length * progress);
 
-    // 1. Outer soft glow (wide blur, low opacity)
     final outerGlowPaint = Paint()
       ..color = color.withOpacity(0.35)
       ..style = PaintingStyle.stroke
@@ -343,7 +363,6 @@ class _CardProgressRingPainter extends CustomPainter {
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
     canvas.drawPath(drawPath, outerGlowPaint);
 
-    // 2. Inner tighter glow (medium blur, more opacity)
     final innerGlowPaint = Paint()
       ..color = color.withOpacity(0.6)
       ..style = PaintingStyle.stroke
@@ -352,7 +371,6 @@ class _CardProgressRingPainter extends CustomPainter {
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3);
     canvas.drawPath(drawPath, innerGlowPaint);
 
-    // 3. Crisp bright core stroke on top
     final corePaint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke

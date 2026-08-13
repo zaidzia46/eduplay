@@ -8,6 +8,7 @@ import '../screens/auth/auth_binding.dart';
 import '../screens/auth/login.dart';
 import '../screens/auth/register.dart';
 import '../screens/home/bottom_nav/bottomNavbar_bin.dart';
+import '../screens/home/child_profile/profile_bin.dart';
 import '../screens/home/dashboard/dashboard_bin.dart';
 import '../screens/home/home.dart';
 import '../screens/home/progress/progress.dart';
@@ -86,7 +87,7 @@ abstract class AppPages {
         BottomNavBinding().dependencies();
         DashboardBinding().dependencies();
         ProgressBinding().dependencies();
-        // ProfileSwitcherBinding.dependencies();
+        ChildProfileBinding().dependencies();
       }),
     ),
 

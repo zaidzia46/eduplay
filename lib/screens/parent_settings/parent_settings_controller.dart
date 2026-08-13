@@ -5,9 +5,10 @@ import 'package:eduplay/screens/parent_settings/parent_settings_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../routes/app_routes.dart';
-import '../../core/api_client.dart';
+import '../../core/supabase_client.dart';
 import '../../fns/image_picker_service.dart';
 
 class ParentSettingsController extends GetxController {
@@ -28,9 +29,9 @@ class ParentSettingsController extends GetxController {
     profileImagePath.value = imagePath;
 
     try {
-      final relativePath = await _parentRepo.uploadAvatar(imagePath);
-      final fullUrl = ApiClient.resolveMediaUrl(relativePath);
-      profileImagePath.value = fullUrl;
+      final storagePath = await _parentRepo.uploadAvatar(imagePath);
+      final signedUrl = await _parentRepo.getAvatarSignedUrl(storagePath);
+      profileImagePath.value = signedUrl;
     } catch (e) {
       log('Avatar upload failed: $e');
     }
@@ -59,15 +60,37 @@ class ParentSettingsController extends GetxController {
 
     try {
       isChangingPassword.value = true;
-      // TODO: replace with a real API call, e.g.
-      // await authRepo.changePassword(current, newPassword);
-      await Future.delayed(const Duration(seconds: 1));
+
+      final email = supabase.auth.currentUser?.email;
+      if (email == null) {
+        passwordErrorMessage.value =
+            'Could not verify your account. Try logging in again.';
+        return;
+      }
+
+      // Supabase's updateUser() doesn't ask for the current password itself
+      // (you're already authenticated) — so to actually verify it, we
+      // re-authenticate with it first. Wrong current password fails here
+      // with an AuthException before anything changes.
+      await supabase.auth.signInWithPassword(
+        email: email,
+        password: currentPasswordController.text,
+      );
+
+      await supabase.auth.updateUser(
+        UserAttributes(password: newPasswordController.text),
+      );
 
       currentPasswordController.clear();
       newPasswordController.clear();
       confirmPasswordController.clear();
-      Get.back(); // close the change-password sheet/dialog
+      Get.back();
       Get.snackbar('Success', 'Password updated.');
+    } on AuthException catch (e) {
+      passwordErrorMessage.value =
+          e.message.toLowerCase().contains('invalid login credentials')
+          ? 'Current password is incorrect.'
+          : e.message;
     } catch (e) {
       passwordErrorMessage.value = 'Could not update password. Try again.';
     } finally {

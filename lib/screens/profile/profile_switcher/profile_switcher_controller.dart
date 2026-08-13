@@ -1,30 +1,23 @@
-import 'dart:developer';
-
 import 'package:eduplay/controller/session_controller.dart';
 import 'package:get/get.dart';
 
-import '../../../models/child_profile_model.dart';
 import '../../../routes/app_routes.dart';
-import '../../home/dashboard/subject_repo.dart';
-import '../../home/progress/progress_stats_repo.dart';
-import '../create_child_profile/create_child_profile_repo.dart';
+import '../create_child_profile/repo/create_child_profile_repo.dart';
+import 'models/child_profile_model.dart';
 
 class ProfileSwitcherViewModel extends GetxController {
   final ChildProfileRepository _repo = ChildProfileRepository();
-  final SubjectRepository _subjectRepo = SubjectRepository();
-  final ProgressStatsRepository _statsRepo = ProgressStatsRepository();
   final session = Get.find<SessionController>();
 
   var children = <ChildProfileModel>[].obs;
   var starsByChild = <int, int>{}.obs;
   var streakByChild = <int, int>{}.obs;
+  var avatarUrlByChild = <int, String?>{}.obs;
   var totalStars = 0.obs;
   var isLoading = true.obs;
   var errorMessage = ''.obs;
 
   var loadingChildId = Rxn<int>();
-
-  // var activeChild = Rxn<ChildProfileModel>();
 
   @override
   void onInit() {
@@ -39,30 +32,27 @@ class ProfileSwitcherViewModel extends GetxController {
 
       final fetchedChildren = await _repo.getChildren();
 
-      final newStarsByChild = <int, int>{};
-      final newStreakByChild = <int, int>{};
+      starsByChild.value = {
+        for (final c in fetchedChildren) c.id: c.totalStars,
+      };
+      streakByChild.value = {
+        for (final c in fetchedChildren) c.id: c.currentStreak,
+      };
+      totalStars.value = starsByChild.values.fold(0, (sum, s) => sum + s);
 
-      final withProgress = await Future.wait(
-        fetchedChildren.map((child) async {
-          final percent = await _subjectRepo.getOverallPercent(
-            childId: child.id,
-          );
-
-          final subjects = await _subjectRepo.getSubjects(childId: child.id);
-          final stats = await _statsRepo.getStats(subjects, childId: child.id);
-          newStarsByChild[child.id] = stats.starsEarned;
-          newStreakByChild[child.id] = stats.daysActive;
-          return child.copyWithProgress(overallPercent: percent);
+      final avatarEntries = await Future.wait(
+        fetchedChildren.map((c) async {
+          final url = c.avatar != null
+              ? await _repo.getAvatarSignedUrl(c.avatar!)
+              : null;
+          return MapEntry(c.id, url);
         }),
       );
+      avatarUrlByChild.value = Map.fromEntries(avatarEntries);
 
-      starsByChild.value = newStarsByChild;
-      streakByChild.value = newStreakByChild;
-      totalStars.value = newStarsByChild.values.fold(
-        0,
-        (sum, stars) => sum + stars,
-      );
-      children.value = withProgress;
+      children.value = fetchedChildren
+          .map((c) => c.copyWithProgress(overallPercent: 0))
+          .toList();
     } catch (e) {
       errorMessage.value = 'Could not load profiles.';
     } finally {

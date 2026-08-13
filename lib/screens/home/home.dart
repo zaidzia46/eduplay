@@ -1,4 +1,4 @@
-import 'package:eduplay/screens/home/profile.dart';
+import 'package:eduplay/screens/home/child_profile/profile.dart';
 import 'package:eduplay/screens/home/progress/progress.dart';
 import 'package:eduplay/screens/home/subjects/subjects.dart';
 import 'package:eduplay/theme/app_colors.dart';

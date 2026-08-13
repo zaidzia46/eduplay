@@ -35,17 +35,6 @@ class ApiClient {
         headers: {'Content-Type': 'application/json'},
       ),
     );
-    dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) {
-          final token = Get.find<SessionController>().authToken.value;
-          if (token != null) {
-            options.headers['Authorization'] = 'Bearer $token';
-          }
-          return handler.next(options);
-        },
-      ),
-    );
 
     _instance = dio;
     return dio;

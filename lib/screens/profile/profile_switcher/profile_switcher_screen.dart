@@ -1,6 +1,5 @@
-import 'dart:developer';
-
 import 'package:animations/animations.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eduplay/controller/session_controller.dart';
 import 'package:eduplay/screens/profile/profile_switcher/profile_switcher_controller.dart';
 import 'package:eduplay/widgets/staggered_anime.dart';
@@ -9,11 +8,11 @@ import 'package:get/get.dart';
 
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/add_profile_card.dart';
-import '../../../widgets/circular_loader.dart';
 import '../../../widgets/welcome_bg_parent_dashboard.dart';
 import '../../parent_settings/parent_settings_bin.dart';
 import '../../parent_settings/parent_settings_screen.dart';
 import '../widgets/profile_card.dart';
+import '../widgets/skeleton_card_loader.dart';
 
 class ProfileSwitcherView extends StatefulWidget {
   const ProfileSwitcherView({super.key});
@@ -26,6 +25,31 @@ class _ProfileSwitcherViewState extends State<ProfileSwitcherView>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Worker _worker;
+
+  // Tracks which set of (childId -> avatarUrl) pairs we last kicked off
+  // precaching for, so we don't redo it on every unrelated Obx rebuild.
+  String? _precachedKey;
+  Future<void>? _precacheFuture;
+
+  /// Warms Flutter's image cache for every visible child's avatar so that
+  /// by the time ProfileCard actually builds, CachedNetworkImage resolves
+  /// from cache instantly instead of showing its own placeholder/skeleton.
+  Future<void> _precacheAvatars(ProfileSwitcherViewModel vm) {
+    final urls = vm.children
+        .map((c) => vm.avatarUrlByChild[c.id])
+        .whereType<String>()
+        .toSet();
+
+    return Future.wait(
+      urls.map(
+        (url) => precacheImage(CachedNetworkImageProvider(url), context)
+            .catchError((_) {
+              // Swallow individual failures (bad url/offline) so one broken
+              // avatar can't hold up the rest of the list forever.
+            }),
+      ),
+    );
+  }
 
   @override
   void initState() {
@@ -134,7 +158,7 @@ class _ProfileSwitcherViewState extends State<ProfileSwitcherView>
           Expanded(
             child: Obx(() {
               if (vm.isLoading.value) {
-                return Center(child: CircularLoader());
+                return const ProfileCardSkeletonList();
               }
 
               if (vm.errorMessage.isNotEmpty) {
@@ -157,24 +181,44 @@ class _ProfileSwitcherViewState extends State<ProfileSwitcherView>
                 );
               }
 
-              final items = [...vm.children, null];
+              // Recompute only when the actual (child, avatarUrl) pairs
+              // change, so this doesn't fire on every Obx rebuild.
+              final key = vm.children
+                  .map((c) => '${c.id}:${vm.avatarUrlByChild[c.id]}')
+                  .join(',');
+              if (_precachedKey != key) {
+                _precachedKey = key;
+                _precacheFuture = _precacheAvatars(vm);
+              }
 
-              return ListView.builder(
-                padding: EdgeInsets.symmetric(horizontal: 12),
-                itemCount: items.length,
-                itemBuilder: (context, index) {
-                  final child = items[index];
-                  return StaggeredAnimation(
-                    controller: _controller,
-                    index: index,
-                    child: child == null
-                        ? AddProfileCard(onTap: vm.goToCreateProfile)
-                        : ProfileCard(
-                            child: child,
-                            stars: vm.starsByChild[child.id] ?? 0,
-                            streak: vm.streakByChild[child.id] ?? 0,
-                            onTap: () => vm.selectChild(child),
-                          ),
+              return FutureBuilder<void>(
+                future: _precacheFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState != ConnectionState.done) {
+                    return const ProfileCardSkeletonList();
+                  }
+
+                  final items = [...vm.children, null];
+
+                  return ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: 12),
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      final child = items[index];
+                      return StaggeredAnimation(
+                        controller: _controller,
+                        index: index,
+                        child: child == null
+                            ? AddProfileCard(onTap: vm.goToCreateProfile)
+                            : ProfileCard(
+                                child: child,
+                                stars: vm.starsByChild[child.id] ?? 0,
+                                streak: vm.streakByChild[child.id] ?? 0,
+                                avatarUrl: vm.avatarUrlByChild[child.id],
+                                onTap: () => vm.selectChild(child),
+                              ),
+                      );
+                    },
                   );
                 },
               );

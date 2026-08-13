@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
-import '../../models/standards_model.dart';
+import '../profile/create_child_profile/models/standard_model.dart';
 
 class StandardRepository {
   // ── Right now: loads from local JSON asset ──────────────
