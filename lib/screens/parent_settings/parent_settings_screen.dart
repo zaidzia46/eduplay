@@ -1,5 +1,7 @@
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eduplay/screens/parent_settings/parent_settings_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,6 +11,7 @@ import '../../../theme/app_text_styles.dart';
 import '../../../widgets/action_tile.dart';
 import '../../widgets/parent_welcome_bg.dart';
 import '../auth/auth_controller.dart';
+import '../profile/widgets/skeleton_avatar_loader.dart';
 
 class ParentSettingsView extends StatelessWidget {
   const ParentSettingsView({super.key});
@@ -46,7 +49,19 @@ class ParentSettingsView extends StatelessWidget {
                 GestureDetector(
                   onTap: vm.setParentAvatar,
                   child: Obx(() {
-                    final avatar = vm.profileImagePath.value;
+                    final localPath = vm.localPreviewPath.value;
+                    final url = vm.profileImagePath.value;
+                    final isLoading = vm.isLoadingAvatar.value;
+
+                    ImageProvider? imageProvider;
+                    if (localPath != null) {
+                      imageProvider = FileImage(File(localPath));
+                    } else if (url != null) {
+                      imageProvider = CachedNetworkImageProvider(url);
+                    }
+
+                    final showSkeleton = isLoading && imageProvider == null;
+
                     return Stack(
                       children: [
                         Container(
@@ -57,19 +72,19 @@ class ParentSettingsView extends StatelessWidget {
                             color: const Color(0xffFFD84E),
                             border: Border.all(color: Colors.white, width: 4),
                           ),
-                          child: CircleAvatar(
-                            radius: avatarSize / 2,
-                            backgroundColor: AppColors.primaryDark,
-                            backgroundImage: avatar != null
-                                ? (avatar.startsWith('http://') ||
-                                          avatar.startsWith('https://')
-                                      ? NetworkImage(avatar)
-                                      : FileImage(File(avatar)))
-                                : null,
-                            child: avatar == null || avatar.isEmpty
-                                ? Icon(Icons.person, size: avatarSize * 0.5)
-                                : null,
-                          ),
+                          child: showSkeleton
+                              ? SkeletonAvatarLoader(avatarSize: avatarSize)
+                              : CircleAvatar(
+                                  radius: avatarSize / 2,
+                                  backgroundColor: AppColors.primaryDark,
+                                  backgroundImage: imageProvider,
+                                  child: url == null
+                                      ? Icon(
+                                          Icons.person,
+                                          size: avatarSize * 0.5,
+                                        )
+                                      : null,
+                                ),
                         ),
                         Positioned(
                           bottom: 0,

@@ -50,13 +50,13 @@ class SessionController extends GetxController {
     await _box.write(_parentNameKey, name);
   }
 
-  Future<void> setChildAvatar() async {
-    final imagePath = await ImagePickerService.pickImage(ImageSource.gallery);
-    if (imagePath != null) {
-      childAvatar.value = imagePath;
-      await _box.write(_childAvatarKey, imagePath);
-    }
-  }
+  // Future<void> setChildAvatar() async {
+  //   final imagePath = await ImagePickerService.pickImage(ImageSource.gallery);
+  //   if (imagePath != null) {
+  //     childAvatar.value = imagePath;
+  //     await _box.write(_childAvatarKey, imagePath);
+  //   }
+  // }
 
   Future<void> setActiveChild(ChildProfileModel child) async {
     activeChild.value = child;

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eduplay/screens/parent_settings/parent_settings_controller.dart';
 import 'package:eduplay/theme/app_text_styles.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../controller/session_controller.dart';
+import '../screens/profile/widgets/skeleton_avatar_loader.dart';
 import '../theme/app_colors.dart';
 
 class WelcomeBackground extends StatelessWidget {
@@ -166,23 +168,50 @@ class WelcomeBackground extends StatelessWidget {
   Widget _buildAvatar() {
     final vm = Get.find<ParentSettingsController>();
     double avatarSize = 65;
+
     return Obx(() {
-      final avatar = vm.profileImagePath.value;
+      final localPath = vm.localPreviewPath.value;
+      final url = vm.profileImagePath.value;
+      final isLoading = vm.isLoadingAvatar.value;
+
+      Widget avatarContent;
+
+      if (localPath != null) {
+        avatarContent = CircleAvatar(
+          radius: avatarSize / 2,
+          backgroundColor: AppColors.primaryDark,
+          backgroundImage: FileImage(File(localPath)),
+        );
+      } else if (isLoading) {
+        avatarContent = SkeletonAvatarLoader(avatarSize: avatarSize);
+      } else if (url != null) {
+        avatarContent = ClipOval(
+          child: CachedNetworkImage(
+            imageUrl: url,
+            width: avatarSize,
+            height: avatarSize,
+            fit: BoxFit.cover,
+            placeholder: (context, url) =>
+                SkeletonAvatarLoader(avatarSize: avatarSize),
+            errorWidget: (context, url, error) => CircleAvatar(
+              radius: avatarSize / 2,
+              backgroundColor: AppColors.primaryDark,
+              child: Icon(Icons.person, size: avatarSize * 0.5),
+            ),
+          ),
+        );
+      } else {
+        avatarContent = CircleAvatar(
+          radius: avatarSize / 2,
+          backgroundColor: AppColors.primaryDark,
+          child: Icon(Icons.person, size: avatarSize * 0.5),
+        );
+      }
+
       return Stack(
         clipBehavior: Clip.none,
         children: [
-          CircleAvatar(
-            radius: avatarSize / 2,
-            backgroundColor: AppColors.primaryLight,
-            backgroundImage: avatar != null
-                ? (avatar.startsWith('http://') || avatar.startsWith('https://')
-                      ? NetworkImage(avatar)
-                      : FileImage(File(avatar)))
-                : null,
-            child: avatar == null || avatar.isEmpty
-                ? Icon(Icons.person, size: avatarSize * 0.5)
-                : null,
-          ),
+          avatarContent,
           Positioned(
             right: -2,
             bottom: -2,

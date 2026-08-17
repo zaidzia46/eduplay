@@ -15,6 +15,8 @@ class ParentSettingsController extends GetxController {
   final session = Get.find<SessionController>();
   final _parentRepo = ParentRepository();
   var profileImagePath = Rxn<String>();
+  final Rx<String?> localPreviewPath = Rx<String?>(null);
+  final RxBool isUploadingAvatar = false.obs;
 
   final currentPasswordController = TextEditingController();
   final newPasswordController = TextEditingController();
@@ -22,18 +24,46 @@ class ParentSettingsController extends GetxController {
 
   var isChangingPassword = false.obs;
   var passwordErrorMessage = ''.obs;
+  var isLoadingAvatar = true.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    _loadParentAvatar();
+  }
+
+  Future<void> _loadParentAvatar() async {
+    final parentId = supabase.auth.currentUser!.id;
+    final path = '$parentId/parent.png';
+
+    try {
+      final url = await _parentRepo.getAvatarSignedUrl(path);
+      profileImagePath.value = url;
+    } catch (e) {
+      log('No parent avatar yet, or failed to load: $e');
+    } finally {
+      isLoadingAvatar.value = false;
+    }
+  }
 
   Future<void> setParentAvatar() async {
     final imagePath = await ImagePickerService.pickImage(ImageSource.gallery);
     if (imagePath == null) return;
     profileImagePath.value = imagePath;
 
+    localPreviewPath.value = imagePath;
+    isUploadingAvatar.value = true;
+
     try {
       final storagePath = await _parentRepo.uploadAvatar(imagePath);
-      final signedUrl = await _parentRepo.getAvatarSignedUrl(storagePath);
-      profileImagePath.value = signedUrl;
+      profileImagePath.value = await _parentRepo.getAvatarSignedUrl(
+        storagePath,
+      );
     } catch (e) {
       log('Avatar upload failed: $e');
+      localPreviewPath.value = null;
+    } finally {
+      isUploadingAvatar.value = false;
     }
   }
 
