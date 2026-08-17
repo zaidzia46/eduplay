@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eduplay/routes/app_routes.dart';
 import 'package:eduplay/theme/app_colors.dart';
 import 'package:eduplay/widgets/title_row.dart';
@@ -5,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 
-import '../../../controller/session_controller.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/circular_loader.dart';
 import '../../../widgets/continue_learning_card.dart';
@@ -105,39 +105,41 @@ class _DashBoardState extends State<DashBoard>
                     children: [
                       SizedBox(height: 15),
                       Obx(() {
-                        final session = Get.find<SessionController>();
-                        final child = session.activeChild.value;
-
                         final progress = Get.find<ProgressController>();
                         final stats = progress.stats.value;
 
                         return Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            CircleAvatar(
-                              radius: avatarSize / 2,
-                              backgroundColor: const Color(0xffFFD84E),
-                              child: ClipOval(
-                                child: child?.avatar != null
-                                    ? Image.asset(
-                                        child!.avatar!,
-                                        fit: BoxFit.cover,
-                                        width: avatarSize,
-                                        height: avatarSize,
-                                        errorBuilder: (_, __, ___) =>
-                                            const Icon(
-                                              Icons.person,
-                                              size: 45,
-                                              color: AppColors.primary,
-                                            ),
-                                      )
-                                    : const Icon(
-                                        Icons.person,
-                                        size: 45,
-                                        color: AppColors.primary,
-                                      ),
-                              ),
-                            ),
+                            Obx(() {
+                              final url = vm.avatarUrl.value;
+                              return CircleAvatar(
+                                radius: avatarSize / 2,
+                                backgroundColor: const Color(0xffFFD84E),
+                                child: ClipOval(
+                                  child: url != null
+                                      ? Image(
+                                          image: CachedNetworkImageProvider(
+                                            url,
+                                          ),
+                                          fit: BoxFit.cover,
+                                          width: avatarSize,
+                                          height: avatarSize,
+                                          errorBuilder: (_, __, ___) =>
+                                              const Icon(
+                                                Icons.person,
+                                                size: 45,
+                                                color: AppColors.primary,
+                                              ),
+                                        )
+                                      : const Icon(
+                                          Icons.person,
+                                          size: 45,
+                                          color: AppColors.primary,
+                                        ),
+                                ),
+                              );
+                            }),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Column(
@@ -146,7 +148,7 @@ class _DashBoardState extends State<DashBoard>
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Hi, ${child?.name ?? 'there'}!',
+                                    'Hi, ${vm.child.value?.name ?? 'there'}!',
                                     style: AppTextStyles.bodyLarge.copyWith(
                                       color: AppColors.white,
                                       fontWeight: FontWeight.bold,

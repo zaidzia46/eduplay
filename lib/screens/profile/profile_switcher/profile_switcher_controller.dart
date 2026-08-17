@@ -1,4 +1,5 @@
 import 'package:eduplay/controller/session_controller.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../routes/app_routes.dart';
@@ -62,6 +63,16 @@ class ProfileSwitcherViewModel extends GetxController {
 
   Future<void> selectChild(ChildProfileModel child) async {
     await session.setActiveChild(child);
+    final context = Get.context!;
+    await Future.wait([
+      //dashboard bg is used in both dashboard and profile tab.
+      precacheImage(
+        const AssetImage('assets/images/dashboard_bg.png'),
+        context,
+      ),
+      precacheImage(const AssetImage('assets/images/subjects_bg.png'), context),
+      precacheImage(const AssetImage('assets/images/progress_bg.png'), context),
+    ]);
     Get.offAllNamed(AppRoutes.home);
   }
 

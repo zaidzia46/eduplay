@@ -9,6 +9,8 @@ import 'package:get/get.dart';
 import '../../../models/continue_learning_model.dart';
 import '../../../models/subjects_model.dart';
 import '../../../widgets/filter_sheet.dart';
+import '../../profile/create_child_profile/repo/create_child_profile_repo.dart';
+import '../../profile/profile_switcher/models/child_profile_model.dart';
 import 'continue_learn_repo.dart';
 
 enum SubjectFilter { all, notStarted, inProgress, completed }
@@ -16,6 +18,11 @@ enum SubjectFilter { all, notStarted, inProgress, completed }
 class DashboardController extends GetxController {
   final SubjectRepository _subjectRepo = SubjectRepository();
   final LessonRepository _lessonRepo = LessonRepository();
+  final ChildProfileRepository _childRepo = ChildProfileRepository();
+  final SessionController _session = Get.find<SessionController>();
+
+  final Rx<ChildProfileModel?> child = Rx<ChildProfileModel?>(null);
+  final Rx<String?> avatarUrl = Rx<String?>(null);
 
   var subjects = <SubjectsModel>[].obs;
   var dashboardSubjects = <SubjectsModel>[].obs;
@@ -25,7 +32,6 @@ class DashboardController extends GetxController {
   var errorSubjectMessage = ''.obs;
   var errorLessonMessage = ''.obs;
   var activeFilter = SubjectFilter.all.obs;
-  // Search/filter for the Subjects screen.
   final searchController = TextEditingController();
   var searchQuery = ''.obs;
 
@@ -34,6 +40,8 @@ class DashboardController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    child.value = _session.activeChild.value;
+    _loadAvatarUrl();
     fetchSubjects();
     fetchLessons();
 
@@ -48,6 +56,13 @@ class DashboardController extends GetxController {
       searchQuery.value = searchController.text;
       _applyFilter();
     });
+  }
+
+  Future<void> _loadAvatarUrl() async {
+    final path = child.value?.avatar;
+    avatarUrl.value = path != null
+        ? await _childRepo.getAvatarSignedUrl(path)
+        : null;
   }
 
   void _applyFilter() {
