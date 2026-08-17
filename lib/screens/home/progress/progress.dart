@@ -217,37 +217,6 @@ class _ProgressViewState extends State<ProgressView>
                                           Expanded(
                                             child: StatTile(
                                               icon: FaIcon(
-                                                FontAwesomeIcons.bookOpen,
-                                                size: 20,
-                                                color: AppColors.tertiary,
-                                              ),
-                                              color: AppColors.tertiary,
-                                              value:
-                                                  '${stats?.lessonsCompleted ?? 0}',
-                                              label: 'Lessons Completed',
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 14),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: StatTile(
-                                              icon: FaIcon(
-                                                FontAwesomeIcons.calendarCheck,
-                                                size: 20,
-                                                color: AppColors.success,
-                                              ),
-                                              color: AppColors.success,
-                                              value:
-                                                  '${stats?.daysActive ?? 0}',
-                                              label: 'Days Active',
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: StatTile(
-                                              icon: FaIcon(
                                                 FontAwesomeIcons.award,
                                                 size: 20,
                                                 color: AppColors.error,
