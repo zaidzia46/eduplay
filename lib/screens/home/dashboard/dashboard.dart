@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 
 import '../../../theme/app_text_styles.dart';
+import '../../profile/widgets/skeleton_avatar_loader.dart';
 import '../../../widgets/circular_loader.dart';
 import '../../../widgets/continue_learning_card.dart';
 import '../../../widgets/streak_card.dart';
@@ -113,19 +114,29 @@ class _DashBoardState extends State<DashBoard>
                           children: [
                             Obx(() {
                               final url = vm.avatarUrl.value;
+                              final isLoading = vm.isAvatarLoading.value;
+
+                              if (isLoading) {
+                                return const SkeletonAvatarLoader(
+                                  avatarSize: avatarSize,
+                                );
+                              }
+
                               return CircleAvatar(
                                 radius: avatarSize / 2,
                                 backgroundColor: const Color(0xffFFD84E),
                                 child: ClipOval(
                                   child: url != null
-                                      ? Image(
-                                          image: CachedNetworkImageProvider(
-                                            url,
-                                          ),
+                                      ? CachedNetworkImage(
+                                          imageUrl: url,
                                           fit: BoxFit.cover,
                                           width: avatarSize,
                                           height: avatarSize,
-                                          errorBuilder: (_, __, ___) =>
+                                          placeholder: (_, __) =>
+                                              const SkeletonAvatarLoader(
+                                                avatarSize: avatarSize,
+                                              ),
+                                          errorWidget: (_, __, ___) =>
                                               const Icon(
                                                 Icons.person,
                                                 size: 45,

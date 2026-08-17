@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:math';
 
 import 'package:eduplay/controller/session_controller.dart';
 import 'package:eduplay/screens/home/dashboard/subject_repo.dart';
@@ -23,6 +22,7 @@ class DashboardController extends GetxController {
 
   final Rx<ChildProfileModel?> child = Rx<ChildProfileModel?>(null);
   final Rx<String?> avatarUrl = Rx<String?>(null);
+  final RxBool isAvatarLoading = true.obs;
 
   var subjects = <SubjectsModel>[].obs;
   var dashboardSubjects = <SubjectsModel>[].obs;
@@ -42,6 +42,12 @@ class DashboardController extends GetxController {
     super.onInit();
     child.value = _session.activeChild.value;
     _loadAvatarUrl();
+
+    ever<ChildProfileModel?>(_session.activeChild, (updatedChild) {
+      child.value = updatedChild;
+      _loadAvatarUrl();
+    });
+
     fetchSubjects();
     fetchLessons();
 
@@ -60,9 +66,28 @@ class DashboardController extends GetxController {
 
   Future<void> _loadAvatarUrl() async {
     final path = child.value?.avatar;
-    avatarUrl.value = path != null
-        ? await _childRepo.getAvatarSignedUrl(path)
-        : null;
+    if (path == null) {
+      avatarUrl.value = null;
+      isAvatarLoading.value = false;
+      return;
+    }
+
+    try {
+      final url = await _childRepo.getAvatarSignedUrl(path);
+
+      if (child.value?.avatar == path) {
+        avatarUrl.value = url;
+      }
+    } catch (e) {
+      log('Could not load dashboard avatar: $e');
+      if (child.value?.avatar == path) {
+        avatarUrl.value = null;
+      }
+    } finally {
+      if (child.value?.avatar == path) {
+        isAvatarLoading.value = false;
+      }
+    }
   }
 
   void _applyFilter() {

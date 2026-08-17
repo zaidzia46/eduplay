@@ -93,12 +93,16 @@ class ChildProfileRepository {
           60 * 60, // 1 hour
         );
 
+    final versionedUrl = Uri.parse(url)
+        .replace(fragment: 'v=${DateTime.now().millisecondsSinceEpoch}')
+        .toString();
+
     _avatarUrlCache[storagePath] = _CachedSignedUrl(
-      url: url,
+      url: versionedUrl,
       expiresAt: DateTime.now().add(const Duration(minutes: 50)),
     );
 
-    return url;
+    return versionedUrl;
   }
 }
 
