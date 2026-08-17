@@ -72,6 +72,10 @@ class ProfileSwitcherViewModel extends GetxController {
       ),
       precacheImage(const AssetImage('assets/images/subjects_bg.png'), context),
       precacheImage(const AssetImage('assets/images/progress_bg.png'), context),
+      precacheImage(
+        const AssetImage('assets/images/profile_card_bg.png'),
+        context,
+      ),
     ]);
     Get.offAllNamed(AppRoutes.home);
   }
