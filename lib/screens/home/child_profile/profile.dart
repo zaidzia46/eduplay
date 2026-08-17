@@ -58,7 +58,7 @@ class _ProfileViewState extends State<ProfileView>
             },
             blendMode: BlendMode.dstIn,
             child: Image.asset(
-              'assets/images/profile_bg2.png',
+              'assets/images/dashboard_bg.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -67,7 +67,11 @@ class _ProfileViewState extends State<ProfileView>
               padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 15),
               child: Column(
                 children: [
-                  SizedBox(height: 40),
+                  Text(
+                    'Profile',
+                    style: AppTextStyles.h1.copyWith(color: AppColors.white),
+                  ),
+                  const SizedBox(height: 15),
                   Obx(() {
                     final child = session.activeChild.value;
                     if (child == null) return const SizedBox.shrink();
