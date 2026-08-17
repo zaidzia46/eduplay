@@ -1,3 +1,4 @@
+import 'package:eduplay/screens/home/subjects/widgets/subject_progress_row_skeleton.dart';
 import 'package:eduplay/widgets/circular_loader.dart';
 import 'package:eduplay/widgets/subject_progress_row.dart';
 import 'package:flutter/material.dart';
@@ -206,7 +207,7 @@ class _SubjectViewState extends State<SubjectView>
           Expanded(
             child: Obx(() {
               if (vm.isSubjectsLoading.value) {
-                return Center(child: CircularLoader());
+                return Center(child: SubjectProgressRowSkeleton());
               }
 
               if (vm.filteredSubjects.isEmpty) {
