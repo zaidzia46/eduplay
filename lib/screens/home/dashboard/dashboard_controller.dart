@@ -59,7 +59,6 @@ class DashboardController extends GetxController {
         avatarUrl.value = url;
       }
     } catch (e) {
-      log('Could not load dashboard avatar: $e');
       if (child.value?.avatar == path) {
         avatarUrl.value = null;
       }

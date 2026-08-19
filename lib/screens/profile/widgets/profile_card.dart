@@ -1,4 +1,4 @@
-import 'package:eduplay/screens/home/dashboard/widgets/expanded_avatar.dart';
+import 'package:eduplay/widgets/expanded_avatar.dart';
 import 'package:eduplay/screens/profile/widgets/skeleton_avatar_loader.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';

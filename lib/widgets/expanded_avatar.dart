@@ -1,9 +1,13 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class ExpandableAvatar extends StatefulWidget {
   final double avatarSize;
   final String? imageUrl;
+  final String? localPreviewPath;
   final Widget collapsedChild;
   final double expandedSize;
 
@@ -11,6 +15,7 @@ class ExpandableAvatar extends StatefulWidget {
     super.key,
     required this.avatarSize,
     required this.collapsedChild,
+    this.localPreviewPath,
     this.imageUrl,
     this.expandedSize = 220,
   });
@@ -97,6 +102,12 @@ class _ExpandableAvatarState extends State<ExpandableAvatar>
                             ? CachedNetworkImage(
                                 imageUrl: widget.imageUrl!,
                                 fit: BoxFit.cover,
+                              )
+                            : widget.localPreviewPath != null
+                            ? Image(
+                                image: FileImage(
+                                  File(widget.localPreviewPath!),
+                                ),
                               )
                             : Container(
                                 color: const Color(0xffFFD84E),

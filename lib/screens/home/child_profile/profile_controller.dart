@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../controller/session_controller.dart';
 import '../../../fns/image_picker_service.dart';
 import '../../profile/profile_switcher/models/child_profile_model.dart';
+import '../../profile/profile_switcher/profile_switcher_controller.dart';
 
 class ProfileViewModel extends GetxController {
   final ChildProfileRepository _childRepo = ChildProfileRepository();
@@ -51,7 +52,15 @@ class ProfileViewModel extends GetxController {
       final updatedChild = currentChild.copyWith(avatarPath: storagePath);
       child.value = updatedChild;
       await _session.setActiveChild(updatedChild);
-      avatarUrl.value = await _childRepo.getAvatarSignedUrl(storagePath);
+      final freshUrl = await _childRepo.getAvatarSignedUrl(storagePath);
+      avatarUrl.value = freshUrl;
+
+      if (Get.isRegistered<ProfileSwitcherViewModel>()) {
+        Get.find<ProfileSwitcherViewModel>().updateChild(
+          updatedChild,
+          avatarUrl: freshUrl,
+        );
+      }
     } catch (e) {
       log('Avatar upload failed: $e');
       localPreviewPath.value = null;

@@ -83,6 +83,15 @@ class ProfileSwitcherViewModel extends GetxController {
     Get.offAllNamed(AppRoutes.home);
   }
 
+  void updateChild(ChildProfileModel updatedChild, {String? avatarUrl}) {
+    final index = children.indexWhere((c) => c.id == updatedChild.id);
+    if (index != -1) {
+      children[index] = updatedChild;
+      children.refresh();
+    }
+    avatarUrlByChild[updatedChild.id] = avatarUrl;
+  }
+
   void goToCreateProfile() {
     Get.toNamed(AppRoutes.createProfile);
   }

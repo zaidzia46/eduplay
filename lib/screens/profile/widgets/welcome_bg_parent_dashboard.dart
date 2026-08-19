@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../controller/session_controller.dart';
-import '../../home/dashboard/widgets/expanded_avatar.dart';
+import '../../../widgets/expanded_avatar.dart';
 import 'skeleton_avatar_loader.dart';
 import '../../../theme/app_colors.dart';
 
@@ -179,8 +179,8 @@ class WelcomeBackground extends StatelessWidget {
 
       if (localPath != null) {
         avatarContent = ExpandableAvatar(
-          imageUrl: localPath,
           avatarSize: avatarSize,
+          localPreviewPath: localPath,
           collapsedChild: CircleAvatar(
             radius: avatarSize / 2,
             backgroundColor: AppColors.primaryDark,

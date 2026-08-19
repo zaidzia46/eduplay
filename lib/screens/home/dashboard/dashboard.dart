@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eduplay/routes/app_routes.dart';
-import 'package:eduplay/screens/home/dashboard/widgets/expanded_avatar.dart';
+import 'package:eduplay/widgets/expanded_avatar.dart';
 import 'package:eduplay/screens/home/subjects/subjects_controller.dart';
 import 'package:eduplay/theme/app_colors.dart';
 import 'package:eduplay/widgets/title_row.dart';
@@ -10,6 +10,8 @@ import 'package:lottie/lottie.dart';
 
 import '../../../theme/app_text_styles.dart';
 import '../../profile/widgets/skeleton_avatar_loader.dart';
+import '../../../widgets/circular_loader.dart';
+import '../../../widgets/continue_learning_card.dart';
 import '../../../widgets/streak_card.dart';
 import '../subjects/widgets/subject_progress_row.dart';
 import '../bottom_nav/bottomNavigation_controller.dart';
@@ -292,7 +294,6 @@ class _DashBoardState extends State<DashBoard>
                                   SubjectFilter.all;
                             },
                           ),
-                          SizedBox(height: 5),
                           SizedBox(
                             child: Obx(() {
                               if (subjectController.isSubjectsLoading.value) {
@@ -305,7 +306,6 @@ class _DashBoardState extends State<DashBoard>
                                 );
                               }
                               return ListView.builder(
-                                physics: BouncingScrollPhysics(),
                                 shrinkWrap: true,
                                 itemCount: vm.dashboardSubjects.length,
                                 itemBuilder: (context, index) {
@@ -323,7 +323,7 @@ class _DashBoardState extends State<DashBoard>
                               );
                             }),
                           ),
-                          SizedBox(height: 12),
+                          SizedBox(height: 20),
                           TitleRow(
                             title: 'Continue Learning',
                             onTap: () {
