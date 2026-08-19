@@ -7,9 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../controller/session_controller.dart';
-import '../screens/profile/widgets/skeleton_avatar_loader.dart';
-import '../theme/app_colors.dart';
+import '../../../controller/session_controller.dart';
+import '../../home/dashboard/widgets/expanded_avatar.dart';
+import 'skeleton_avatar_loader.dart';
+import '../../../theme/app_colors.dart';
 
 class WelcomeBackground extends StatelessWidget {
   final String welcomeText;
@@ -177,26 +178,34 @@ class WelcomeBackground extends StatelessWidget {
       Widget avatarContent;
 
       if (localPath != null) {
-        avatarContent = CircleAvatar(
-          radius: avatarSize / 2,
-          backgroundColor: AppColors.primaryDark,
-          backgroundImage: FileImage(File(localPath)),
+        avatarContent = ExpandableAvatar(
+          imageUrl: localPath,
+          avatarSize: avatarSize,
+          collapsedChild: CircleAvatar(
+            radius: avatarSize / 2,
+            backgroundColor: AppColors.primaryDark,
+            backgroundImage: FileImage(File(localPath)),
+          ),
         );
       } else if (isLoading) {
         avatarContent = SkeletonAvatarLoader(avatarSize: avatarSize);
       } else if (url != null) {
-        avatarContent = ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: url,
-            width: avatarSize,
-            height: avatarSize,
-            fit: BoxFit.cover,
-            placeholder: (context, url) =>
-                SkeletonAvatarLoader(avatarSize: avatarSize),
-            errorWidget: (context, url, error) => CircleAvatar(
-              radius: avatarSize / 2,
-              backgroundColor: AppColors.primaryDark,
-              child: Icon(Icons.person, size: avatarSize * 0.5),
+        avatarContent = ExpandableAvatar(
+          imageUrl: url,
+          avatarSize: avatarSize,
+          collapsedChild: ClipOval(
+            child: CachedNetworkImage(
+              imageUrl: url,
+              width: avatarSize,
+              height: avatarSize,
+              fit: BoxFit.cover,
+              placeholder: (context, url) =>
+                  SkeletonAvatarLoader(avatarSize: avatarSize),
+              errorWidget: (context, url, error) => CircleAvatar(
+                radius: avatarSize / 2,
+                backgroundColor: AppColors.primaryDark,
+                child: Icon(Icons.person, size: avatarSize * 0.5),
+              ),
             ),
           ),
         );

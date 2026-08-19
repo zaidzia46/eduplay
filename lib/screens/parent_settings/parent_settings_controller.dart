@@ -10,6 +10,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../routes/app_routes.dart';
 import '../../core/supabase_client.dart';
 import '../../fns/image_picker_service.dart';
+import '../profile/create_child_profile/repo/create_child_profile_repo.dart';
+import '../profile/profile_switcher/profile_switcher_controller.dart';
 
 class ParentSettingsController extends GetxController {
   final session = Get.find<SessionController>();
@@ -26,10 +28,12 @@ class ParentSettingsController extends GetxController {
   var passwordErrorMessage = ''.obs;
   var isLoadingAvatar = true.obs;
 
+  late Future<void> loadingParentAvatar;
+
   @override
   void onInit() {
     super.onInit();
-    _loadParentAvatar();
+    loadingParentAvatar = _loadParentAvatar();
   }
 
   Future<void> _loadParentAvatar() async {
@@ -39,6 +43,7 @@ class ParentSettingsController extends GetxController {
     try {
       final url = await _parentRepo.getAvatarSignedUrl(path);
       profileImagePath.value = url;
+      log('Loaded parent avatar');
     } catch (e) {
       log('No parent avatar yet, or failed to load: $e');
     } finally {
@@ -130,6 +135,10 @@ class ParentSettingsController extends GetxController {
 
   Future<void> logout() async {
     await session.logout();
+    Get.delete<ProfileSwitcherViewModel>(force: true);
+    ChildProfileRepository.clearCache();
+    ParentRepository.clearCache();
+
     Get.offAllNamed(AppRoutes.login);
   }
 

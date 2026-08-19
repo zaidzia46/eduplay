@@ -1,3 +1,4 @@
+import 'package:eduplay/screens/home/dashboard/widgets/expanded_avatar.dart';
 import 'package:eduplay/screens/profile/widgets/skeleton_avatar_loader.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
@@ -151,18 +152,32 @@ class _ProfileCardState extends State<ProfileCard>
                       decoration: const BoxDecoration(
                         shape: BoxShape.rectangle,
                       ),
-                      child: ClipOval(
-                        child: widget.avatarUrl != null
-                            ? CachedNetworkImage(
-                                imageUrl: widget.avatarUrl!,
-                                width: avatarSize,
-                                height: avatarSize,
-                                fit: BoxFit.cover,
-                                placeholder: (context, url) =>
-                                    SkeletonAvatarLoader(
-                                      avatarSize: avatarSize,
-                                    ),
-                                errorWidget: (context, url, error) => Container(
+                      child: ExpandableAvatar(
+                        avatarSize: avatarSize,
+                        imageUrl: widget.avatarUrl,
+                        collapsedChild: ClipOval(
+                          child: widget.avatarUrl != null
+                              ? CachedNetworkImage(
+                                  imageUrl: widget.avatarUrl!,
+                                  width: avatarSize,
+                                  height: avatarSize,
+                                  fit: BoxFit.cover,
+                                  placeholder: (context, url) =>
+                                      SkeletonAvatarLoader(
+                                        avatarSize: avatarSize,
+                                      ),
+                                  errorWidget: (context, url, error) =>
+                                      Container(
+                                        width: avatarSize,
+                                        height: avatarSize,
+                                        color: const Color(0xffFFD84E),
+                                        child: Icon(
+                                          Icons.person,
+                                          size: avatarSize * 0.5,
+                                        ),
+                                      ),
+                                )
+                              : Container(
                                   width: avatarSize,
                                   height: avatarSize,
                                   color: const Color(0xffFFD84E),
@@ -171,16 +186,7 @@ class _ProfileCardState extends State<ProfileCard>
                                     size: avatarSize * 0.5,
                                   ),
                                 ),
-                              )
-                            : Container(
-                                width: avatarSize,
-                                height: avatarSize,
-                                color: const Color(0xffFFD84E),
-                                child: Icon(
-                                  Icons.person,
-                                  size: avatarSize * 0.5,
-                                ),
-                              ),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 9),

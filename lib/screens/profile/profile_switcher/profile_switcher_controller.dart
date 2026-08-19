@@ -20,10 +20,12 @@ class ProfileSwitcherViewModel extends GetxController {
 
   var loadingChildId = Rxn<int>();
 
+  late Future<void> loadingFuture;
+
   @override
   void onInit() {
     super.onInit();
-    fetchChildren();
+    loadingFuture = fetchChildren();
   }
 
   Future<void> fetchChildren() async {
@@ -76,6 +78,7 @@ class ProfileSwitcherViewModel extends GetxController {
         const AssetImage('assets/images/profile_card_bg.png'),
         context,
       ),
+      precacheImage(const AssetImage('assets/images/banner.png'), context),
     ]);
     Get.offAllNamed(AppRoutes.home);
   }

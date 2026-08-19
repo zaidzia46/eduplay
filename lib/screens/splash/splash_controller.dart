@@ -1,10 +1,13 @@
+import 'dart:developer';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
-import '../../controller/session_controller.dart';
 import '../../core/supabase_client.dart';
 import '../../routes/app_routes.dart';
+import '../parent_settings/parent_settings_controller.dart';
+import '../parent_settings/parent_settings_repo.dart';
+import '../profile/profile_switcher/profile_switcher_controller.dart';
 
 class SplashController extends GetxController
     with GetSingleTickerProviderStateMixin {
@@ -53,27 +56,35 @@ class SplashController extends GetxController
     final context = Get.context!;
 
     await Future.wait([
-      Future.delayed(const Duration(seconds: 5)),
       precacheImage(
         const AssetImage('assets/images/profile_switch_bg.png'),
         context,
       ),
     ]);
 
-    // if (session.activeChild.value != null) {
-    //   Get.offAllNamed(AppRoutes.home);
-    //   return;
-    // }
-    // supabase.auth.onAuthStateChange.listen((data) {
-    //   final event = data.event;
-    //   if (event == AuthChangeEvent.signedIn) {
-    //     Get.offAllNamed(AppRoutes.profileSwitcher);
-    //   }
-    // });
-
     final session = supabase.auth.currentSession;
 
     if (session != null) {
+      final profileVm = Get.put(ProfileSwitcherViewModel(), permanent: true);
+      final parentRepo = ParentRepository();
+      final parentId = supabase.auth.currentUser!.id;
+      String? parentAvatarUrl;
+      try {
+        parentAvatarUrl = await parentRepo.getAvatarSignedUrl(
+          '$parentId/parent.png',
+        );
+      } catch (e) {
+        parentAvatarUrl = null;
+      }
+      await profileVm.loadingFuture;
+      await Future.wait([
+        ...profileVm.avatarUrlByChild.values.whereType<String>().map(
+          (url) => precacheImage(CachedNetworkImageProvider(url), context),
+        ),
+        if (parentAvatarUrl != null)
+          precacheImage(CachedNetworkImageProvider(parentAvatarUrl), context),
+      ]);
+
       Get.offAllNamed(AppRoutes.profileSwitcher);
     } else {
       Get.offAllNamed(AppRoutes.login);

@@ -39,6 +39,8 @@ class ParentRepository {
     return _refreshAvatarSignedUrl(storagePath);
   }
 
+  static void clearCache() => _avatarUrlCache.clear();
+
   Future<String?> _refreshAvatarSignedUrl(String storagePath) async {
     final url = await supabase.storage
         .from('avatars')

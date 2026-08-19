@@ -14,6 +14,7 @@ class AddProfileCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 17.0, horizontal: 15.0),
+        margin: EdgeInsets.only(bottom: 80),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           image: DecorationImage(
