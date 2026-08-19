@@ -1,14 +1,14 @@
+import 'package:eduplay/screens/home/subjects/subjects_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../screens/home/dashboard/dashboard_controller.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
+import '../../../../theme/app_colors.dart';
+import '../../../../theme/app_text_styles.dart';
 
 class FilterSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final vm = Get.find<DashboardController>();
+    final vm = Get.find<SubjectsController>();
 
     final filters = [
       (SubjectFilter.all, 'All', Icons.apps_rounded, AppColors.primary),

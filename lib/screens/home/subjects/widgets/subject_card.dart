@@ -1,13 +1,13 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
-import '../models/subjects_model.dart';
-import '../screens/home/dashboard/dashboard_controller.dart';
-import '../theme/app_colors.dart';
-import '../theme/app_text_styles.dart';
+import '../subjects_model.dart';
+import '../../dashboard/dashboard_controller.dart';
+import '../../../../theme/app_colors.dart';
+import '../../../../theme/app_text_styles.dart';
 
 class SubjectCard extends StatelessWidget {
-  final SubjectsModel subject;
+  final SubjectModel subject;
   final VoidCallback onPressed;
 
   const SubjectCard({
@@ -29,11 +29,11 @@ class SubjectCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           // Subject image
-          Expanded(child: Image.asset('assets/images/${subject.imageUrl}')),
+          Expanded(child: Image.asset('assets/images/${subject.iconPath}')),
 
           // Subject title
           Text(
-            subject.subjectTitle,
+            subject.name,
             style: AppTextStyles.caption.copyWith(color: AppColors.textPrimary),
             textAlign: TextAlign.center,
           ),
@@ -47,7 +47,7 @@ class SubjectCard extends StatelessWidget {
             child: ElevatedButton(
               onPressed: onPressed,
               style: ElevatedButton.styleFrom(
-                backgroundColor: subject.buttonColor,
+                backgroundColor: subject.colorHex,
                 padding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),

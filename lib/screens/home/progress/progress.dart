@@ -11,7 +11,7 @@ import '../../../widgets/morphing_progress_indicator.dart';
 import '../../../widgets/recent_act_tile.dart';
 import '../../../widgets/staggered_anime.dart';
 import '../../../widgets/stat_tile.dart';
-import '../../../widgets/subject_progress_row.dart';
+import '../subjects/widgets/subject_progress_row.dart';
 import '../bottom_nav/bottomNavigation_controller.dart';
 
 class ProgressView extends StatefulWidget {

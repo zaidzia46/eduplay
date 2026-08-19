@@ -8,7 +8,7 @@ abstract class AppRoutes {
   static const String profileSwitcher = '/profile-switcher';
   static const String createProfile = '/create-profile';
   static const home = '/home';
-  static const topics = '/topics';
+  static const chapters = '/chapters';
   static const String progress = '/progress';
   static const String parentSettings = '/parent-settings';
 }

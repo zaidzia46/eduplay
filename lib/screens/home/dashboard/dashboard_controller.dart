@@ -1,18 +1,15 @@
 import 'dart:developer';
 
 import 'package:eduplay/controller/session_controller.dart';
-import 'package:eduplay/screens/home/dashboard/subject_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../models/continue_learning_model.dart';
-import '../../../models/subjects_model.dart';
-import '../../../widgets/filter_sheet.dart';
+import '../subjects/subject_repo.dart';
+import '../subjects/subjects_model.dart';
 import '../../profile/create_child_profile/repo/create_child_profile_repo.dart';
 import '../../profile/profile_switcher/models/child_profile_model.dart';
 import 'continue_learn_repo.dart';
-
-enum SubjectFilter { all, notStarted, inProgress, completed }
 
 class DashboardController extends GetxController {
   final SubjectRepository _subjectRepo = SubjectRepository();
@@ -24,43 +21,26 @@ class DashboardController extends GetxController {
   final Rx<String?> avatarUrl = Rx<String?>(null);
   final RxBool isAvatarLoading = true.obs;
 
-  var subjects = <SubjectsModel>[].obs;
-  var dashboardSubjects = <SubjectsModel>[].obs;
-  var continueLearning = <ContinueLearningModel>[].obs;
-  var isSubjectsLoading = true.obs;
-  var isLessonLoading = true.obs;
+  var dashboardSubjects = <SubjectModel>[].obs;
+  var isDashboardSubjectsLoading = true.obs;
   var errorSubjectMessage = ''.obs;
-  var errorLessonMessage = ''.obs;
-  var activeFilter = SubjectFilter.all.obs;
-  final searchController = TextEditingController();
-  var searchQuery = ''.obs;
 
-  var filteredSubjects = <SubjectsModel>[].obs;
+  var continueLearning = <ContinueLearningModel>[].obs;
+  var isLessonLoading = true.obs;
+  var errorLessonMessage = ''.obs;
+
+  late final Worker _activeChildWorker;
 
   @override
   void onInit() {
     super.onInit();
     child.value = _session.activeChild.value;
     _loadAvatarUrl();
-
-    ever<ChildProfileModel?>(_session.activeChild, (updatedChild) {
+    _fetchDashboardSubjects();
+    _activeChildWorker = ever(_session.activeChild, (updatedChild) {
       child.value = updatedChild;
       _loadAvatarUrl();
-    });
-
-    fetchSubjects();
-    fetchLessons();
-
-    ever(Get.find<SessionController>().currentStandard, (_) {
-      fetchSubjects();
-      fetchLessons();
-    });
-
-    ever(subjects, (_) => _applyFilter());
-    ever(activeFilter, (_) => _applyFilter());
-    searchController.addListener(() {
-      searchQuery.value = searchController.text;
-      _applyFilter();
+      _fetchDashboardSubjects();
     });
   }
 
@@ -72,9 +52,9 @@ class DashboardController extends GetxController {
       return;
     }
 
+    isAvatarLoading.value = true;
     try {
       final url = await _childRepo.getAvatarSignedUrl(path);
-
       if (child.value?.avatar == path) {
         avatarUrl.value = url;
       }
@@ -90,81 +70,36 @@ class DashboardController extends GetxController {
     }
   }
 
-  void _applyFilter() {
-    final query = searchQuery.value.trim().toLowerCase();
+  Future<void> _fetchDashboardSubjects() async {
+    final currentChild = child.value;
+    final curriculumId = currentChild?.curriculumId;
+    final standardId = currentChild?.standard?.id;
 
-    var result = subjects.toList();
-
-    if (query.isNotEmpty) {
-      result = result
-          .where((s) => s.subjectTitle.toLowerCase().contains(query))
-          .toList();
+    if (curriculumId == null || standardId == null) {
+      dashboardSubjects.value = [];
+      isDashboardSubjectsLoading.value = false;
+      return;
     }
 
-    switch (activeFilter.value) {
-      case SubjectFilter.notStarted:
-        result = result.where((s) => (s.progressPercent ?? 0) == 0).toList();
-        break;
-      case SubjectFilter.inProgress:
-        result = result
-            .where(
-              (s) =>
-                  (s.progressPercent ?? 0) > 0 &&
-                  (s.progressPercent ?? 0) < 100,
-            )
-            .toList();
-        break;
-      case SubjectFilter.completed:
-        result = result.where((s) => (s.progressPercent ?? 0) == 100).toList();
-        break;
-      case SubjectFilter.all:
-        break;
-    }
-
-    filteredSubjects.value = result;
-  }
-
-  void setFilter(SubjectFilter filter) {
-    activeFilter.value = filter;
-    _applyFilter();
-  }
-
-  void showFilterSheet() {
-    Get.bottomSheet(
-      FilterSheet(),
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-    );
-  }
-
-  void clearSearch() {
-    searchController.clear();
-    searchQuery.value = '';
-    _applyFilter();
-  }
-
-  Future<void> fetchSubjects() async {
     try {
-      isSubjectsLoading.value = true;
+      isDashboardSubjectsLoading.value = true;
       errorSubjectMessage.value = '';
-      final allSubjects = await _subjectRepo.getSubjects();
 
-      subjects.value = allSubjects;
+      final allSubjects = await _subjectRepo.getSubjects(
+        curriculumId: curriculumId,
+        standardId: standardId,
+      );
 
-      dashboardSubjects.value = List.of(allSubjects)
-        ..sort((a, b) => b.progressPercent.compareTo(a.progressPercent));
-
-      dashboardSubjects.value = dashboardSubjects.take(3).toList();
+      // TODO: once child_progress_summary exists, sort by progress and take
+      // the top 3 (e.g. subjects the child is mid-way through). For now,
+      // there's no progress data to sort by, so this is just "first 3".
+      dashboardSubjects.value = allSubjects.take(3).toList();
     } catch (e) {
       errorSubjectMessage.value = 'Could not load subjects';
     } finally {
-      isSubjectsLoading.value = false;
+      isDashboardSubjectsLoading.value = false;
     }
   }
-
-  // void onSubjectTap(SubjectsModel subject) {
-  //   Get.toNamed(AppRoutes.subjectHome, arguments: {'subject': subject});
-  // }
 
   Future<void> fetchLessons() async {
     try {
@@ -178,13 +113,9 @@ class DashboardController extends GetxController {
     }
   }
 
-  // void onLessonTap(ContinueLearningModel lessons) {
-  //   Get.toNamed(AppRoutes.lessonsHome, arguments: {'lesson': lesson});
-  // }
-
   @override
   void onClose() {
-    // searchController.dispose(); uncomment after adding API, cause currently it dispose and cause error
+    _activeChildWorker.dispose();
     super.onClose();
   }
 }

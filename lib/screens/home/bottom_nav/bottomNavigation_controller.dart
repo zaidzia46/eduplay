@@ -1,10 +1,11 @@
+import 'package:eduplay/screens/home/subjects/subjects_controller.dart';
 import 'package:get/get.dart';
 
 import '../dashboard/dashboard_controller.dart';
 
 class BottomNavController extends GetxController {
   var currentIndex = 0.obs;
-  final vm = Get.find<DashboardController>();
+  final vm = Get.find<SubjectsController>();
 
   void changePage(int index) {
     currentIndex.value = index;

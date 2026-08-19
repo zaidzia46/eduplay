@@ -15,7 +15,6 @@ class SubjectProgressRowSkeleton extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Avatar placeholder
           Container(
             width: 44,
             height: 44,
@@ -39,7 +38,6 @@ class SubjectProgressRowSkeleton extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                // "X / Y Lessons" placeholder
                 Container(
                   width: 80,
                   height: 10,
@@ -49,7 +47,6 @@ class SubjectProgressRowSkeleton extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                // Progress bar placeholder
                 Container(
                   width: double.infinity,
                   height: 6,
@@ -62,7 +59,6 @@ class SubjectProgressRowSkeleton extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          // Percent text placeholder
           Container(
             width: 30,
             height: 14,

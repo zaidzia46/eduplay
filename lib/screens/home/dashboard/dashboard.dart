@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eduplay/routes/app_routes.dart';
+import 'package:eduplay/screens/home/subjects/subjects_controller.dart';
 import 'package:eduplay/theme/app_colors.dart';
 import 'package:eduplay/widgets/title_row.dart';
 import 'package:flutter/material.dart';
@@ -11,9 +12,10 @@ import '../../profile/widgets/skeleton_avatar_loader.dart';
 import '../../../widgets/circular_loader.dart';
 import '../../../widgets/continue_learning_card.dart';
 import '../../../widgets/streak_card.dart';
-import '../../../widgets/subject_progress_row.dart';
+import '../subjects/widgets/subject_progress_row.dart';
 import '../bottom_nav/bottomNavigation_controller.dart';
 import '../progress/progress_controller.dart';
+import '../subjects/widgets/subject_progress_row_skeleton.dart';
 import 'dashboard_controller.dart';
 
 class DashBoard extends StatefulWidget {
@@ -26,6 +28,7 @@ class DashBoard extends StatefulWidget {
 class _DashBoardState extends State<DashBoard>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   final vm = Get.find<DashboardController>();
+  final subjectController = Get.find<SubjectsController>();
   final bottomNavConn = Get.find<BottomNavController>();
   late final AnimationController _controller;
   late final Worker _worker;
@@ -231,7 +234,8 @@ class _DashBoardState extends State<DashBoard>
                             child: ElevatedButton(
                               onPressed: () {
                                 bottomNavConn.currentIndex.value = 1;
-                                vm.activeFilter.value = SubjectFilter.all;
+                                subjectController.activeFilter.value =
+                                    SubjectFilter.all;
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primary,
@@ -281,13 +285,14 @@ class _DashBoardState extends State<DashBoard>
                             title: 'Choose a Subject',
                             onTap: () {
                               bottomNavConn.currentIndex.value = 1;
-                              vm.activeFilter.value = SubjectFilter.all;
+                              subjectController.activeFilter.value =
+                                  SubjectFilter.all;
                             },
                           ),
                           SizedBox(
                             child: Obx(() {
-                              if (vm.isSubjectsLoading.value) {
-                                return CircularLoader();
+                              if (subjectController.isSubjectsLoading.value) {
+                                return SubjectProgressListSkeleton();
                               }
 
                               if (vm.errorSubjectMessage.isNotEmpty) {
@@ -304,7 +309,7 @@ class _DashBoardState extends State<DashBoard>
                                     subject: subject,
                                     onTap: () {
                                       Get.toNamed(
-                                        AppRoutes.topics,
+                                        AppRoutes.chapters,
                                         arguments: {'subject': subject},
                                       );
                                     },
@@ -318,73 +323,74 @@ class _DashBoardState extends State<DashBoard>
                             title: 'Continue Learning',
                             onTap: () {
                               bottomNavConn.currentIndex.value = 1;
-                              vm.activeFilter.value = SubjectFilter.inProgress;
+                              subjectController.activeFilter.value =
+                                  SubjectFilter.inProgress;
                             },
                           ),
-                          SizedBox(
-                            height: 124,
-                            child: Obx(() {
-                              if (vm.isLessonLoading.value) {
-                                return CircularLoader();
-                              }
-
-                              if (vm.errorLessonMessage.isNotEmpty) {
-                                return Center(
-                                  child: Text(vm.errorLessonMessage.value),
-                                );
-                              }
-
-                              if (vm.continueLearning.isEmpty) {
-                                return Container(
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                  ),
-                                  padding: const EdgeInsets.all(20),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.surfaceAlt,
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(color: AppColors.border),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Lottie.asset(
-                                        'assets/animations/sleep_cat.json',
-                                      ),
-                                      const SizedBox(width: 16),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'No lessons in progress',
-                                              style: AppTextStyles.h4,
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              'Pick a subject above and start\nyour learning!',
-                                              style:
-                                                  AppTextStyles.bodySecondary,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }
-
-                              return ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: vm.continueLearning.length,
-                                itemBuilder: (context, index) {
-                                  return ContinueLearningCard(
-                                    item: vm.continueLearning[index],
-                                  );
-                                },
-                              );
-                            }),
-                          ),
+                          // SizedBox(
+                          //   height: 124,
+                          //   child: Obx(() {
+                          //     if (vm.isLessonLoading.value) {
+                          //       return CircularLoader();
+                          //     }
+                          //
+                          //     if (vm.errorLessonMessage.isNotEmpty) {
+                          //       return Center(
+                          //         child: Text(vm.errorLessonMessage.value),
+                          //       );
+                          //     }
+                          //
+                          //     if (vm.continueLearning.isEmpty) {
+                          //       return Container(
+                          //         margin: const EdgeInsets.symmetric(
+                          //           horizontal: 12,
+                          //         ),
+                          //         padding: const EdgeInsets.all(20),
+                          //         decoration: BoxDecoration(
+                          //           color: AppColors.surfaceAlt,
+                          //           borderRadius: BorderRadius.circular(16),
+                          //           border: Border.all(color: AppColors.border),
+                          //         ),
+                          //         child: Row(
+                          //           children: [
+                          //             Lottie.asset(
+                          //               'assets/animations/sleep_cat.json',
+                          //             ),
+                          //             const SizedBox(width: 16),
+                          //             Expanded(
+                          //               child: Column(
+                          //                 crossAxisAlignment:
+                          //                     CrossAxisAlignment.start,
+                          //                 children: [
+                          //                   Text(
+                          //                     'No lessons in progress',
+                          //                     style: AppTextStyles.h4,
+                          //                   ),
+                          //                   const SizedBox(height: 4),
+                          //                   Text(
+                          //                     'Pick a subject above and start\nyour learning!',
+                          //                     style:
+                          //                         AppTextStyles.bodySecondary,
+                          //                   ),
+                          //                 ],
+                          //               ),
+                          //             ),
+                          //           ],
+                          //         ),
+                          //       );
+                          //     }
+                          //
+                          //     return ListView.builder(
+                          //       scrollDirection: Axis.horizontal,
+                          //       itemCount: vm.continueLearning.length,
+                          //       itemBuilder: (context, index) {
+                          //         return ContinueLearningCard(
+                          //           item: vm.continueLearning[index],
+                          //         );
+                          //       },
+                          //     );
+                          //   }),
+                          // ),
                         ],
                       ),
                     ),

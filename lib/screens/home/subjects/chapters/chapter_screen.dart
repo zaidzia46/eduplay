@@ -1,17 +1,17 @@
-import 'package:eduplay/screens/home/topics/topic_controller.dart';
 import 'package:eduplay/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../theme/app_text_styles.dart';
-import '../../../widgets/circular_loader.dart';
-import '../../../widgets/topic_card.dart';
-import '../../../widgets/topics_banner_background.dart';
+import '../../../../theme/app_text_styles.dart';
+import '../../../../widgets/circular_loader.dart';
+import '../../../../widgets/topic_card.dart';
+import '../../../../widgets/topics_banner_background.dart';
+import 'chapter_controller.dart';
 
-class TopicScreen extends StatelessWidget {
-  TopicScreen({super.key});
+class ChapterScreen extends StatelessWidget {
+  ChapterScreen({super.key});
 
-  final vm = Get.find<TopicController>();
+  final vm = Get.find<ChapterController>();
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +30,14 @@ class TopicScreen extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
-                        color: vm.subject.buttonColor,
+                        color: vm.subject.colorHex,
                       ),
                       child: Row(
                         children: [
                           Container(
                             width: 40,
                             decoration: BoxDecoration(
-                              color: vm.subject.buttonColor.withOpacity(0.5),
+                              color: vm.subject.colorHex.withOpacity(0.5),
                               shape: BoxShape.circle,
                             ),
                             child: IconButton(
@@ -56,7 +56,7 @@ class TopicScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  vm.subject.subjectTitle,
+                                  vm.subject.name,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: AppTextStyles.h2.copyWith(
@@ -75,9 +75,13 @@ class TopicScreen extends StatelessWidget {
                           const SizedBox(width: 10),
                           SizedBox(
                             width: 90,
-                            child: Image.asset(
-                              'assets/images/${vm.subject.imageUrl}',
-                            ),
+                            child: vm.subject.iconPath != null
+                                ? Image.asset(
+                                    'assets/images/${vm.subject.iconPath}',
+                                    errorBuilder: (_, __, ___) =>
+                                        const SizedBox.shrink(),
+                                  )
+                                : const SizedBox.shrink(),
                           ),
                         ],
                       ),
@@ -95,23 +99,15 @@ class TopicScreen extends StatelessWidget {
 
                         return ListView.separated(
                           padding: EdgeInsets.zero,
-                          itemCount: vm.topics.length,
+                          itemCount: vm.chapters.length,
                           separatorBuilder: (_, __) =>
                               const SizedBox(height: 6),
                           itemBuilder: (context, index) {
-                            final topic = vm.topics[index];
+                            final chapter = vm.chapters[index];
 
-                            final colors = [
-                              Color(0xffF3E8FF),
-                              Color(0xffDCFCE7),
-                              Color(0xffDBEAFE),
-                              Color(0xffFDE68A),
-                              Color(0xffFCE7F3),
-                            ];
                             return TopicCard(
-                              topic: topic,
-                              // CardtColor: colors[index % colors.length],
-                              accentColor: vm.subject.buttonColor,
+                              topic: chapter,
+                              accentColor: vm.subject.colorHex,
                             );
                           },
                         );
@@ -127,9 +123,9 @@ class TopicScreen extends StatelessWidget {
                 topRight: Radius.circular(40),
               ),
               child: TopicBannerBackground(
-                startColor: vm.subject.buttonColor.withOpacity(0.5),
-                endColor: vm.subject.buttonColor.withOpacity(0.5),
-                starColor: vm.subject.buttonColor,
+                startColor: vm.subject.colorHex.withOpacity(0.5),
+                endColor: vm.subject.colorHex.withOpacity(0.5),
+                starColor: vm.subject.colorHex,
               ),
             ),
           ],

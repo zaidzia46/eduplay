@@ -14,6 +14,7 @@ class ChildProfileRepository {
           total_stars, current_streak, longest_streak,
           child_standard_enrollment(
             is_current,
+            curriculum_id,
             institutes(id, name),
             standards(id, name, sort_order)
           )

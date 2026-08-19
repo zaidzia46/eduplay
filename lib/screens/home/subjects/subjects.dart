@@ -1,15 +1,14 @@
+import 'package:eduplay/screens/home/subjects/subjects_controller.dart';
 import 'package:eduplay/screens/home/subjects/widgets/subject_progress_row_skeleton.dart';
-import 'package:eduplay/widgets/circular_loader.dart';
-import 'package:eduplay/widgets/subject_progress_row.dart';
+import 'package:eduplay/screens/home/subjects/widgets/subject_progress_row.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
-import '../../../widgets/empty_search.dart';
+import 'widgets/empty_search.dart';
 import '../../../widgets/staggered_anime.dart';
 import '../bottom_nav/bottomNavigation_controller.dart';
-import '../dashboard/dashboard_controller.dart';
 
 class SubjectView extends StatefulWidget {
   const SubjectView({super.key});
@@ -21,6 +20,7 @@ class SubjectView extends StatefulWidget {
 class _SubjectViewState extends State<SubjectView>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late final AnimationController _controller;
+  late final TextEditingController _searchController;
   late final Worker _tabWorker;
   late final Worker _loadingWorker;
   bool _hasAnimated = false;
@@ -31,14 +31,14 @@ class _SubjectViewState extends State<SubjectView>
   @override
   void initState() {
     super.initState();
-    final vm = Get.find<DashboardController>();
+    final vm = Get.find<SubjectsController>();
+    _searchController = TextEditingController();
 
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 700),
     );
 
-    // fire once data finishes loading (covers first load)
     _loadingWorker = ever(vm.isSubjectsLoading, (isLoading) {
       if (!isLoading && !_hasAnimated) {
         _controller.forward(from: 0);
@@ -46,7 +46,6 @@ class _SubjectViewState extends State<SubjectView>
       }
     });
 
-    // if data was already loaded before this screen was built, catch that case
     if (!vm.isSubjectsLoading.value) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!_hasAnimated) {
@@ -56,7 +55,6 @@ class _SubjectViewState extends State<SubjectView>
       });
     }
 
-    // replay stagger every time user comes back to this tab
     _tabWorker = ever(Get.find<BottomNavController>().currentIndex, (index) {
       if (index == 1 && !vm.isSubjectsLoading.value) {
         _controller.forward(from: 0);
@@ -69,13 +67,14 @@ class _SubjectViewState extends State<SubjectView>
     _tabWorker.dispose();
     _loadingWorker.dispose();
     _controller.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final vm = Get.find<DashboardController>();
+    final vm = Get.find<SubjectsController>();
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
@@ -98,7 +97,8 @@ class _SubjectViewState extends State<SubjectView>
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: TextField(
-                      controller: vm.searchController,
+                      controller: _searchController,
+                      onChanged: vm.updateSearchQuery,
                       cursorColor: AppColors.primary,
                       decoration: InputDecoration(
                         hintText: 'Search subjects...',
@@ -109,11 +109,13 @@ class _SubjectViewState extends State<SubjectView>
                           Icons.search,
                           color: AppColors.primary,
                         ),
-                        // Show clear button when typing
                         suffixIcon: Obx(
                           () => vm.searchQuery.value.isNotEmpty
                               ? GestureDetector(
-                                  onTap: vm.clearSearch,
+                                  onTap: () {
+                                    _searchController.clear();
+                                    vm.clearSearch();
+                                  },
                                   child: Icon(
                                     Icons.close,
                                     color: AppColors.textMuted,
@@ -230,7 +232,7 @@ class _SubjectViewState extends State<SubjectView>
                       subject: subject,
                       onTap: () {
                         Get.toNamed(
-                          AppRoutes.topics,
+                          AppRoutes.chapters,
                           arguments: {'subject': subject},
                         );
                       },

@@ -3,13 +3,12 @@ import 'dart:developer';
 import 'package:eduplay/controller/session_controller.dart';
 import 'package:eduplay/screens/home/progress/recent_act_repo.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 
 import '../../../models/activity_category_model.dart';
 import '../../../models/progress_stat_model.dart';
 import '../../../models/recent_act_model.dart';
-import '../../../models/subjects_model.dart';
-import '../dashboard/subject_repo.dart';
+import '../subjects/subject_repo.dart';
+import '../subjects/subjects_model.dart';
 import 'activitybreakdown_repo.dart';
 import 'progress_stats_repo.dart';
 
@@ -20,7 +19,7 @@ class ProgressController extends GetxController {
   final ActivityBreakdownRepository _breakdownRepo =
       ActivityBreakdownRepository();
 
-  var subjects = <SubjectsModel>[].obs;
+  var subjects = <SubjectModel>[].obs;
   var stats = Rxn<ProgressStatsModel>();
   var recentActivity = <RecentActivityModel>[].obs;
   var activityBreakdown = <ActivityCategoryModel>[].obs;
@@ -41,7 +40,7 @@ class ProgressController extends GetxController {
       isLoading.value = true;
       errorMessage.value = '';
 
-      subjects.value = await _subjectRepo.getSubjects();
+      // subjects.value = await _subjectRepo.getSubjects();
       stats.value = await _statsRepo.getStats(subjects);
       recentActivity.value = await _activityRepo.getRecentActivity(limit: 5);
       activityBreakdown.value = await _breakdownRepo.getBreakdown();

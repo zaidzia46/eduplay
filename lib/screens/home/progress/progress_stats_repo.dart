@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import '../../../models/progress_stat_model.dart';
-import '../../../models/subjects_model.dart';
+import '../subjects/subjects_model.dart';
 
 class ProgressStatsRepository {
   // Right now: loads progress_stats.json for the genuinely-new fields
@@ -18,7 +18,7 @@ class ProgressStatsRepository {
   // `childId` defaults to the active session child, same pattern as
   // SubjectRepository, so existing call sites don't need to change.
   Future<ProgressStatsModel> getStats(
-    List<SubjectsModel> subjects, {
+    List<SubjectModel> subjects, {
     int? childId,
   }) async {
     final resolvedChildId =
@@ -33,18 +33,18 @@ class ProgressStatsRepository {
         ? null
         : statsByChild['$resolvedChildId'];
 
-    final totalLessons = subjects.fold<int>(0, (sum, s) => sum + s.lessonCount);
-    final completedLessons = subjects.fold<int>(
-      0,
-      (sum, s) => sum + s.completedLessonCount,
-    );
-    final overallPercent = totalLessons == 0
-        ? 0
-        : ((completedLessons / totalLessons) * 100).round();
+    // final totalLessons = subjects.fold<int>(0, (sum, s) => sum + s.lessonCount);
+    // final completedLessons = subjects.fold<int>(
+    //   0,
+    //   (sum, s) => sum + s.completedLessonCount,
+    // );
+    // final overallPercent = totalLessons == 0
+    //     ? 0
+    //     : ((completedLessons / totalLessons) * 100).round();
 
     return ProgressStatsModel(
-      overallPercent: overallPercent,
-      lessonsCompleted: completedLessons,
+      overallPercent: 0,
+      lessonsCompleted: 0,
       starsEarned: data?['stars_earned'] ?? 0,
       daysActive: data?['days_active'] ?? 0,
       badgesEarned: data?['badges_earned'] ?? 0,

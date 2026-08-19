@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../screens/home/dashboard/dashboard_controller.dart';
-import '../theme/app_text_styles.dart';
+import '../../dashboard/dashboard_controller.dart';
+import '../subjects_controller.dart';
+import '../../../../theme/app_text_styles.dart';
 
 class EmptySearch extends StatelessWidget {
   final String query;

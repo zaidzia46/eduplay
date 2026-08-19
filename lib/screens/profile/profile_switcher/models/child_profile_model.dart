@@ -10,8 +10,13 @@ class ChildProfileModel {
   final int currentStreak;
   final int longestStreak;
 
+  // Nullable now: a child could theoretically have no current enrollment
+  // row (e.g. it failed to insert after the child was created — see the
+  // note in ChildProfileRepository.createChild). Handle null in the UI
+  // rather than assuming it's always present.
   final StandardModel? standard;
   final InstitutionModel? institution;
+  final int? curriculumId;
 
   final int overallPercent;
 
@@ -25,6 +30,7 @@ class ChildProfileModel {
     this.longestStreak = 0,
     this.standard,
     this.institution,
+    this.curriculumId,
     this.overallPercent = 0,
   });
 
@@ -58,6 +64,7 @@ class ChildProfileModel {
               current!['institutes'] as Map<String, dynamic>,
             )
           : null,
+      curriculumId: current?['curriculum_id'] as int?,
     );
   }
 
@@ -67,6 +74,7 @@ class ChildProfileModel {
     StandardModel? standard,
     InstitutionModel? institution,
     String? avatarPath,
+    int? curriculumId,
   }) {
     return ChildProfileModel(
       id: id,
@@ -78,6 +86,7 @@ class ChildProfileModel {
       longestStreak: longestStreak,
       standard: standard ?? this.standard,
       institution: institution ?? this.institution,
+      curriculumId: curriculumId ?? this.curriculumId,
       overallPercent: overallPercent,
     );
   }
@@ -95,15 +104,11 @@ class ChildProfileModel {
       longestStreak: longestStreak,
       standard: standard,
       institution: institution,
+      curriculumId: curriculumId,
       overallPercent: overallPercent,
     );
   }
 
-  // --- Local-storage (GetStorage) caching, kept separate from fromJson ---
-  // fromJson() above expects Supabase's nested join shape
-  // (child_standard_enrollment as a list). A cached blob round-tripped
-  // through GetStorage is flat, so it needs its own pair to avoid the two
-  // shapes silently colliding.
   Map<String, dynamic> toCacheJson() {
     return {
       'id': id,
@@ -124,6 +129,7 @@ class ChildProfileModel {
       'institution': institution == null
           ? null
           : {'id': institution!.id, 'name': institution!.name},
+      'curriculum_id': curriculumId,
     };
   }
 
@@ -145,6 +151,7 @@ class ChildProfileModel {
               json['institution'] as Map<String, dynamic>,
             )
           : null,
+      curriculumId: json['curriculum_id'] as int?,
     );
   }
 }

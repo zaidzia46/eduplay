@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../models/topics_model.dart';
+import '../screens/home/subjects/chapters/chapter_models.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 
 class TopicCard extends StatelessWidget {
-  final TopicModel topic;
+  final ChapterModel topic;
   final Color accentColor;
   final VoidCallback? onTap;
 
@@ -43,7 +43,7 @@ class TopicCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    topic.topic,
+                    topic.title,
                     style: AppTextStyles.label.copyWith(
                       color: AppColors.textPrimary,
                     ),

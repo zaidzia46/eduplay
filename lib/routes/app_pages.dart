@@ -1,4 +1,5 @@
 import 'package:eduplay/screens/home/progress/progress_bin.dart';
+import 'package:eduplay/screens/home/subjects/subjects_bin.dart';
 import 'package:get/get.dart';
 import 'package:eduplay/routes/app_routes.dart';
 
@@ -12,8 +13,8 @@ import '../screens/home/child_profile/profile_bin.dart';
 import '../screens/home/dashboard/dashboard_bin.dart';
 import '../screens/home/home.dart';
 import '../screens/home/progress/progress.dart';
-import '../screens/home/topics/topic_bin.dart';
-import '../screens/home/topics/topic_screen.dart';
+import '../screens/home/subjects/chapters/chapter_bin.dart';
+import '../screens/home/subjects/chapters/chapter_screen.dart';
 import '../screens/onboarding/onboarding_bin.dart';
 import '../screens/onboarding/onborading_screens/age_view.dart';
 import '../screens/onboarding/onborading_screens/name_view.dart';
@@ -86,15 +87,16 @@ abstract class AppPages {
       binding: BindingsBuilder(() {
         BottomNavBinding().dependencies();
         DashboardBinding().dependencies();
+        SubjectBinding().dependencies();
         ProgressBinding().dependencies();
         ChildProfileBinding().dependencies();
       }),
     ),
 
     GetPage(
-      name: AppRoutes.topics,
-      page: () => TopicScreen(),
-      binding: TopicBinding(),
+      name: AppRoutes.chapters,
+      page: () => ChapterScreen(),
+      binding: ChapterBinding(),
       transition: Transition.fadeIn,
     ),
   ];
