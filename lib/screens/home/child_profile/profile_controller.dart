@@ -19,6 +19,8 @@ class ProfileViewModel extends GetxController {
   final Rx<String?> localPreviewPath = Rx<String?>(null);
   final RxBool isUploadingAvatar = false.obs;
 
+  final RxBool avatarChanged = false.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -39,6 +41,7 @@ class ProfileViewModel extends GetxController {
 
     final pickedPath = await ImagePickerService.pickImage(ImageSource.gallery);
     if (pickedPath == null) return;
+    avatarChanged.value = !avatarChanged.value;
 
     localPreviewPath.value = pickedPath;
     isUploadingAvatar.value = true;
