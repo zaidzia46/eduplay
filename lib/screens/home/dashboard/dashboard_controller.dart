@@ -17,7 +17,6 @@ class DashboardController extends GetxController {
   final LessonRepository _lessonRepo = LessonRepository();
   final ChildProfileRepository _childRepo = ChildProfileRepository();
   final SessionController _session = Get.find<SessionController>();
-  final ProfileViewModel _profileVm = Get.find<ProfileViewModel>();
 
   final Rx<ChildProfileModel?> child = Rx<ChildProfileModel?>(null);
   final Rx<String?> avatarUrl = Rx<String?>(null);

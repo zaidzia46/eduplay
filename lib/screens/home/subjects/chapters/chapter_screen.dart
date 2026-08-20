@@ -90,7 +90,9 @@ class ChapterScreen extends StatelessWidget {
                     Expanded(
                       child: Obx(() {
                         if (vm.isLoading.value) {
-                          return Center(child: CircularLoader());
+                          return Center(
+                            child: CircularLoader(color: vm.subject.colorHex),
+                          );
                         }
 
                         if (vm.error.value.isNotEmpty) {

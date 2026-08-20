@@ -10,6 +10,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../routes/app_routes.dart';
 import '../../core/supabase_client.dart';
 import '../../fns/image_picker_service.dart';
+import '../home/dashboard/dashboard_controller.dart';
 import '../profile/create_child_profile/repo/create_child_profile_repo.dart';
 import '../profile/profile_switcher/profile_switcher_controller.dart';
 
@@ -136,6 +137,7 @@ class ParentSettingsController extends GetxController {
   Future<void> logout() async {
     await session.logout();
     Get.delete<ProfileSwitcherViewModel>(force: true);
+    Get.delete<DashboardController>(force: true);
     ChildProfileRepository.clearCache();
     ParentRepository.clearCache();
 
