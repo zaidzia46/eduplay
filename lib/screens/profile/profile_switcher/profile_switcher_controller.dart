@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:eduplay/controller/session_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -34,6 +36,7 @@ class ProfileSwitcherViewModel extends GetxController {
       errorMessage.value = '';
 
       final fetchedChildren = await _repo.getChildren();
+      log("Fetched Children: $fetchedChildren");
 
       starsByChild.value = {
         for (final c in fetchedChildren) c.id: c.totalStars,

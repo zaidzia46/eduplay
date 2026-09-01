@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
@@ -64,6 +66,14 @@ class SessionController extends GetxController {
       await setCurrentStandard(child.standard!);
     }
     await _box.write(_activeChildKey, child.toCacheJson());
+  }
+
+  Future<void> updateActiveChildStars(int totalStars) async {
+    final current = activeChild.value;
+    if (current == null) return;
+    final updated = current.copyWithStars(totalStars: totalStars);
+    activeChild.value = updated;
+    await _box.write(_activeChildKey, updated.toCacheJson());
   }
 
   Future<void> clearActiveChild() async {

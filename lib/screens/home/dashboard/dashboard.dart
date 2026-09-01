@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eduplay/routes/app_routes.dart';
 import 'package:eduplay/widgets/expanded_avatar.dart';
@@ -40,6 +42,7 @@ class _DashBoardState extends State<DashBoard>
   @override
   void initState() {
     super.initState();
+    log("updated child: ${vm.child.value?.totalStars}");
 
     _controller = AnimationController(
       vsync: this,
@@ -188,7 +191,7 @@ class _DashBoardState extends State<DashBoard>
                             ),
                             const SizedBox(width: 5),
                             StreakCard(
-                              num: stats?.starsEarned ?? 0,
+                              num: vm.child.value?.totalStars ?? 0,
                               image: const Image(
                                 image: AssetImage('assets/images/star.png'),
                                 fit: BoxFit.cover,

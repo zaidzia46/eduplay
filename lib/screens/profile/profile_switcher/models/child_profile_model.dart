@@ -5,15 +5,11 @@ class ChildProfileModel {
   final int id;
   final String name;
   final String username;
-  final String? avatar; // storage PATH, not a URL — see note in repo
+  final String? avatar;
   final int totalStars;
   final int currentStreak;
   final int longestStreak;
 
-  // Nullable now: a child could theoretically have no current enrollment
-  // row (e.g. it failed to insert after the child was created — see the
-  // note in ChildProfileRepository.createChild). Handle null in the UI
-  // rather than assuming it's always present.
   final StandardModel? standard;
   final InstitutionModel? institution;
   final int? curriculumId;
@@ -91,8 +87,22 @@ class ChildProfileModel {
     );
   }
 
-  // overallPercent still comes from the switcher controller until
-  // child_progress_summary exists — same role as before.
+  ChildProfileModel copyWithStars({required int totalStars}) {
+    return ChildProfileModel(
+      id: id,
+      name: name,
+      username: username,
+      avatar: avatar,
+      totalStars: totalStars,
+      currentStreak: currentStreak,
+      longestStreak: longestStreak,
+      standard: standard,
+      institution: institution,
+      curriculumId: curriculumId,
+      overallPercent: overallPercent,
+    );
+  }
+
   ChildProfileModel copyWithProgress({required int overallPercent}) {
     return ChildProfileModel(
       id: id,

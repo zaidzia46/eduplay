@@ -15,6 +15,10 @@ import '../screens/home/home.dart';
 import '../screens/home/progress/progress.dart';
 import '../screens/home/subjects/chapters/chapter_bin.dart';
 import '../screens/home/subjects/chapters/chapter_screen.dart';
+import '../screens/home/subjects/chapters/quiz/quiz_bin.dart';
+import '../screens/home/subjects/chapters/quiz/quiz_screen.dart';
+import '../screens/home/subjects/chapters/quiz_list/quiz_list_bin.dart';
+import '../screens/home/subjects/chapters/quiz_list/quiz_list_screen.dart';
 import '../screens/onboarding/onboarding_bin.dart';
 import '../screens/onboarding/onborading_screens/age_view.dart';
 import '../screens/onboarding/onborading_screens/name_view.dart';
@@ -97,6 +101,20 @@ abstract class AppPages {
       name: AppRoutes.chapters,
       page: () => ChapterScreen(),
       binding: ChapterBinding(),
+      transition: Transition.fadeIn,
+    ),
+
+    GetPage(
+      name: AppRoutes.quizList,
+      page: () => QuizListScreen(),
+      binding: QuizListBinding(),
+      transition: Transition.fadeIn,
+    ),
+
+    GetPage(
+      name: AppRoutes.quiz,
+      page: () => QuizScreen(),
+      binding: QuizBinding(),
       transition: Transition.fadeIn,
     ),
   ];

@@ -9,6 +9,8 @@ abstract class AppRoutes {
   static const String createProfile = '/create-profile';
   static const home = '/home';
   static const chapters = '/chapters';
+  static const quizList = '/quiz-list';
+  static const quiz = '/quiz';
   static const String progress = '/progress';
   static const String parentSettings = '/parent-settings';
 }

@@ -2,6 +2,7 @@ import 'package:eduplay/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../../../routes/app_routes.dart';
 import '../../../../theme/app_text_styles.dart';
 import '../../../../widgets/circular_loader.dart';
 import '../../../../widgets/topic_card.dart';
@@ -110,6 +111,16 @@ class ChapterScreen extends StatelessWidget {
                             return TopicCard(
                               topic: chapter,
                               accentColor: vm.subject.colorHex,
+                              onTap: () {
+                                Get.toNamed(
+                                  AppRoutes.quizList,
+                                  arguments: {
+                                    'chapterId': chapter.id,
+                                    'chapterTitle': chapter.title,
+                                    'accentColor': vm.subject.colorHex,
+                                  },
+                                );
+                              },
                             );
                           },
                         );

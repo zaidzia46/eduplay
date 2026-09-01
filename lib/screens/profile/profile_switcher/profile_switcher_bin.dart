@@ -3,13 +3,11 @@ import 'package:get/get_instance/src/bindings_interface.dart';
 import 'package:get/get.dart';
 
 import '../../parent_settings/parent_settings_controller.dart';
-import '../create_child_profile/create_child_profile_controller.dart';
 
 class ProfileSwitcherBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<ProfileSwitcherViewModel>(() => ProfileSwitcherViewModel());
-    Get.lazyPut<CreateProfileViewModel>(() => CreateProfileViewModel());
     Get.lazyPut<ParentSettingsController>(() => ParentSettingsController());
   }
 }
