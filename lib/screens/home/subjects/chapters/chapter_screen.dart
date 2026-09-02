@@ -7,6 +7,7 @@ import '../../../../theme/app_text_styles.dart';
 import '../../../../widgets/circular_loader.dart';
 import '../../../../widgets/topic_card.dart';
 import '../../../../widgets/topics_banner_background.dart';
+import '../widgets/chp_skeleton_loader.dart';
 import 'chapter_controller.dart';
 
 class ChapterScreen extends StatelessWidget {
@@ -91,9 +92,7 @@ class ChapterScreen extends StatelessWidget {
                     Expanded(
                       child: Obx(() {
                         if (vm.isLoading.value) {
-                          return Center(
-                            child: CircularLoader(color: vm.subject.colorHex),
-                          );
+                          return ChapterListSkeleton(itemCount: 3);
                         }
 
                         if (vm.error.value.isNotEmpty) {

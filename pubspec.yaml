@@ -17,7 +17,6 @@ dependencies:
   lottie: ^3.3.1
   font_awesome_flutter: ^10.9.1
   flutter_staggered_animations: ^1.1.1
-  flutter_svg: ^2.2.3
   shimmer_animation: ^2.2.2+1
   vector_math: ^2.1.4
   percent_indicator: ^4.2.5
@@ -30,6 +29,8 @@ dependencies:
   supabase_flutter: ^2.15.4
   cached_network_image: ^3.4.1
   collection: ^1.19.1
+  confetti: ^0.8.0
+  flutter_cache_manager: ^3.4.2
 
 dev_dependencies:
   flutter_test:

@@ -14,15 +14,6 @@ class QuizRepository {
         .toList();
   }
 
-  /// `quiz-content` is a public bucket — no signed URL needed, unlike
-  /// avatars. Synchronous and never expires.
-  ///
-  /// Some seed rows store the value with the bucket name baked in
-  /// (e.g. "quiz-content/math/dog.png"), while the app's convention elsewhere
-  /// is a bucket-relative key ("math/dog.png"). `getPublicUrl` already
-  /// prefixes the bucket, so a raw value would produce a doubled
-  /// "quiz-content/quiz-content/..." key that 404s. Strip any leading slash
-  /// and leading bucket segment so both forms resolve correctly.
   String getPublicImageUrl(String storagePath) {
     var path = storagePath.trim();
     if (path.startsWith('/')) path = path.substring(1);
@@ -39,7 +30,7 @@ class QuizRepository {
     required int totalQuestions,
     required int timeSpentSeconds,
   }) async {
-    final row = await supabase
+    final inserted = await supabase
         .from('quiz_attempts')
         .insert({
           'child_id': childId,
@@ -50,6 +41,13 @@ class QuizRepository {
         })
         .select()
         .single();
+
+    final row = await supabase
+        .from('quiz_attempts')
+        .select('stars_awarded')
+        .eq('id', inserted['id'])
+        .single();
+
     return row['stars_awarded'] as int?;
   }
 }

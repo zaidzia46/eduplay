@@ -6,6 +6,7 @@ import '../../../../../theme/app_colors.dart';
 import '../../../../../theme/app_text_styles.dart';
 import '../../../../../widgets/circular_loader.dart';
 import '../../../../../widgets/topics_banner_background.dart';
+import '../../widgets/quiz_skeleton_loader.dart';
 import 'quiz_list_controller.dart';
 import 'quiz_model.dart';
 
@@ -31,9 +32,7 @@ class QuizListScreen extends StatelessWidget {
                     Expanded(
                       child: Obx(() {
                         if (vm.isLoading.value) {
-                          return Center(
-                            child: CircularLoader(color: vm.accentColor),
-                          );
+                          return QuizListSkeleton(itemCount: 3);
                         }
 
                         if (vm.error.value.isNotEmpty) {

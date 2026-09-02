@@ -4,16 +4,17 @@ class QuestionModel {
   final int id;
   final QuestionType questionType;
   final String questionText;
-  final String?
-  questionImage; // storage path, optional image alongside the prompt
-  final List<QuestionOptionModel>? options; // mcq/true_false only
-  final List<String>? acceptedAnswers; // fill_blank only
+  final String? questionImage;
+  final List<QuestionOptionModel>? options;
+  final List<String>? acceptedAnswers;
   final String? explanation;
+  final int timeLimitSeconds;
 
   QuestionModel({
     required this.id,
     required this.questionType,
     required this.questionText,
+    required this.timeLimitSeconds,
     this.questionImage,
     this.options,
     this.acceptedAnswers,
@@ -36,6 +37,7 @@ class QuestionModel {
           .toList(),
       acceptedAnswers: acceptedJson?.map((e) => e as String).toList(),
       explanation: json['explanation'] as String?,
+      timeLimitSeconds: json['time_limit_seconds'] as int? ?? 20,
     );
   }
 }

@@ -297,6 +297,7 @@ class _DashBoardState extends State<DashBoard>
                                   SubjectFilter.all;
                             },
                           ),
+                          SizedBox(height: 8),
                           SizedBox(
                             child: Obx(() {
                               if (subjectController.isSubjectsLoading.value) {
@@ -326,15 +327,15 @@ class _DashBoardState extends State<DashBoard>
                               );
                             }),
                           ),
-                          SizedBox(height: 20),
-                          TitleRow(
-                            title: 'Continue Learning',
-                            onTap: () {
-                              bottomNavConn.currentIndex.value = 1;
-                              subjectController.activeFilter.value =
-                                  SubjectFilter.inProgress;
-                            },
-                          ),
+                          // SizedBox(height: 20),
+                          // TitleRow(
+                          //   title: 'Continue Learning',
+                          //   onTap: () {
+                          //     bottomNavConn.currentIndex.value = 1;
+                          //     subjectController.activeFilter.value =
+                          //         SubjectFilter.inProgress;
+                          //   },
+                          // ),
                           // SizedBox(
                           //   height: 124,
                           //   child: Obx(() {

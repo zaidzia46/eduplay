@@ -1,5 +1,7 @@
-import 'package:collection/collection.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get.dart';
 
 import '../../../../../controller/session_controller.dart';
@@ -31,6 +33,10 @@ class QuizController extends GetxController {
   var starsAwarded = Rxn<int>();
   var isSubmitting = false.obs;
 
+  var remainingSeconds = 0.obs;
+  var ranOutOfTime = false.obs;
+  Timer? _questionTimer;
+
   DateTime? _startedAt;
 
   @override
@@ -52,7 +58,11 @@ class QuizController extends GetxController {
 
       pool.shuffle();
       questions.value = pool.take(questionsPerAttempt).toList();
+
+      await _precacheQuestionImages(questions);
+
       _startedAt = DateTime.now();
+      _startQuestionTimer();
     } catch (e) {
       errorMessage.value = 'Could not load quiz. Please try again.';
     } finally {
@@ -60,11 +70,62 @@ class QuizController extends GetxController {
     }
   }
 
+  Future<void> _precacheQuestionImages(List<QuestionModel> selected) async {
+    final urls = <String>{};
+
+    for (final q in selected) {
+      if (q.questionImage != null) {
+        urls.add(_repo.getPublicImageUrl(q.questionImage!));
+      }
+      for (final option in q.options ?? const []) {
+        if (option.type == 'image') {
+          urls.add(_repo.getPublicImageUrl(option.value));
+        }
+      }
+    }
+
+    await Future.wait(
+      urls.map((url) async {
+        try {
+          await DefaultCacheManager().downloadFile(url);
+        } catch (_) {
+          // Swallowed on purpose: CachedNetworkImage will just show its
+          // errorWidget for this one image later, same as if we'd never
+          // precached at all.
+        }
+      }),
+    );
+  }
+
   QuestionModel get currentQuestion => questions[currentIndex.value];
+
+  void _startQuestionTimer() {
+    _questionTimer?.cancel();
+    ranOutOfTime.value = false;
+    remainingSeconds.value = currentQuestion.timeLimitSeconds;
+
+    _questionTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (remainingSeconds.value <= 1) {
+        _questionTimer?.cancel();
+        remainingSeconds.value = 0;
+        if (!hasAnswered.value) {
+          // Time ran out with no answer selected — counts as wrong, same as
+          // a normal incorrect answer, just with a distinct message so the
+          // child understands why (ranOutOfTime vs. actually picked wrong).
+          hasAnswered.value = true;
+          isCurrentAnswerCorrect.value = false;
+          ranOutOfTime.value = true;
+        }
+      } else {
+        remainingSeconds.value--;
+      }
+    });
+  }
 
   void selectOption(String optionId) {
     if (hasAnswered.value) return;
 
+    _questionTimer?.cancel();
     selectedOptionId.value = optionId;
     final option = currentQuestion.options?.firstWhereOrNull(
       (o) => o.id == optionId,
@@ -82,6 +143,7 @@ class QuizController extends GetxController {
     final typed = fillBlankController.text.trim().toLowerCase();
     if (typed.isEmpty) return;
 
+    _questionTimer?.cancel();
     final accepted = currentQuestion.acceptedAnswers ?? [];
     final correct = accepted.any((a) => a.trim().toLowerCase() == typed);
 
@@ -97,6 +159,7 @@ class QuizController extends GetxController {
 
     if (currentIndex.value < questions.length - 1) {
       currentIndex.value++;
+      _startQuestionTimer();
     } else {
       await _finishQuiz();
     }
@@ -123,7 +186,6 @@ class QuizController extends GetxController {
         totalQuestions: questions.length,
         timeSpentSeconds: timeSpent,
       );
-      await _session.addActiveChildStars(starsAwarded.value ?? 0);
     } catch (e) {
       errorMessage.value = 'Could not save your results.';
     } finally {
@@ -134,6 +196,7 @@ class QuizController extends GetxController {
 
   @override
   void onClose() {
+    _questionTimer?.cancel();
     fillBlankController.dispose();
     super.onClose();
   }
