@@ -86,6 +86,29 @@ class SessionController extends GetxController {
     await _box.write(_activeChildKey, updated.toCacheJson());
   }
 
+  /// Re-read the server-maintained star/streak counters for the active child
+  /// (a trigger on quiz_attempts keeps them current) and mirror them onto the
+  /// cached active child. Watched by ProgressController, so calling this after
+  /// a quiz also refreshes the Progress tab.
+  Future<void> refreshActiveChildCounters() async {
+    final current = activeChild.value;
+    if (current == null) return;
+
+    final row = await supabase
+        .from('children')
+        .select('total_stars, current_streak, longest_streak')
+        .eq('id', current.id)
+        .single();
+
+    final updated = current.copyWithCounters(
+      totalStars: row['total_stars'] as int? ?? current.totalStars,
+      currentStreak: row['current_streak'] as int? ?? current.currentStreak,
+      longestStreak: row['longest_streak'] as int? ?? current.longestStreak,
+    );
+    activeChild.value = updated;
+    await _box.write(_activeChildKey, updated.toCacheJson());
+  }
+
   Future<void> clearActiveChild() async {
     activeChild.value = null;
     currentStandard.value = null;

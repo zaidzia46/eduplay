@@ -17,7 +17,6 @@ import '../../../widgets/continue_learning_card.dart';
 import '../../../widgets/streak_card.dart';
 import '../subjects/widgets/subject_progress_row.dart';
 import '../bottom_nav/bottomNavigation_controller.dart';
-import '../progress/progress_controller.dart';
 import '../subjects/widgets/subject_progress_row_skeleton.dart';
 import 'dashboard_controller.dart';
 
@@ -113,9 +112,6 @@ class _DashBoardState extends State<DashBoard>
                     children: [
                       SizedBox(height: 15),
                       Obx(() {
-                        final progress = Get.find<ProgressController>();
-                        final stats = progress.stats.value;
-
                         return Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -200,7 +196,7 @@ class _DashBoardState extends State<DashBoard>
                             ),
                             const SizedBox(width: 8),
                             StreakCard(
-                              num: stats?.daysActive ?? 0,
+                              num: vm.child.value?.currentStreak ?? 0,
                               image: const Image(
                                 image: AssetImage('assets/images/3d-fire.png'),
                                 fit: BoxFit.cover,

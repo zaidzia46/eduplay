@@ -119,6 +119,29 @@ class ChildProfileModel {
     );
   }
 
+  /// Refresh the server-maintained gamification counters together. Unlike
+  /// [copyWithStars] (which leaves the streaks untouched), this lets a single
+  /// re-read of `children` after a quiz update stars AND streak at once.
+  ChildProfileModel copyWithCounters({
+    int? totalStars,
+    int? currentStreak,
+    int? longestStreak,
+  }) {
+    return ChildProfileModel(
+      id: id,
+      name: name,
+      username: username,
+      avatar: avatar,
+      totalStars: totalStars ?? this.totalStars,
+      currentStreak: currentStreak ?? this.currentStreak,
+      longestStreak: longestStreak ?? this.longestStreak,
+      standard: standard,
+      institution: institution,
+      curriculumId: curriculumId,
+      overallPercent: overallPercent,
+    );
+  }
+
   Map<String, dynamic> toCacheJson() {
     return {
       'id': id,

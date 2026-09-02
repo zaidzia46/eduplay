@@ -186,6 +186,13 @@ class QuizController extends GetxController {
         totalQuestions: questions.length,
         timeSpentSeconds: timeSpent,
       );
+
+      // Pull the freshly-updated stars/streak (and thus Progress) onto the
+      // active child. A failure here must not surface as a save error — the
+      // attempt itself already succeeded.
+      try {
+        await _session.refreshActiveChildCounters();
+      } catch (_) {}
     } catch (e) {
       errorMessage.value = 'Could not save your results.';
     } finally {

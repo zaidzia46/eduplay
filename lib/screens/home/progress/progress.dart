@@ -11,7 +11,9 @@ import '../../../widgets/morphing_progress_indicator.dart';
 import '../../../widgets/recent_act_tile.dart';
 import '../../../widgets/staggered_anime.dart';
 import '../../../widgets/stat_tile.dart';
-import '../subjects/widgets/subject_progress_row.dart';
+import '../../../routes/app_routes.dart';
+import '../subjects/subjects_model.dart';
+import 'widgets/subject_progress_tile.dart';
 import '../bottom_nav/bottomNavigation_controller.dart';
 
 class ProgressView extends StatefulWidget {
@@ -72,6 +74,7 @@ class _ProgressViewState extends State<ProgressView>
 
     _tabWorker = ever(Get.find<BottomNavController>().currentIndex, (index) {
       if (index == 2) {
+        vm.reload();
         _controller.forward(from: 0);
       }
     });
@@ -116,7 +119,7 @@ class _ProgressViewState extends State<ProgressView>
           );
         }
 
-        final stats = vm.stats.value;
+        final overview = vm.overview.value;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -163,7 +166,7 @@ class _ProgressViewState extends State<ProgressView>
                                         children: [
                                           MorphingProgressIndicator(
                                             percent:
-                                                (stats?.overallPercent ?? 0)
+                                                (overview?.overallPercent ?? 0)
                                                     .toDouble(),
                                             t: t,
                                             circleDiameter: 100,
@@ -182,7 +185,7 @@ class _ProgressViewState extends State<ProgressView>
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 Text(
-                                                  '${stats?.overallPercent ?? 0}%',
+                                                  '${overview?.overallPercent ?? 0}%',
                                                   style: AppTextStyles.h2,
                                                 ),
                                                 Text(
@@ -209,22 +212,20 @@ class _ProgressViewState extends State<ProgressView>
                                                 color: AppColors.star,
                                               ),
                                               color: AppColors.star,
-                                              value:
-                                                  '${stats?.starsEarned ?? 0}',
+                                              value: '${vm.starsEarned}',
                                               label: 'Stars Earned',
                                             ),
                                           ),
                                           Expanded(
                                             child: StatTile(
                                               icon: FaIcon(
-                                                FontAwesomeIcons.award,
+                                                FontAwesomeIcons.fire,
                                                 size: 20,
-                                                color: AppColors.error,
+                                                color: AppColors.streak,
                                               ),
-                                              color: AppColors.error,
-                                              value:
-                                                  '${stats?.badgesEarned ?? 0}',
-                                              label: 'Badges Earned',
+                                              color: AppColors.streak,
+                                              value: '${vm.dayStreak}',
+                                              label: 'Day Streak',
                                             ),
                                           ),
                                         ],
@@ -251,6 +252,44 @@ class _ProgressViewState extends State<ProgressView>
                     children: [
                       const SizedBox(height: 12),
                       ActivityBreakdownCard(categories: vm.activityBreakdown),
+
+                      if (overview != null && overview.subjects.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Subjects',
+                            style: AppTextStyles.sectionHeader,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        ...List.generate(overview.subjects.length, (index) {
+                          final subject = overview.subjects[index];
+                          return StaggeredAnimation(
+                            controller: _controller,
+                            index: index,
+                            child: SubjectProgressTile(
+                              subject: subject,
+                              onTap: () {
+                                Get.toNamed(
+                                  AppRoutes.chapters,
+                                  arguments: {
+                                    'subject': SubjectModel(
+                                      id: subject.subjectId,
+                                      standardSubjectId:
+                                          subject.standardSubjectId,
+                                      name: subject.name,
+                                      colorHex: subject.color,
+                                      iconPath: subject.iconPath,
+                                      progressPercent: subject.percent,
+                                    ),
+                                  },
+                                );
+                              },
+                            ),
+                          );
+                        }),
+                      ],
 
                       const SizedBox(height: 12),
                       Row(
