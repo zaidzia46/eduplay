@@ -31,39 +31,51 @@ class ChapterController extends GetxController {
       final base = await _topicRepo.getTopics(
         standardSubjectId: subject.standardSubjectId,
       );
-
-      // Layer per-chapter progress (passed quizzes / total) on top of the base
-      // list when there's an active child. Without one we still show chapters,
-      // just at 0%.
-      final childId = Get.find<SessionController>().activeChild.value?.id;
-      if (childId == null) {
-        chapters.value = base;
-        return;
-      }
-
-      final progress = await _progressRepo.getSubjectChapters(
-        childId,
-        subject.standardSubjectId,
-      );
-      final byId = {for (final p in progress) p.chapterId: p};
-
-      chapters.value = base.map((chapter) {
-        final p = byId[chapter.id];
-        if (p == null) return chapter;
-        final status = p.isCompleted
-            ? ChapterStatus.completed
-            : (p.quizzesPassed > 0
-                  ? ChapterStatus.inProgress
-                  : ChapterStatus.notStarted);
-        return chapter.copyWithProgress(
-          status: status,
-          progressPercent: p.percent,
-        );
-      }).toList();
+      chapters.value = await _withProgress(base);
     } catch (e) {
       error.value = 'Failed to load chapters: $e';
     } finally {
       isLoading.value = false;
     }
+  }
+
+  /// Re-pull only per-chapter progress and fold it onto the chapters already on
+  /// screen — used when returning from the quiz list so the bars/percentages
+  /// aren't stale. No isLoading toggle, so there's no skeleton flash.
+  Future<void> refreshProgress() async {
+    if (chapters.isEmpty) return;
+    try {
+      chapters.value = await _withProgress(chapters);
+    } catch (_) {
+      // Keep last-known percentages on a transient failure.
+    }
+  }
+
+  /// Layer per-chapter progress (passed quizzes / total) on top of [base] when
+  /// there's an active child. Without one we still show chapters, just at 0%.
+  /// Always returns a fresh list.
+  Future<List<ChapterModel>> _withProgress(List<ChapterModel> base) async {
+    final childId = Get.find<SessionController>().activeChild.value?.id;
+    if (childId == null) return List<ChapterModel>.from(base);
+
+    final progress = await _progressRepo.getSubjectChapters(
+      childId,
+      subject.standardSubjectId,
+    );
+    final byId = {for (final p in progress) p.chapterId: p};
+
+    return base.map((chapter) {
+      final p = byId[chapter.id];
+      if (p == null) return chapter;
+      final status = p.isCompleted
+          ? ChapterStatus.completed
+          : (p.quizzesPassed > 0
+                ? ChapterStatus.inProgress
+                : ChapterStatus.notStarted);
+      return chapter.copyWithProgress(
+        status: status,
+        progressPercent: p.percent,
+      );
+    }).toList();
   }
 }

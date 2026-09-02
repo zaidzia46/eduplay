@@ -786,8 +786,9 @@ class _FillBlankInput extends StatelessWidget {
 /// Reusable gradient button with press-scale feedback.
 class _GradientButton extends StatefulWidget {
   final String label;
-  final VoidCallback onTap;
-  const _GradientButton({required this.label, required this.onTap});
+  final VoidCallback? onTap;
+  final bool busy;
+  const _GradientButton({required this.label, required this.onTap, this.busy = false});
 
   @override
   State<_GradientButton> createState() => _GradientButtonState();
@@ -798,36 +799,49 @@ class _GradientButtonState extends State<_GradientButton> {
 
   @override
   Widget build(BuildContext context) {
+    final disabled = widget.onTap == null || widget.busy;
     return GestureDetector(
-      onTapDown: (_) => setState(() => _pressed = true),
-      onTapCancel: () => setState(() => _pressed = false),
-      onTapUp: (_) => setState(() => _pressed = false),
-      onTap: widget.onTap,
+      onTapDown: disabled ? null : (_) => setState(() => _pressed = true),
+      onTapCancel: disabled ? null : () => setState(() => _pressed = false),
+      onTapUp: disabled ? null : (_) => setState(() => _pressed = false),
+      onTap: disabled ? null : widget.onTap,
       child: AnimatedScale(
         scale: _pressed ? 0.97 : 1.0,
         duration: const Duration(milliseconds: 120),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 15),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            gradient: const LinearGradient(colors: [_purple, _purpleDark]),
-            boxShadow: [
-              BoxShadow(
-                color: _purple.withOpacity(0.4),
-                blurRadius: 14,
-                offset: const Offset(0, 6),
-              ),
-            ],
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            widget.label,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-              fontSize: 15,
+        child: Opacity(
+          opacity: disabled ? 0.7 : 1.0,
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 15),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              gradient: const LinearGradient(colors: [_purple, _purpleDark]),
+              boxShadow: [
+                BoxShadow(
+                  color: _purple.withOpacity(0.4),
+                  blurRadius: 14,
+                  offset: const Offset(0, 6),
+                ),
+              ],
             ),
+            alignment: Alignment.center,
+            child: widget.busy
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.5,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : Text(
+                    widget.label,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                    ),
+                  ),
           ),
         ),
       ),
@@ -916,12 +930,15 @@ class _FeedbackBanner extends StatelessWidget {
             ),
           ],
           const SizedBox(height: 12),
-          _GradientButton(
-            label: vm.currentIndex.value < vm.questions.length - 1
-                ? 'Continue'
-                : 'Finish Quiz',
-            onTap: vm.nextQuestion,
-          ),
+          Obx(() {
+            final isLast = vm.currentIndex.value >= vm.questions.length - 1;
+            final busy = vm.isSubmitting.value;
+            return _GradientButton(
+              label: isLast ? 'Finish Quiz' : 'Continue',
+              busy: busy,
+              onTap: busy ? null : vm.nextQuestion,
+            );
+          }),
         ],
       ),
     );
@@ -956,7 +973,7 @@ class _ResultsViewState extends State<_ResultsView>
     // during initState/build itself can be flaky on some platforms.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _entranceController.forward();
-      if (_tier(widget.vm) == _ResultTier.good) {
+      if (widget.vm.passed) {
         _confettiController.play();
       }
     });
@@ -992,7 +1009,15 @@ class _ResultsViewState extends State<_ResultsView>
   @override
   Widget build(BuildContext context) {
     final vm = widget.vm;
-    final tier = _tier(vm);
+    final passed = vm.passed;
+    // Failing always shows the encouraging "needs work" messaging (even at a
+    // 50–59% score that would otherwise read as "average"); passing never shows
+    // it, so the copy never contradicts the Retake button.
+    final tier = passed
+        ? (_tier(vm) == _ResultTier.needsWork
+              ? _ResultTier.average
+              : _tier(vm))
+        : _ResultTier.needsWork;
 
     final cardAnim = CurvedAnimation(
       parent: _entranceController,
@@ -1115,29 +1140,28 @@ class _ResultsViewState extends State<_ResultsView>
                     begin: const Offset(0, 0.5),
                     end: Offset.zero,
                   ).animate(buttonAnim),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _orange,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        elevation: 6,
-                        shadowColor: _orange.withOpacity(0.5),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                  child: passed
+                      ? _ResultButton(
+                          label: 'Done',
+                          filled: true,
+                          onPressed: () => Get.back(),
+                        )
+                      : Column(
+                          children: [
+                            _ResultButton(
+                              label: 'Retake Quiz',
+                              icon: Icons.refresh_rounded,
+                              filled: true,
+                              onPressed: () => vm.retake(),
+                            ),
+                            const SizedBox(height: 12),
+                            _ResultButton(
+                              label: 'Done',
+                              filled: false,
+                              onPressed: () => Get.back(),
+                            ),
+                          ],
                         ),
-                      ),
-                      onPressed: () => Get.back(),
-                      child: const Text(
-                        'Done',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ),
                 ),
               ),
             ],
@@ -1157,3 +1181,70 @@ class _ResultsViewState extends State<_ResultsView>
 }
 
 enum _ResultTier { good, average, needsWork }
+
+/// Full-width action button for the results screen. `filled` = solid orange
+/// primary CTA (Done when passed / Retake when failed); otherwise a white
+/// outlined secondary that reads against the purple results background.
+class _ResultButton extends StatelessWidget {
+  final String label;
+  final IconData? icon;
+  final bool filled;
+  final VoidCallback onPressed;
+
+  const _ResultButton({
+    required this.label,
+    required this.filled,
+    required this.onPressed,
+    this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final child = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (icon != null) ...[
+          Icon(icon, color: Colors.white, size: 20),
+          const SizedBox(width: 8),
+        ],
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
+    );
+
+    return SizedBox(
+      width: double.infinity,
+      child: filled
+          ? ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _orange,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                elevation: 6,
+                shadowColor: _orange.withOpacity(0.5),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              onPressed: onPressed,
+              child: child,
+            )
+          : OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                side: const BorderSide(color: Colors.white70, width: 1.5),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              onPressed: onPressed,
+              child: child,
+            ),
+    );
+  }
+}

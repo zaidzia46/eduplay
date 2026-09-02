@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import '../../../../../routes/app_routes.dart';
 import '../../../../../theme/app_colors.dart';
 import '../../../../../theme/app_text_styles.dart';
-import '../../../../../widgets/circular_loader.dart';
 import '../../../../../widgets/topics_banner_background.dart';
 import '../../widgets/quiz_skeleton_loader.dart';
 import 'quiz_list_controller.dart';
@@ -53,11 +52,19 @@ class QuizListScreen extends StatelessWidget {
                             return _QuizCard(
                               quiz: quiz,
                               accentColor: vm.accentColor,
-                              onTap: () {
-                                Get.toNamed(
+                              onTap: () async {
+                                // Wait for the quiz route to pop, then re-pull
+                                // just the scores so this card's percentage is
+                                // fresh the moment we're back.
+                                await Get.toNamed(
                                   AppRoutes.quiz,
-                                  arguments: {'quizId': quiz.id},
+                                  arguments: {
+                                    'quizId': quiz.id,
+                                    'passingScorePercent':
+                                        quiz.passingScorePercent,
+                                  },
                                 );
+                                vm.refreshProgress();
                               },
                             );
                           },
@@ -154,6 +161,12 @@ class _QuizCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final passed = quiz.isPassed;
+    final attempted = quiz.attempted;
+    // Passed quizzes read as "done" (green); attempted-but-not-passed stay on
+    // the subject accent; never-attempted show the plain play affordance.
+    final progressColor = passed ? AppColors.success : accentColor;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -176,22 +189,60 @@ class _QuizCard extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: accentColor.withOpacity(0.2),
+                color: (passed ? AppColors.success : accentColor).withOpacity(
+                  0.2,
+                ),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.play_arrow_rounded, color: accentColor),
+              child: Icon(
+                passed ? Icons.check_rounded : Icons.play_arrow_rounded,
+                color: passed ? AppColors.success : accentColor,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(
-                quiz.title,
-                style: AppTextStyles.label.copyWith(
-                  color: AppColors.textPrimary,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    quiz.title,
+                    style: AppTextStyles.label.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                  // Only show a progress bar once there's a real score to show.
+                  if (attempted) ...[
+                    const SizedBox(height: 8),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: LinearProgressIndicator(
+                        value: quiz.bestPercent / 100,
+                        minHeight: 6,
+                        backgroundColor: progressColor.withOpacity(0.3),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          progressColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
-            const SizedBox(width: 8),
-            Icon(Icons.chevron_right, color: AppColors.textMuted),
+            const SizedBox(width: 12),
+            if (attempted) ...[
+              Text(
+                '${quiz.bestPercent}%',
+                style: AppTextStyles.progressPercent.copyWith(
+                  color: passed ? AppColors.success : AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Icon(
+                passed ? Icons.chevron_right : Icons.refresh_rounded,
+                color: passed ? AppColors.success : AppColors.textMuted,
+              ),
+            ] else
+              Icon(Icons.chevron_right, color: AppColors.textMuted),
           ],
         ),
       ),

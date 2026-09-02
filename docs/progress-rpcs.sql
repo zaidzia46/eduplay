@@ -235,12 +235,55 @@ from agg
 order by sort_order;
 $$;
 
+-- ─────────────────────────────────────────────────────────────────────────
+-- 4. Per-quiz progress for one chapter (powers the QuizListScreen badges).
+--    best_percent = best score across all attempts (0 if never attempted);
+--    is_passed    = any attempt >= that quiz's passing_score_percent;
+--    attempted    = the child has at least one attempt at the quiz.
+-- ─────────────────────────────────────────────────────────────────────────
+create or replace function public.get_chapter_quiz_progress(
+  p_child_id bigint,
+  p_chapter_id bigint
+)
+returns table (
+  quiz_id bigint,
+  best_percent int,
+  is_passed boolean,
+  attempted boolean
+)
+language sql
+stable
+as $$
+  select q.id::bigint as quiz_id,
+         coalesce(
+           round(max(a.correct_count::numeric / nullif(a.total_questions, 0) * 100)),
+           0
+         )::int as best_percent,
+         coalesce(
+           bool_or(
+             a.total_questions > 0
+             and (a.correct_count::numeric / a.total_questions) * 100
+                 >= q.passing_score_percent
+           ),
+           false
+         ) as is_passed,
+         (count(a.id) > 0) as attempted
+  from quizzes q
+  left join quiz_attempts a
+    on a.quiz_id = q.id
+   and a.child_id = p_child_id
+  where q.chapter_id = p_chapter_id
+  group by q.id;
+$$;
+
 -- Expose to the client roles used by supabase_flutter.
 grant execute on function public.get_child_progress(bigint) to anon, authenticated;
 grant execute on function public.get_child_recent_activity(bigint, int) to anon, authenticated;
 grant execute on function public.get_child_subject_chapters(bigint, bigint) to anon, authenticated;
+grant execute on function public.get_chapter_quiz_progress(bigint, bigint) to anon, authenticated;
 
 -- ── Sanity checks (replace 1 with a real child id) ──
 -- select public.get_child_progress(1);
 -- select * from public.get_child_recent_activity(1, 5);
 -- select * from public.get_child_subject_chapters(1, 1);
+-- select * from public.get_chapter_quiz_progress(1, 1);

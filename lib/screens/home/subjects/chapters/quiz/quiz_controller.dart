@@ -13,7 +13,14 @@ class QuizController extends GetxController {
   final SessionController _session = Get.find<SessionController>();
 
   final int quizId;
-  QuizController({required this.quizId});
+
+  /// The score (%) the child must reach for this quiz to count as passed. Comes
+  /// from the quiz row (`quizzes.passing_score_percent`, default 60) and is
+  /// passed in from the quiz list so the results screen can decide pass/fail
+  /// without another round-trip.
+  final int passingScorePercent;
+
+  QuizController({required this.quizId, this.passingScorePercent = 60});
 
   static const questionsPerAttempt = 10;
 
@@ -99,6 +106,17 @@ class QuizController extends GetxController {
 
   QuestionModel get currentQuestion => questions[currentIndex.value];
 
+  /// Best-effort score for the *current* attempt, as a whole-number percent.
+  int get scorePercent => questions.isEmpty
+      ? 0
+      : ((correctCount.value / questions.length) * 100).round();
+
+  /// Whether this attempt passed. Uses the raw ratio (not the rounded
+  /// [scorePercent]) so it matches the server-side pass check exactly.
+  bool get passed =>
+      questions.isNotEmpty &&
+      (correctCount.value / questions.length) * 100 >= passingScorePercent;
+
   void _startQuestionTimer() {
     _questionTimer?.cancel();
     ranOutOfTime.value = false;
@@ -153,19 +171,29 @@ class QuizController extends GetxController {
   }
 
   Future<void> nextQuestion() async {
-    hasAnswered.value = false;
-    selectedOptionId.value = null;
-    fillBlankController.clear();
-
     if (currentIndex.value < questions.length - 1) {
+      hasAnswered.value = false;
+      selectedOptionId.value = null;
+      fillBlankController.clear();
       currentIndex.value++;
       _startQuestionTimer();
     } else {
+      // Last question: keep the feedback banner (and its spinner) on screen
+      // while the attempt is submitted — the results view replaces it once
+      // isFinished flips. Resetting hasAnswered here would hide the banner
+      // instantly and leave a blank gap during the network call.
       await _finishQuiz();
     }
   }
 
   Future<void> _finishQuiz() async {
+    // Guard against a double-tap on "Finish Quiz": the button stays on screen
+    // during the async submit, and a second tap would insert a *second*
+    // quiz_attempts row (showing up as a duplicate in Recent Activity).
+    // isSubmitting flips synchronously before the first await, so any re-entry
+    // is blocked here.
+    if (isSubmitting.value || isFinished.value) return;
+
     final childId = _session.activeChild.value?.id;
     if (childId == null) {
       errorMessage.value = 'No active profile — could not save results.';
@@ -199,6 +227,26 @@ class QuizController extends GetxController {
       isSubmitting.value = false;
       isFinished.value = true;
     }
+  }
+
+  /// Restart the quiz from scratch after a failed attempt: clear every
+  /// per-attempt value and pull a fresh (re-shuffled) question set. _loadQuiz
+  /// flips isLoading, so the screen shows the "preparing" view then question 1.
+  Future<void> retake() async {
+    _questionTimer?.cancel();
+    currentIndex.value = 0;
+    correctCount.value = 0;
+    selectedOptionId.value = null;
+    fillBlankController.clear();
+    hasAnswered.value = false;
+    isCurrentAnswerCorrect.value = false;
+    ranOutOfTime.value = false;
+    remainingSeconds.value = 0;
+    starsAwarded.value = null;
+    isSubmitting.value = false;
+    isFinished.value = false;
+    errorMessage.value = '';
+    await _loadQuiz();
   }
 
   @override

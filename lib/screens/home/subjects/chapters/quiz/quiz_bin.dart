@@ -7,7 +7,15 @@ class QuizBinding extends Bindings {
   void dependencies() {
     final args = Get.arguments as Map<String, dynamic>;
     final quizId = args['quizId'] as int;
+    // Optional — falls back to the schema default so launching the quiz from
+    // anywhere without it still works.
+    final passingScorePercent = args['passingScorePercent'] as int? ?? 60;
 
-    Get.lazyPut<QuizController>(() => QuizController(quizId: quizId));
+    Get.lazyPut<QuizController>(
+      () => QuizController(
+        quizId: quizId,
+        passingScorePercent: passingScorePercent,
+      ),
+    );
   }
 }

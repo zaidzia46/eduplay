@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 
 import '../../../../routes/app_routes.dart';
 import '../../../../theme/app_text_styles.dart';
-import '../../../../widgets/circular_loader.dart';
 import '../../../../widgets/topic_card.dart';
 import '../../../../widgets/topics_banner_background.dart';
 import '../widgets/chp_skeleton_loader.dart';
@@ -110,8 +109,11 @@ class ChapterScreen extends StatelessWidget {
                             return TopicCard(
                               topic: chapter,
                               accentColor: vm.subject.colorHex,
-                              onTap: () {
-                                Get.toNamed(
+                              onTap: () async {
+                                // Wait for the quiz list (and any quiz played
+                                // from it) to pop, then refresh just the
+                                // progress so this chapter's bar is current.
+                                await Get.toNamed(
                                   AppRoutes.quizList,
                                   arguments: {
                                     'chapterId': chapter.id,
@@ -119,6 +121,7 @@ class ChapterScreen extends StatelessWidget {
                                     'accentColor': vm.subject.colorHex,
                                   },
                                 );
+                                vm.refreshProgress();
                               },
                             );
                           },

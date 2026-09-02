@@ -6,13 +6,13 @@ import 'package:get/get.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/activity_breakdown_card.dart';
-import '../../../widgets/circular_loader.dart';
 import '../../../widgets/morphing_progress_indicator.dart';
 import '../../../widgets/recent_act_tile.dart';
 import '../../../widgets/staggered_anime.dart';
 import '../../../widgets/stat_tile.dart';
 import '../../../routes/app_routes.dart';
 import '../subjects/subjects_model.dart';
+import 'widgets/progress_skeleton.dart';
 import 'widgets/subject_progress_tile.dart';
 import '../bottom_nav/bottomNavigation_controller.dart';
 
@@ -109,16 +109,18 @@ class _ProgressViewState extends State<ProgressView>
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Obx(() {
-        if (vm.isLoading.value) {
-          return Center(child: CircularLoader());
-        }
-
-        if (vm.errorMessage.isNotEmpty) {
+        // An error only blocks the whole screen when there's nothing to show
+        // yet; background-refresh failures keep existing data (see controller).
+        if (vm.errorMessage.isNotEmpty && vm.overview.value == null) {
           return Center(
             child: Text(vm.errorMessage.value, style: AppTextStyles.body),
           );
         }
 
+        // First load: the page chrome and the Stars / Day Streak tiles render
+        // for real (instant from the cached child); only the fetched sections
+        // — ring, breakdown, subjects, recent activity — show skeletons.
+        final loading = vm.isLoading.value;
         final overview = vm.overview.value;
 
         return Column(
@@ -158,9 +160,16 @@ class _ProgressViewState extends State<ProgressView>
                               const SizedBox(height: 16),
                               Column(
                                 children: [
-                                  ValueListenableBuilder<double>(
-                                    valueListenable: _morphT,
-                                    builder: (context, t, _) {
+                                  loading
+                                      ? const Padding(
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: 8,
+                                          ),
+                                          child: ProgressRingSkeleton(),
+                                        )
+                                      : ValueListenableBuilder<double>(
+                                          valueListenable: _morphT,
+                                          builder: (context, t, _) {
                                       return Stack(
                                         alignment: Alignment.center,
                                         children: [
@@ -251,9 +260,25 @@ class _ProgressViewState extends State<ProgressView>
                   child: Column(
                     children: [
                       const SizedBox(height: 12),
-                      ActivityBreakdownCard(categories: vm.activityBreakdown),
+                      loading
+                          ? const ActivityBreakdownSkeleton()
+                          : ActivityBreakdownCard(
+                              categories: vm.activityBreakdown,
+                            ),
 
-                      if (overview != null && overview.subjects.isNotEmpty) ...[
+                      if (loading) ...[
+                        const SizedBox(height: 12),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Subjects',
+                            style: AppTextStyles.sectionHeader,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        const SubjectListSkeleton(),
+                      ] else if (overview != null &&
+                          overview.subjects.isNotEmpty) ...[
                         const SizedBox(height: 12),
                         Align(
                           alignment: Alignment.centerLeft,
@@ -303,16 +328,19 @@ class _ProgressViewState extends State<ProgressView>
                         ],
                       ),
                       const SizedBox(height: 12),
-                      ...List.generate(
-                        vm.recentActivity.length,
-                        (index) => StaggeredAnimation(
-                          controller: _controller,
-                          index: index,
-                          child: RecentActivityTile(
-                            activity: vm.recentActivity[index],
+                      if (loading)
+                        const RecentActivityListSkeleton()
+                      else
+                        ...List.generate(
+                          vm.recentActivity.length,
+                          (index) => StaggeredAnimation(
+                            controller: _controller,
+                            index: index,
+                            child: RecentActivityTile(
+                              activity: vm.recentActivity[index],
+                            ),
                           ),
                         ),
-                      ),
                     ],
                   ),
                 ),
