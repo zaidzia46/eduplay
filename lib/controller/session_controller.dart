@@ -76,6 +76,16 @@ class SessionController extends GetxController {
     await _box.write(_activeChildKey, updated.toCacheJson());
   }
 
+  Future<void> addActiveChildStars(int earnedStars) async {
+    final current = activeChild.value;
+    if (current == null) return;
+    final updated = current.copyWithStars(
+      totalStars: current.totalStars + earnedStars,
+    );
+    activeChild.value = updated;
+    await _box.write(_activeChildKey, updated.toCacheJson());
+  }
+
   Future<void> clearActiveChild() async {
     activeChild.value = null;
     currentStandard.value = null;

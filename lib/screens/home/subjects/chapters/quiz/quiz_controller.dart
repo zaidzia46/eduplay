@@ -123,7 +123,7 @@ class QuizController extends GetxController {
         totalQuestions: questions.length,
         timeSpentSeconds: timeSpent,
       );
-      _session.updateActiveChildStars(starsAwarded.value ?? 0);
+      await _session.addActiveChildStars(starsAwarded.value ?? 0);
     } catch (e) {
       errorMessage.value = 'Could not save your results.';
     } finally {
