@@ -56,9 +56,10 @@ class ProfileSwitcherViewModel extends GetxController {
       );
       avatarUrlByChild.value = Map.fromEntries(avatarEntries);
 
-      children.value = fetchedChildren
-          .map((c) => c.copyWithProgress(overallPercent: 0))
-          .toList();
+      // overallPercent now comes straight from children.overall_progress
+      // (denormalized, kept current by a quiz_attempts trigger), so we keep the
+      // fetched value instead of forcing 0.
+      children.value = fetchedChildren;
     } catch (e) {
       errorMessage.value = 'Could not load profiles.';
     } finally {

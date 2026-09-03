@@ -11,7 +11,7 @@ class ChildProfileRepository {
         .from('children')
         .select('''
           id, name, username, avatar_path,
-          total_stars, current_streak, longest_streak,
+          total_stars, current_streak, longest_streak, overall_progress,
           child_standard_enrollment(
             is_current,
             curriculum_id,

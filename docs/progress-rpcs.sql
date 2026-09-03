@@ -276,14 +276,84 @@ as $$
   group by q.id;
 $$;
 
+-- ─────────────────────────────────────────────────────────────────────────
+-- 5. Denormalized overall progress on children (fast profile-switcher reads).
+--    The switcher lists EVERY child at once. Recomputing each child's overall
+--    % on open would re-run the whole subject/chapter/quiz aggregation N times
+--    per open. Instead we store it on `children` (exactly like total_stars /
+--    streaks) and keep it current with a trigger that fires on the SAME event
+--    that already moves the number — a new quiz_attempts row. Reads then become
+--    a plain column select that rides the existing getChildren() query, with no
+--    extra round trip.
+-- ─────────────────────────────────────────────────────────────────────────
+
+alter table public.children
+  add column if not exists overall_progress smallint not null default 0;
+
+-- Single source of truth: derive the scalar straight from get_child_progress so
+-- the switcher % can never drift from the Progress tab %. (Runs the full
+-- overview and extracts one field — fine here since it's only ever called off
+-- the UI hot path: from the triggers below and the one-time backfill.)
+create or replace function public.compute_child_overall_percent(p_child_id bigint)
+returns int
+language sql
+stable
+as $$
+  select coalesce(
+    (public.get_child_progress(p_child_id) ->> 'overall_percent')::int,
+    0
+  );
+$$;
+
+-- Recompute + store overall_progress for the affected child. Reused by both
+-- triggers below (quiz_attempts and child_standard_enrollment both expose
+-- child_id). SECURITY DEFINER so the UPDATE on children isn't blocked by RLS,
+-- mirroring how the existing stars/streak trigger maintains children.
+create or replace function public.sync_child_overall_progress()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  update public.children
+     set overall_progress = public.compute_child_overall_percent(new.child_id)
+   where id = new.child_id;
+  return new;
+end;
+$$;
+
+-- Fires when a quiz is submitted — the moment the % can actually change.
+drop trigger if exists trg_sync_overall_on_attempt on public.quiz_attempts;
+create trigger trg_sync_overall_on_attempt
+  after insert on public.quiz_attempts
+  for each row execute function public.sync_child_overall_progress();
+
+-- Fires when a child's enrollment changes — their standard (and thus the total
+-- content forming the denominator) changed, so the stored % must be recomputed.
+drop trigger if exists trg_sync_overall_on_enrollment on public.child_standard_enrollment;
+create trigger trg_sync_overall_on_enrollment
+  after insert or update on public.child_standard_enrollment
+  for each row execute function public.sync_child_overall_progress();
+
+-- Backfill existing children once so they aren't stuck at 0 until their next
+-- attempt. Safe to re-run anytime — also use this exact line to RECONCILE after
+-- an admin adds/removes chapters or quizzes, since content edits don't fire the
+-- triggers above and the stored value would otherwise lag until the next quiz.
+update public.children c
+   set overall_progress = public.compute_child_overall_percent(c.id);
+
 -- Expose to the client roles used by supabase_flutter.
 grant execute on function public.get_child_progress(bigint) to anon, authenticated;
 grant execute on function public.get_child_recent_activity(bigint, int) to anon, authenticated;
 grant execute on function public.get_child_subject_chapters(bigint, bigint) to anon, authenticated;
 grant execute on function public.get_chapter_quiz_progress(bigint, bigint) to anon, authenticated;
+grant execute on function public.compute_child_overall_percent(bigint) to anon, authenticated;
 
 -- ── Sanity checks (replace 1 with a real child id) ──
 -- select public.get_child_progress(1);
 -- select * from public.get_child_recent_activity(1, 5);
 -- select * from public.get_child_subject_chapters(1, 1);
 -- select * from public.get_chapter_quiz_progress(1, 1);
+-- select public.compute_child_overall_percent(1);
+-- select id, name, overall_progress from public.children order by id;

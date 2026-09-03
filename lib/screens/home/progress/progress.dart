@@ -170,44 +170,49 @@ class _ProgressViewState extends State<ProgressView>
                                       : ValueListenableBuilder<double>(
                                           valueListenable: _morphT,
                                           builder: (context, t, _) {
-                                      return Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          MorphingProgressIndicator(
-                                            percent:
-                                                (overview?.overallPercent ?? 0)
-                                                    .toDouble(),
-                                            t: t,
-                                            circleDiameter: 100,
-                                            strokeWidth: 10,
-                                            trackColor:
-                                                AppColors.primarySurface,
-                                            progressColor: AppColors.primary,
-                                            bubbleColor: AppColors.primaryDark,
-                                          ),
-                                          Opacity(
-                                            opacity: (1 - t * 2).clamp(
-                                              0.0,
-                                              1.0,
-                                            ),
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
+                                            return Stack(
+                                              alignment: Alignment.center,
                                               children: [
-                                                Text(
-                                                  '${overview?.overallPercent ?? 0}%',
-                                                  style: AppTextStyles.h2,
+                                                MorphingProgressIndicator(
+                                                  percent:
+                                                      (overview?.overallPercent ??
+                                                              0)
+                                                          .toDouble(),
+                                                  t: t,
+                                                  circleDiameter: 100,
+                                                  strokeWidth: 10,
+                                                  trackColor:
+                                                      AppColors.primarySurface,
+                                                  progressColor:
+                                                      AppColors.primary,
+                                                  bubbleColor:
+                                                      AppColors.primaryDark,
                                                 ),
-                                                Text(
-                                                  'Overall',
-                                                  style: AppTextStyles.caption,
+                                                Opacity(
+                                                  opacity: (1 - t * 2).clamp(
+                                                    0.0,
+                                                    1.0,
+                                                  ),
+                                                  child: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      Text(
+                                                        '${overview?.overallPercent ?? 0}%',
+                                                        style: AppTextStyles.h2,
+                                                      ),
+                                                      Text(
+                                                        'Overall',
+                                                        style: AppTextStyles
+                                                            .caption,
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                               ],
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  ),
+                                            );
+                                          },
+                                        ),
                                   const SizedBox(height: 20),
                                   Column(
                                     children: [
@@ -324,7 +329,6 @@ class _ProgressViewState extends State<ProgressView>
                             'Recent Activity',
                             style: AppTextStyles.sectionHeader,
                           ),
-                          Text('View all', style: AppTextStyles.sectionLink),
                         ],
                       ),
                       const SizedBox(height: 12),

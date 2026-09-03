@@ -61,6 +61,7 @@ class ChildProfileModel {
             )
           : null,
       curriculumId: current?['curriculum_id'] as int?,
+      overallPercent: json['overall_progress'] as int? ?? 0,
     );
   }
 
@@ -103,29 +104,15 @@ class ChildProfileModel {
     );
   }
 
-  ChildProfileModel copyWithProgress({required int overallPercent}) {
-    return ChildProfileModel(
-      id: id,
-      name: name,
-      username: username,
-      avatar: avatar,
-      totalStars: totalStars,
-      currentStreak: currentStreak,
-      longestStreak: longestStreak,
-      standard: standard,
-      institution: institution,
-      curriculumId: curriculumId,
-      overallPercent: overallPercent,
-    );
-  }
-
   /// Refresh the server-maintained gamification counters together. Unlike
   /// [copyWithStars] (which leaves the streaks untouched), this lets a single
-  /// re-read of `children` after a quiz update stars AND streak at once.
+  /// re-read of `children` after a quiz update stars, streak AND overall % at
+  /// once.
   ChildProfileModel copyWithCounters({
     int? totalStars,
     int? currentStreak,
     int? longestStreak,
+    int? overallPercent,
   }) {
     return ChildProfileModel(
       id: id,
@@ -138,7 +125,7 @@ class ChildProfileModel {
       standard: standard,
       institution: institution,
       curriculumId: curriculumId,
-      overallPercent: overallPercent,
+      overallPercent: overallPercent ?? this.overallPercent,
     );
   }
 
