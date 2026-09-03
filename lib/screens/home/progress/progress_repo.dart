@@ -6,9 +6,6 @@ import '../../../models/chapter_progress_model.dart';
 import '../../../models/progress_overview_model.dart';
 import '../../../models/recent_act_model.dart';
 
-/// Reads quiz-based progress from the Postgres RPCs (docs/progress-rpcs.sql).
-/// Aggregation runs server-side so this scales to hundreds of chapters/quizzes
-/// without pulling every attempt down to the client.
 class ProgressRepository {
   Future<ProgressOverviewModel> getOverview(int childId) async {
     final data = await supabase.rpc(
@@ -61,8 +58,10 @@ class ProgressRepository {
     );
 
     return (rows as List)
-        .map((e) =>
-            ChapterProgressModel.fromRpc(Map<String, dynamic>.from(e as Map)))
+        .map(
+          (e) =>
+              ChapterProgressModel.fromRpc(Map<String, dynamic>.from(e as Map)),
+        )
         .toList();
   }
 }

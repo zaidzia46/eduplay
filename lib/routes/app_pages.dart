@@ -65,12 +65,7 @@ abstract class AppPages {
       binding: AuthBinding(),
       transition: Transition.fadeIn,
     ),
-    GetPage(
-      name: AppRoutes.register,
-      page: () => const RegisterView(),
-      transition: Transition.rightToLeft,
-      transitionDuration: const Duration(milliseconds: 400),
-    ),
+    GetPage(name: AppRoutes.register, page: () => const RegisterView()),
     GetPage(
       name: AppRoutes.profileSwitcher,
       page: () => const ProfileSwitcherView(),

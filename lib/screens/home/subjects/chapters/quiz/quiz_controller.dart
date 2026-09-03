@@ -178,20 +178,11 @@ class QuizController extends GetxController {
       currentIndex.value++;
       _startQuestionTimer();
     } else {
-      // Last question: keep the feedback banner (and its spinner) on screen
-      // while the attempt is submitted — the results view replaces it once
-      // isFinished flips. Resetting hasAnswered here would hide the banner
-      // instantly and leave a blank gap during the network call.
       await _finishQuiz();
     }
   }
 
   Future<void> _finishQuiz() async {
-    // Guard against a double-tap on "Finish Quiz": the button stays on screen
-    // during the async submit, and a second tap would insert a *second*
-    // quiz_attempts row (showing up as a duplicate in Recent Activity).
-    // isSubmitting flips synchronously before the first await, so any re-entry
-    // is blocked here.
     if (isSubmitting.value || isFinished.value) return;
 
     final childId = _session.activeChild.value?.id;
