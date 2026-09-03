@@ -194,7 +194,12 @@ class _ProfileViewState extends State<ProfileView>
                     subtitle: 'Change to a different child',
                     color: AppColors.primary,
                     onTap: () async {
-                      Get.toNamed(AppRoutes.profileSwitcher);
+                      // Pushed (not offAllNamed), so the switcher has somewhere
+                      // to return to — tell it to show a back button.
+                      Get.toNamed(
+                        AppRoutes.profileSwitcher,
+                        arguments: {'showBackButton': true},
+                      );
                     },
                   ),
                 ],

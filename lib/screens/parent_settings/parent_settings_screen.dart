@@ -232,13 +232,21 @@ class ParentSettingsView extends StatelessWidget {
           style: AppTextStyles.bodySecondary,
         ),
         actions: [
-          ElevatedButton(
-            onPressed: () async {
-              Get.back();
-              await vm.logout();
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            child: const Text('Log Out'),
+          Obx(
+            () => ElevatedButton(
+              onPressed: vm.isLoggingOut.value ? null : vm.logout,
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+              child: vm.isLoggingOut.value
+                  ? const SizedBox(
+                      height: 18,
+                      width: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Text('Log Out'),
+            ),
           ),
         ],
       ),

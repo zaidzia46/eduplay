@@ -28,6 +28,7 @@ class ParentSettingsController extends GetxController {
   var isChangingPassword = false.obs;
   var passwordErrorMessage = ''.obs;
   var isLoadingAvatar = true.obs;
+  var isLoggingOut = false.obs;
 
   late Future<void> loadingParentAvatar;
 
@@ -135,13 +136,20 @@ class ParentSettingsController extends GetxController {
   }
 
   Future<void> logout() async {
-    await session.logout();
-    Get.delete<ProfileSwitcherViewModel>(force: true);
-    Get.delete<DashboardController>(force: true);
-    ChildProfileRepository.clearCache();
-    ParentRepository.clearCache();
-
-    Get.offAllNamed(AppRoutes.login);
+    if (isLoggingOut.value) return; // guard against a double-tap
+    isLoggingOut.value = true;
+    try {
+      await session.logout();
+      Get.delete<ProfileSwitcherViewModel>(force: true);
+      Get.delete<DashboardController>(force: true);
+      ChildProfileRepository.clearCache();
+      ParentRepository.clearCache();
+      Get.offAllNamed(AppRoutes.login);
+    } catch (e) {
+      log('Logout failed: $e');
+      isLoggingOut.value = false;
+      Get.snackbar('Logout failed', 'Something went wrong. Please try again.');
+    }
   }
 
   @override
