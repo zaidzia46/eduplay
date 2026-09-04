@@ -30,10 +30,16 @@ class SubjectProgressRow extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Image.asset(
-                "assets/images/${subject.iconPath}",
-                errorBuilder: (_, __, ___) =>
-                    Icon(Icons.book_rounded, color: subject.colorHex, size: 22),
+              child: Padding(
+                padding: const EdgeInsets.all(5),
+                child: Image.asset(
+                  "assets/images/${subject.iconPath}",
+                  errorBuilder: (_, __, ___) => Icon(
+                    Icons.book_rounded,
+                    color: subject.colorHex,
+                    size: 22,
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: 12),

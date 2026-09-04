@@ -33,7 +33,13 @@ class AuthViewModel extends GetxController {
 
       Get.offAllNamed(AppRoutes.profileSwitcher);
     } on AuthException catch (e) {
-      errorMessage.value = _extractErrorMessage(e);
+      final error = _extractErrorMessage(e);
+      if (error.contains('Invalid login credentials')) {
+        errorMessage.value = 'Invalid email or password.';
+      } else {
+        errorMessage.value =
+            'Something went wrong. Please check your connection.';
+      }
     } catch (e) {
       errorMessage.value = e is Exception
           ? e.toString().replaceFirst('Exception: ', '')

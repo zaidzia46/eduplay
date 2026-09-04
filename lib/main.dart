@@ -6,11 +6,14 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
 
 import 'controller/session_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  WebViewPlatform.instance = AndroidWebViewPlatform();
   await GetStorage.init();
   Get.put(SessionController(), permanent: true);
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);

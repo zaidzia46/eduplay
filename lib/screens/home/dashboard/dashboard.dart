@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eduplay/routes/app_routes.dart';
+import 'package:eduplay/screens/home/game_demo/game.dart';
 import 'package:eduplay/widgets/expanded_avatar.dart';
 import 'package:eduplay/screens/home/subjects/subjects_controller.dart';
 import 'package:eduplay/theme/app_colors.dart';
@@ -15,6 +16,7 @@ import '../../profile/widgets/skeleton_avatar_loader.dart';
 import '../../../widgets/circular_loader.dart';
 import '../../../widgets/continue_learning_card.dart';
 import '../../../widgets/streak_card.dart';
+import '../subjects/chapters/quiz/quiz_screen.dart';
 import '../subjects/widgets/subject_progress_row.dart';
 import '../bottom_nav/bottomNavigation_controller.dart';
 import '../subjects/widgets/subject_progress_row_skeleton.dart';
@@ -323,7 +325,30 @@ class _DashBoardState extends State<DashBoard>
                               );
                             }),
                           ),
-                          // SizedBox(height: 20),
+                          SizedBox(height: 20),
+                          TitleRow(title: 'Fun Games', onTap: () {}),
+                          SizedBox(height: 8),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  Get.to(() => GameView());
+                                },
+                                child: SizedBox(
+                                  height: 126,
+                                  width: 126,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(16),
+                                    child: Image.asset(
+                                      "assets/images/mquiz.png",
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                           // TitleRow(
                           //   title: 'Continue Learning',
                           //   onTap: () {

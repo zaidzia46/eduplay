@@ -5,11 +5,11 @@ import 'package:eduplay/controller/session_controller.dart';
 import 'package:eduplay/screens/home/child_profile/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/action_tile.dart';
-import '../../../widgets/info_chip.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -19,195 +19,480 @@ class ProfileView extends StatefulWidget {
 }
 
 class _ProfileViewState extends State<ProfileView>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin, SingleTickerProviderStateMixin {
   @override
   bool get wantKeepAlive => true;
+
+  late final AnimationController _anim = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 650),
+  )..forward();
+
+  late final Animation<double> _fade = CurvedAnimation(
+    parent: _anim,
+    curve: Curves.easeOutCubic,
+  );
+
+  late final Animation<Offset> _slide = Tween<Offset>(
+    begin: const Offset(0, 0.06),
+    end: Offset.zero,
+  ).animate(CurvedAnimation(parent: _anim, curve: Curves.easeOutCubic));
+
+  @override
+  void dispose() {
+    _anim.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
     final session = Get.find<SessionController>();
     final vm = Get.find<ProfileViewModel>();
-    const double avatarSize = 90;
-    final media = MediaQuery.of(context);
-    final size = media.size;
-    final bannerWidth = size.width - 24;
-    final bannerHeight = bannerWidth * 841 / 1871;
-    final topBackgroundHeight = (media.padding.top + 97 + bannerHeight).clamp(
-      250.0,
-      size.height * 0.45,
-    );
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      backgroundColor: AppColors.white,
+      backgroundColor: const Color(0xFFF7F5FE),
       body: Stack(
         children: [
-          ShaderMask(
-            shaderCallback: (Rect bounds) {
-              return const LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.white,
-                  Colors.white,
-                  Colors.white,
-                  Colors.transparent,
-                ],
-                stops: [0.0, 0.5, 0.85, 1.0],
-              ).createShader(bounds);
-            },
-            blendMode: BlendMode.dstIn,
-            child: Image.asset(
-              'assets/images/dashboard_bg.png',
-              fit: BoxFit.cover,
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    AppColors.primary.withOpacity(.14),
+                    const Color(0xFFF8F7FF),
+                    const Color(0xFFF7F5FE),
+                  ],
+                  stops: const [0.0, 0.38, 1.0],
+                ),
+              ),
             ),
           ),
+
+          Positioned(
+            top: -70,
+            left: -70,
+            child: _Bubble(
+              size: 210,
+              color: AppColors.primary.withOpacity(.12),
+            ),
+          ),
+
+          Positioned(
+            top: 90,
+            right: -70,
+            child: _Bubble(
+              size: 170,
+              color: AppColors.primary.withOpacity(.09),
+            ),
+          ),
+
+          Positioned(
+            bottom: 130,
+            left: -55,
+            child: _Bubble(
+              size: 130,
+              color: AppColors.primary.withOpacity(.07),
+            ),
+          ),
+
+          Positioned(
+            bottom: 30,
+            right: 30,
+            child: _Bubble(size: 80, color: AppColors.primary.withOpacity(.08)),
+          ),
+
           SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 15),
-              child: Column(
-                children: [
-                  Text(
-                    'Profile',
-                    style: AppTextStyles.h1.copyWith(color: AppColors.white),
-                  ),
-                  const SizedBox(height: 15),
-                  Obx(() {
-                    final child = session.activeChild.value;
-                    if (child == null) return const SizedBox.shrink();
+            child: FadeTransition(
+              opacity: _fade,
+              child: SlideTransition(
+                position: _slide,
+                child: Column(
+                  children: [
+                    _buildHeader(),
 
-                    return Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage(
-                            'assets/images/profile_card_bg.png',
-                          ),
-                          fit: BoxFit.cover,
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
                         ),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Column(
-                        children: [
-                          GestureDetector(
-                            onTap: vm.changeAvatar,
-                            child: Stack(
-                              children: [
-                                Obx(() {
-                                  final localPath = vm.localPreviewPath.value;
-                                  final url = vm.avatarUrl.value;
+                        child: Column(
+                          children: [
+                            Obx(() {
+                              final child = session.activeChild.value;
 
-                                  ImageProvider? imageProvider;
-                                  if (localPath != null) {
-                                    imageProvider = FileImage(File(localPath));
-                                  } else if (url != null) {
-                                    imageProvider = CachedNetworkImageProvider(
-                                      url,
-                                    );
-                                  }
-                                  return Container(
-                                    width: avatarSize,
-                                    height: avatarSize,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: const Color(0xffFFD84E),
-                                      border: Border.all(
-                                        color: Colors.white,
-                                        width: 4,
-                                      ),
-                                    ),
-                                    child: CircleAvatar(
-                                      radius: avatarSize / 2,
-                                      backgroundColor: AppColors.primaryDark,
-                                      backgroundImage: imageProvider,
-                                      child: url == null
-                                          ? Icon(
-                                              Icons.person,
-                                              size: avatarSize * 0.5,
-                                            )
-                                          : null,
-                                    ),
-                                  );
-                                }),
-                                Positioned(
-                                  bottom: 0,
-                                  right: 0,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(6),
-                                    decoration: const BoxDecoration(
-                                      color: AppColors.textPrimary,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(
-                                      Icons.camera_alt,
-                                      size: 14,
-                                      color: Colors.white,
-                                    ),
+                              if (child == null) {
+                                return const SizedBox.shrink();
+                              }
+
+                              return _buildProfileCard(child, vm);
+                            }),
+
+                            const SizedBox(height: 22),
+
+                            Obx(() {
+                              final child = session.activeChild.value;
+
+                              if (child == null) {
+                                return const SizedBox.shrink();
+                              }
+
+                              return Column(
+                                children: [
+                                  _buildInfoTile(
+                                    category: 'Standard / Grade',
+                                    title:
+                                        child.standard?.name ?? 'No standard',
+                                    icon: Icons.menu_book_rounded,
+                                    iconColor: AppColors.primary,
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 12),
 
-                          Text(
-                            child.name,
-                            style: AppTextStyles.h2,
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 4),
+                                  const SizedBox(height: 12),
 
-                          // Username
-                          Text(
-                            '@${child.username}',
-                            style: AppTextStyles.bodySecondary,
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 12),
+                                  _buildInfoTile(
+                                    category: 'Institution',
+                                    title:
+                                        child.institution?.name ??
+                                        'No institution',
+                                    icon: Icons.account_balance_rounded,
+                                    iconColor: const Color(0xFF10B981),
+                                  ),
+                                ],
+                              );
+                            }),
 
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              InfoChip(
-                                icon: Icons.school_outlined,
-                                label: child.standard?.name ?? 'No standard',
-                              ),
-                              const SizedBox(height: 8),
-                              InfoChip(
-                                icon: Icons.location_city_outlined,
-                                label:
-                                    child.institution?.name ?? 'No institution',
-                              ),
-                            ],
-                          ),
-                        ],
+                            const SizedBox(height: 22),
+
+                            _buildSwitchProfile(),
+
+                            const SizedBox(height: 32),
+                          ],
+                        ),
                       ),
-                    );
-                  }),
-
-                  const SizedBox(height: 24),
-
-                  ActionTile(
-                    icon: Icons.switch_account_outlined,
-                    label: 'Switch Profile',
-                    subtitle: 'Change to a different child',
-                    color: AppColors.primary,
-                    onTap: () async {
-                      // Pushed (not offAllNamed), so the switcher has somewhere
-                      // to return to — tell it to show a back button.
-                      Get.toNamed(
-                        AppRoutes.profileSwitcher,
-                        arguments: {'showBackButton': true},
-                      );
-                    },
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: SizedBox(
+        width: double.infinity,
+        child: Center(
+          child: Text(
+            'Profile',
+            style: AppTextStyles.h1.copyWith(
+              color: AppColors.primary,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileCard(dynamic child, ProfileViewModel vm) {
+    const double avatarSize = 104;
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0.92, end: 1.0),
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeOutBack,
+      builder: (context, value, childWidget) {
+        return Transform.scale(scale: value, child: childWidget);
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(.94),
+          borderRadius: BorderRadius.circular(32),
+          border: Border.all(color: Colors.white.withOpacity(.8), width: 1.5),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withOpacity(.10),
+              blurRadius: 26,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            GestureDetector(
+              onTap: vm.changeAvatar,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppColors.primary,
+                          AppColors.primary.withOpacity(.55),
+                          const Color(0xFFC4B5FD),
+                          AppColors.primary,
+                        ],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withOpacity(.25),
+                          blurRadius: 18,
+                          offset: const Offset(0, 7),
+                        ),
+                      ],
+                    ),
+                    child: Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white,
+                      ),
+                      child: Obx(() {
+                        final localPath = vm.localPreviewPath.value;
+
+                        final url = vm.avatarUrl.value;
+
+                        // Local image
+                        if (localPath != null) {
+                          return ClipOval(
+                            child: Image.file(
+                              File(localPath),
+                              width: avatarSize,
+                              height: avatarSize,
+                              fit: BoxFit.cover,
+                            ),
+                          );
+                        }
+
+                        // Network image
+                        if (url != null && url.isNotEmpty) {
+                          return ClipOval(
+                            child: CachedNetworkImage(
+                              imageUrl: url,
+                              width: avatarSize,
+                              height: avatarSize,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) {
+                                return _defaultAvatar(avatarSize);
+                              },
+                              errorWidget: (context, url, error) {
+                                return _defaultAvatar(avatarSize);
+                              },
+                            ),
+                          );
+                        }
+
+                        // Default avatar
+                        return _defaultAvatar(avatarSize);
+                      }),
+                    ),
+                  ),
+
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2.5),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withOpacity(.25),
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.camera_alt_rounded,
+                        size: 15,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            Text(
+              child.name,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.h2.copyWith(
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFF1E1B4B),
+              ),
+            ),
+
+            const SizedBox(height: 7),
+
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(.09),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                '@${child.username}',
+                style: AppTextStyles.bodySecondary.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _defaultAvatar(double size) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        color: Color(0xFFF1EDFF),
+      ),
+      child: Icon(
+        Icons.person_rounded,
+        size: size * .45,
+        color: AppColors.primary,
+      ),
+    );
+  }
+
+  Widget _buildInfoTile({
+    required String category,
+    required String title,
+    required IconData icon,
+    required Color iconColor,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: const Color(0xFFF0EEFA), width: 1.3),
+        boxShadow: [
+          BoxShadow(
+            color: iconColor.withOpacity(.07),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // Icon
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: iconColor.withOpacity(.12),
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Icon(icon, color: iconColor, size: 22),
+          ),
+
+          const SizedBox(width: 14),
+
+          // Text
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  category,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: iconColor,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF1E1B4B),
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSwitchProfile() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: const Color(0xFFF0EEFA), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(.08),
+            blurRadius: 18,
+            offset: const Offset(0, 7),
+          ),
+        ],
+      ),
+      child: ActionTile(
+        icon: Icons.switch_account_rounded,
+        label: 'Switch Profile',
+        subtitle: 'Change to a different child',
+        color: AppColors.primary,
+        onTap: () {
+          Get.toNamed(
+            AppRoutes.profileSwitcher,
+            arguments: {'showBackButton': true},
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _Bubble extends StatelessWidget {
+  const _Bubble({required this.size, required this.color});
+
+  final double size;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(shape: BoxShape.circle, color: color),
     );
   }
 }

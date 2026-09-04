@@ -13,4 +13,5 @@ abstract class AppRoutes {
   static const quiz = '/quiz';
   static const String progress = '/progress';
   static const String parentSettings = '/parent-settings';
+  static const game = '/game';
 }

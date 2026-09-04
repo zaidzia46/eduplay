@@ -1,3 +1,4 @@
+import 'package:eduplay/screens/home/game_demo/game.dart';
 import 'package:eduplay/screens/home/progress/progress_bin.dart';
 import 'package:eduplay/screens/home/subjects/subjects_bin.dart';
 import 'package:get/get.dart';
@@ -110,6 +111,12 @@ abstract class AppPages {
       name: AppRoutes.quiz,
       page: () => QuizScreen(),
       binding: QuizBinding(),
+      transition: Transition.fadeIn,
+    ),
+
+    GetPage(
+      name: AppRoutes.game,
+      page: () => GameView(),
       transition: Transition.fadeIn,
     ),
   ];
