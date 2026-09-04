@@ -3,6 +3,7 @@ import 'package:eduplay/screens/home/subjects/widgets/filter_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../progress/progress_repo.dart';
 import 'subject_repo.dart';
 import 'subjects_model.dart';
 
@@ -10,6 +11,7 @@ enum SubjectFilter { all, notStarted, inProgress, completed }
 
 class SubjectsController extends GetxController {
   final SubjectRepository _subjectRepo = SubjectRepository();
+  final ProgressRepository _progressRepo = ProgressRepository();
   final SessionController _session = Get.find<SessionController>();
 
   var subjects = <SubjectModel>[].obs;
@@ -34,6 +36,7 @@ class SubjectsController extends GetxController {
 
   Future<void> fetchSubjects() async {
     final currentChild = _session.activeChild.value;
+    final childId = currentChild?.id;
     final curriculumId = currentChild?.curriculumId;
     final standardId = currentChild?.standard?.id;
 
@@ -47,14 +50,48 @@ class SubjectsController extends GetxController {
       isSubjectsLoading.value = true;
       errorSubjectMessage.value = '';
 
-      subjects.value = await _subjectRepo.getSubjects(
+      final fetched = await _subjectRepo.getSubjects(
         curriculumId: curriculumId,
         standardId: standardId,
       );
+
+      subjects.value = await _withProgress(fetched, childId);
     } catch (e) {
       errorSubjectMessage.value = 'Could not load subjects';
     } finally {
       isSubjectsLoading.value = false;
+    }
+  }
+
+  /// Merges the real per-subject completion % (from `get_child_progress`, the
+  /// same source the Progress tab uses) onto each subject, keyed by
+  /// standard_subject_id. Without this every subject keeps progressPercent 0,
+  /// so the notStarted/inProgress/completed filters can't tell rows apart.
+  /// If the progress call fails we fall back to the un-enriched list rather
+  /// than failing the whole subjects load.
+  Future<List<SubjectModel>> _withProgress(
+    List<SubjectModel> fetched,
+    int? childId,
+  ) async {
+    if (childId == null) return fetched;
+
+    try {
+      final overview = await _progressRepo.getOverview(childId);
+      final percentBySubject = {
+        for (final s in overview.subjects) s.standardSubjectId: s.percent,
+      };
+
+      return fetched
+          .map(
+            (s) => s.copyWithProgress(
+              lessonCount: s.lessonCount,
+              completedLessonCount: s.completedLessonCount,
+              progressPercent: percentBySubject[s.standardSubjectId] ?? 0,
+            ),
+          )
+          .toList();
+    } catch (_) {
+      return fetched;
     }
   }
 
@@ -69,10 +106,8 @@ class SubjectsController extends GetxController {
           .toList();
     }
 
-    // NOTE: progressPercent defaults to 0 for every subject until
-    // child_progress_summary exists — so notStarted/inProgress/completed
-    // filters will currently just put everything in "notStarted". Wiring
-    // stays in place so this works automatically once that table lands.
+    // progressPercent is populated from get_child_progress in _withProgress,
+    // so these filters partition subjects by real completion state.
     switch (activeFilter.value) {
       case SubjectFilter.notStarted:
         result = result.where((s) => s.progressPercent == 0).toList();
