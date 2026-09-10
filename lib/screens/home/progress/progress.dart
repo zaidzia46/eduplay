@@ -1,6 +1,5 @@
 import 'package:eduplay/screens/home/progress/progress_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
 import '../../../theme/app_colors.dart';
@@ -9,7 +8,7 @@ import '../../../widgets/activity_breakdown_card.dart';
 import '../../../widgets/morphing_progress_indicator.dart';
 import '../../../widgets/recent_act_tile.dart';
 import '../../../widgets/staggered_anime.dart';
-import '../../../widgets/stat_tile.dart';
+import '../../../widgets/stat_chip.dart';
 import '../../../routes/app_routes.dart';
 import '../subjects/subjects_model.dart';
 import 'widgets/progress_skeleton.dart';
@@ -219,25 +218,14 @@ class _ProgressViewState extends State<ProgressView>
                                       Row(
                                         children: [
                                           Expanded(
-                                            child: StatTile(
-                                              icon: FaIcon(
-                                                FontAwesomeIcons.solidStar,
-                                                size: 20,
-                                                color: AppColors.star,
-                                              ),
-                                              color: AppColors.star,
+                                            child: StatChip.stars(
                                               value: '${vm.starsEarned}',
                                               label: 'Stars Earned',
                                             ),
                                           ),
+                                          const SizedBox(width: 12),
                                           Expanded(
-                                            child: StatTile(
-                                              icon: FaIcon(
-                                                FontAwesomeIcons.fire,
-                                                size: 20,
-                                                color: AppColors.streak,
-                                              ),
-                                              color: AppColors.streak,
+                                            child: StatChip.streak(
                                               value: '${vm.dayStreak}',
                                               label: 'Day Streak',
                                             ),

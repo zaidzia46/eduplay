@@ -64,12 +64,12 @@ class ProfileCardSkeleton extends StatelessWidget {
                 // Stand-in for the progress bar.
                 _bone(height: 6, radius: 10),
                 const SizedBox(height: 8),
-                // Stand-in for the stars/streak row.
+                // Stand-in for the stars/streak chips.
                 Row(
                   children: [
-                    _bone(width: 24, height: 12),
-                    const SizedBox(width: 12),
-                    _bone(width: 70, height: 12),
+                    _bone(width: 54, height: 30, radius: 14),
+                    const SizedBox(width: 8),
+                    _bone(width: 54, height: 30, radius: 14),
                   ],
                 ),
               ],

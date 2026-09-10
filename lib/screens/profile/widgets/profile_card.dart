@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
+import '../../../widgets/stat_chip.dart';
 import '../profile_switcher/models/child_profile_model.dart';
 
 class ProfileCard extends StatefulWidget {
@@ -286,34 +287,12 @@ class _ProfileCardState extends State<ProfileCard>
                               ),
                             ],
                           ),
-                          const SizedBox(height: 3),
+                          const SizedBox(height: 6),
                           Row(
                             children: [
-                              const Icon(
-                                Icons.star_rounded,
-                                color: AppColors.star,
-                                size: 16,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${widget.stars}',
-                                style: AppTextStyles.caption.copyWith(
-                                  color: AppColors.textPrimary,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              const Icon(
-                                Icons.local_fire_department,
-                                color: AppColors.error,
-                                size: 16,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${widget.streak} day streak',
-                                style: AppTextStyles.caption.copyWith(
-                                  color: AppColors.textPrimary,
-                                ),
-                              ),
+                              StatChip.stars(value: '${widget.stars}'),
+                              const SizedBox(width: 8),
+                              StatChip.streak(value: '${widget.streak}'),
                             ],
                           ),
                         ],
