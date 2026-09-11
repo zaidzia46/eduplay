@@ -58,11 +58,13 @@ class _GameViewState extends State<GameView> {
           style: AppTextStyles.h1.copyWith(color: AppColors.white),
         ),
       ),
-      body: Stack(
-        children: [
-          WebViewWidget(controller: _controller),
-          if (_isLoading) const Center(child: CircularProgressIndicator()),
-        ],
+      body: SafeArea(
+        child: Stack(
+          children: [
+            WebViewWidget(controller: _controller),
+            if (_isLoading) const Center(child: CircularProgressIndicator()),
+          ],
+        ),
       ),
     );
   }

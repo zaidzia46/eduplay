@@ -17,14 +17,14 @@ class RegisterView extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: AppColors.textPrimary,
-            size: 20,
-          ),
-          onPressed: () => Get.back(),
-        ),
+        // leading: IconButton(
+        //   icon: const Icon(
+        //     Icons.arrow_back_ios_new_rounded,
+        //     color: AppColors.textPrimary,
+        //     size: 20,
+        //   ),
+        //   onPressed: () => Get.back(),
+        // ),
       ),
       body: AuthBackground(
         child: SafeArea(
