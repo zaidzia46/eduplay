@@ -87,6 +87,83 @@ class AuthViewModel extends GetxController {
     }
   }
 
+  /// Start an anonymous session so a visitor can explore and play without an
+  /// account. This mints a REAL auth.users row (role `authenticated`, claim
+  /// `is_anonymous: true`) and fires `handle_new_parent()`, so the guest is a
+  /// real "parent" — every per-child screen downstream works untouched. They
+  /// then pick a grade via the create-profile cascade (guest mode).
+  Future<void> continueAsGuest() async {
+    try {
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      await supabase.auth.signInAnonymously();
+
+      Get.toNamed(AppRoutes.createProfile, arguments: {'guest': true});
+    } on AuthException catch (e) {
+      errorMessage.value = _extractErrorMessage(e);
+    } catch (e) {
+      errorMessage.value = e is Exception
+          ? e.toString().replaceFirst('Exception: ', '')
+          : 'Could not start exploring. Please try again.';
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// Convert the current anonymous account into a permanent one on the SAME
+  /// UUID, so the child, stars, streak and attempts built as a guest persist
+  /// losslessly. `updateUser` returns a `UserResponse` (no new session — the
+  /// anon session we already hold simply becomes permanent), so we deliberately
+  /// do NOT route through `_handleAuthSuccess` (which expects an
+  /// `AuthResponse.session`). `newEmail` being set means email confirmation is
+  /// pending; the session still works, so we let them keep using the app.
+  Future<void> convertGuest() async {
+    if (!_validateRegisterForm()) return;
+    try {
+      isLoading.value = true;
+      errorMessage.value = '';
+
+      final name = nameController.text.trim();
+
+      final response = await supabase.auth.updateUser(
+        UserAttributes(
+          email: emailController.text.trim(),
+          password: passwordController.text,
+          data: {'name': name},
+        ),
+      );
+
+      // handle_new_parent() only fills parents.name on INSERT; this is an
+      // existing (guest) parent row, so write the real name explicitly.
+      await supabase
+          .from('parents')
+          .update({'name': name})
+          .eq('id', supabase.auth.currentUser!.id);
+
+      await session.setParentName(name);
+
+      final pendingEmail = response.user?.newEmail;
+      Get.back(); // back into the app they were already using
+      if (pendingEmail != null && pendingEmail.isNotEmpty) {
+        Get.snackbar(
+          'Almost there',
+          'Check $pendingEmail to confirm your email. Your progress is already saved.',
+        );
+      } else {
+        Get.snackbar('Account saved', 'Your progress is now safe.');
+      }
+    } on AuthException catch (e) {
+      errorMessage.value = _extractErrorMessage(e);
+    } catch (e) {
+      errorMessage.value = e is Exception
+          ? e.toString().replaceFirst('Exception: ', '')
+          : 'Could not save your account. Please try again.';
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   Future<void> _handleAuthSuccess(AuthResponse response) async {
     final user = response.user;
     final accessToken = response.session?.accessToken;

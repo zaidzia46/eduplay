@@ -11,20 +11,20 @@ class RegisterView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = Get.find<AuthViewModel>();
+    final args = Get.arguments;
+    // Entered from inside the app by a guest tapping "save my progress"; the
+    // same form then converts the anonymous account instead of creating a new
+    // one. Reached from the login screen (normal signup) with no arguments.
+    final isConvert = args is Map && args['convert'] == true;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        // leading: IconButton(
-        //   icon: const Icon(
-        //     Icons.arrow_back_ios_new_rounded,
-        //     color: AppColors.textPrimary,
-        //     size: 20,
-        //   ),
-        //   onPressed: () => Get.back(),
-        // ),
+        // No back button: it used to shove the Hero logo off-center, and the
+        // form has its own dismiss affordances (tabs / footer link).
+        automaticallyImplyLeading: false,
       ),
       body: AuthBackground(
         child: SafeArea(
@@ -49,25 +49,30 @@ class RegisterView extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 18),
-                  FadeSlideIn(
-                    delayMs: 80,
-                    child: AuthTabs(
-                      isLoginSelected: false,
-                      onLogin: () => Get.back(),
-                      onRegister: () {},
+                  if (!isConvert) ...[
+                    FadeSlideIn(
+                      delayMs: 80,
+                      child: AuthTabs(
+                        isLoginSelected: false,
+                        onLogin: () => Get.back(),
+                        onRegister: () {},
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 18),
+                    const SizedBox(height: 18),
+                  ],
                   FadeSlideIn(
                     delayMs: 160,
                     child: GlassCard(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const AuthHeading(
-                            title: 'Create Account',
-                            subtitle:
-                                "Sign up to start your child's learning adventure.",
+                          AuthHeading(
+                            title: isConvert
+                                ? 'Save your progress'
+                                : 'Create Account',
+                            subtitle: isConvert
+                                ? 'Create an account so your stars and progress are never lost.'
+                                : "Sign up to start your child's learning adventure.",
                           ),
                           const SizedBox(height: 24),
 
@@ -116,9 +121,13 @@ class RegisterView extends StatelessWidget {
 
                           Obx(
                             () => AuthButton(
-                              label: 'Create Account',
+                              label: isConvert
+                                  ? 'Sign Up & Save Progress'
+                                  : 'Create Account',
                               isLoading: vm.isLoading.value,
-                              onPressed: vm.register,
+                              onPressed: isConvert
+                                  ? vm.convertGuest
+                                  : vm.register,
                             ),
                           ),
                           const SizedBox(height: 22),
@@ -152,8 +161,10 @@ class RegisterView extends StatelessWidget {
                           const SizedBox(height: 22),
 
                           AuthFooterLink(
-                            text: 'Already have an account? ',
-                            actionText: 'Sign In',
+                            text: isConvert
+                                ? 'Changed your mind? '
+                                : 'Already have an account? ',
+                            actionText: isConvert ? 'Go back' : 'Sign In',
                             onTap: () => Get.back(),
                           ),
                         ],

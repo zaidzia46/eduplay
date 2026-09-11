@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:eduplay/screens/profile/create_child_profile/repo/catalog_repo.dart';
 import 'package:eduplay/screens/profile/create_child_profile/repo/create_child_profile_repo.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +12,7 @@ import 'models/city_model.dart';
 import 'models/curriculam_option_model.dart';
 import 'models/institution_model.dart';
 import 'models/standard_model.dart';
+import '../profile_switcher/models/child_profile_model.dart';
 
 class CreateProfileViewModel extends GetxController {
   final CatalogRepository _catalogRepo = CatalogRepository();
@@ -43,9 +42,17 @@ class CreateProfileViewModel extends GetxController {
   var isLoading = false.obs;
   var errorMessage = ''.obs;
 
+  /// When true this screen is being used by a guest (anonymous auth) to pick a
+  /// grade before exploring. Identity fields (name/username) and the avatar are
+  /// hidden and auto-filled; only the City→School→Curriculum→Grade cascade
+  /// shows, and on submit we drop straight into `home` rather than the switcher.
+  bool isGuest = false;
+
   @override
   void onInit() {
     super.onInit();
+    final args = Get.arguments;
+    isGuest = args is Map && args['guest'] == true;
     fetchCities();
   }
 
@@ -135,24 +142,51 @@ class CreateProfileViewModel extends GetxController {
   }
 
   Future<void> createProfile() async {
-    if (!_validate()) return;
+    // Guests never see the name/username fields, so synthesize them: a fixed
+    // display name and a timestamp-unique username that can't collide with the
+    // `username` UNIQUE constraint (the 23505 handled below).
+    final name = isGuest ? 'Explorer' : nameController.text.trim();
+    final username = isGuest
+        ? 'guest_${DateTime.now().millisecondsSinceEpoch}'
+        : usernameController.text.trim();
+
+    if (!_validate(name: name, username: username)) return;
     try {
       isLoading.value = true;
       errorMessage.value = '';
 
       final childId = await _childRepo.createChild(
-        name: nameController.text.trim(),
-        username: usernameController.text.trim(),
+        name: name,
+        username: username,
         instituteId: selectedInstitution.value!.id,
         curriculumId: selectedCurriculum.value!.curriculumId,
         standardId: selectedStandard.value!.id,
       );
 
-      if (profileImagePath.value != null) {
+      // Guests skip the avatar step entirely.
+      if (!isGuest && profileImagePath.value != null) {
         await _childRepo.uploadAvatar(childId, profileImagePath.value!);
       }
 
-      Get.offAllNamed(AppRoutes.profileSwitcher);
+      if (isGuest) {
+        // A guest owns exactly this one child, so populate activeChild directly
+        // from the cascade values already in hand (no round-trip) and drop into
+        // the app — mirroring ProfileSwitcherViewModel.selectChild's
+        // precache-then-navigate. setActiveChild also sets currentStandard.
+        final model = ChildProfileModel(
+          id: childId,
+          name: name,
+          username: username,
+          standard: selectedStandard.value,
+          institution: selectedInstitution.value,
+          curriculumId: selectedCurriculum.value!.curriculumId,
+        );
+        await session.setActiveChild(model);
+        await _precacheHomeAssets();
+        Get.offAllNamed(AppRoutes.home);
+      } else {
+        Get.offAllNamed(AppRoutes.profileSwitcher);
+      }
     } on PostgrestException catch (e) {
       errorMessage.value = e.code == '23505'
           ? 'That username is already taken.'
@@ -164,14 +198,38 @@ class CreateProfileViewModel extends GetxController {
     }
   }
 
-  bool _validate() {
-    if (nameController.text.trim().isEmpty) {
-      errorMessage.value = 'Please enter child\'s name.';
-      return false;
-    }
-    if (usernameController.text.trim().isEmpty) {
-      errorMessage.value = 'Please enter a username.';
-      return false;
+  /// Warm the image cache for the home tabs so the guest lands on a fully
+  /// painted dashboard, exactly as the profile switcher does on child select.
+  Future<void> _precacheHomeAssets() async {
+    final context = Get.context;
+    if (context == null) return;
+    await Future.wait([
+      precacheImage(
+        const AssetImage('assets/images/dashboard_bg.png'),
+        context,
+      ),
+      precacheImage(const AssetImage('assets/images/subjects_bg.png'), context),
+      precacheImage(const AssetImage('assets/images/progress_bg.png'), context),
+      precacheImage(
+        const AssetImage('assets/images/profile_card_bg.png'),
+        context,
+      ),
+      precacheImage(const AssetImage('assets/images/banner.png'), context),
+    ]);
+  }
+
+  bool _validate({required String name, required String username}) {
+    // Guests don't fill identity fields (they're auto-generated and hidden),
+    // so only the cascade is validated for them.
+    if (!isGuest) {
+      if (name.isEmpty) {
+        errorMessage.value = 'Please enter child\'s name.';
+        return false;
+      }
+      if (username.isEmpty) {
+        errorMessage.value = 'Please enter a username.';
+        return false;
+      }
     }
     if (selectedCity.value == null) {
       errorMessage.value = 'Please select a city.';

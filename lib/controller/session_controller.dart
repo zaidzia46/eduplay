@@ -1,11 +1,13 @@
 import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../core/supabase_client.dart';
 import '../fns/image_picker_service.dart';
+import '../routes/app_routes.dart';
 import '../screens/profile/create_child_profile/models/standard_model.dart';
 import '../screens/profile/profile_switcher/models/child_profile_model.dart';
 
@@ -128,6 +130,33 @@ class SessionController extends GetxController {
   }
 
   int? get currentStandardId => currentStandard.value?.id;
+
+  /// True while the signed-in user is an anonymous (guest) account. Read
+  /// straight off supabase.auth — the same convention the auth layer uses for
+  /// currentSession — so there's no separate flag to keep in sync. Every guest
+  /// UI gate (add-child, avatar upload, change password, logout copy) reads
+  /// this, and the Phase A RLS cap enforces it server-side.
+  bool get isGuest => supabase.auth.currentUser?.isAnonymous ?? false;
+
+  /// Nudge a guest to turn their anonymous session into a real account.
+  /// Centralised so every guarded surface (child/parent avatar uploads, the
+  /// add-child card, …) shows the same prompt and routes to the same convert
+  /// flow (register in convert mode → updateUser on the same UUID, so progress
+  /// carries over losslessly).
+  void promptSignUp([String message = 'Sign up to save your progress.']) {
+    Get.snackbar(
+      'Create an account',
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      mainButton: TextButton(
+        onPressed: () {
+          if (Get.isSnackbarOpen) Get.closeCurrentSnackbar();
+          Get.toNamed(AppRoutes.register, arguments: {'convert': true});
+        },
+        child: const Text('Sign up'),
+      ),
+    );
+  }
 
   Future<void> logout() async {
     await supabase.auth.signOut();

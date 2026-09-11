@@ -66,6 +66,22 @@ class SplashController extends GetxController
 
     if (session != null) {
       final profileVm = Get.put(ProfileSwitcherViewModel(), permanent: true);
+      await profileVm.loadingFuture;
+
+      // A returning guest (anonymous session) skips the parent-facing switcher:
+      // they own exactly one child, so drop them straight back into the app.
+      // selectChild sets the active child, precaches the home assets and
+      // navigates. If the child is missing (sign-up abandoned before the
+      // cascade completed), send them back to pick a grade.
+      if (supabase.auth.currentUser?.isAnonymous ?? false) {
+        if (profileVm.children.isNotEmpty) {
+          await profileVm.selectChild(profileVm.children.first);
+        } else {
+          Get.offAllNamed(AppRoutes.createProfile, arguments: {'guest': true});
+        }
+        return;
+      }
+
       final parentRepo = ParentRepository();
       final parentId = supabase.auth.currentUser!.id;
       String? parentAvatarUrl;
@@ -76,7 +92,6 @@ class SplashController extends GetxController
       } catch (e) {
         parentAvatarUrl = null;
       }
-      await profileVm.loadingFuture;
       await Future.wait([
         ...profileVm.avatarUrlByChild.values.whereType<String>().map(
           (url) => precacheImage(CachedNetworkImageProvider(url), context),

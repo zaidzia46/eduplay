@@ -66,7 +66,11 @@ abstract class AppPages {
       binding: AuthBinding(),
       transition: Transition.fadeIn,
     ),
-    GetPage(name: AppRoutes.register, page: () => const RegisterView()),
+    GetPage(
+      name: AppRoutes.register,
+      page: () => const RegisterView(),
+      binding: AuthBinding(),
+    ),
     GetPage(
       name: AppRoutes.profileSwitcher,
       page: () => const ProfileSwitcherView(),
