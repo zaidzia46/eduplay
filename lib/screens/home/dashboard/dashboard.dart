@@ -428,13 +428,6 @@ class _DashBoardState extends State<DashBoard>
   }
 }
 
-/// Guest-only nudge to turn the anonymous session into a real account.
-///
-/// The `Obx` reads `session.parentName.value` purely as a reactive trigger:
-/// `convertGuest()` sets the parent name on success, which flips this `Obx` so
-/// the banner vanishes the instant the account becomes permanent. `isGuest`
-/// itself reads live auth state and isn't observable, so we lean on parentName
-/// to know when to re-evaluate.
 class _GuestSaveBanner extends StatelessWidget {
   const _GuestSaveBanner({required this.session});
 
