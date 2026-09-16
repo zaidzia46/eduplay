@@ -13,6 +13,7 @@ class AuthViewModel extends GetxController {
   final session = Get.find<SessionController>();
 
   var isLoading = false.obs;
+  var isLoadingGuest = false.obs;
   var isPasswordHidden = true.obs;
   var errorMessage = ''.obs;
 
@@ -94,7 +95,7 @@ class AuthViewModel extends GetxController {
   /// then pick a grade via the create-profile cascade (guest mode).
   Future<void> continueAsGuest() async {
     try {
-      isLoading.value = true;
+      isLoadingGuest.value = true;
       errorMessage.value = '';
 
       await supabase.auth.signInAnonymously();
@@ -107,7 +108,7 @@ class AuthViewModel extends GetxController {
           ? e.toString().replaceFirst('Exception: ', '')
           : 'Could not start exploring. Please try again.';
     } finally {
-      isLoading.value = false;
+      isLoadingGuest.value = false;
     }
   }
 

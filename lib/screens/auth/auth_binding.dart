@@ -6,6 +6,8 @@ import 'auth_controller.dart';
 class AuthBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<AuthViewModel>(() => AuthViewModel());
+    if (!Get.isRegistered<AuthViewModel>()) {
+      Get.put<AuthViewModel>(AuthViewModel(), permanent: true);
+    }
   }
 }

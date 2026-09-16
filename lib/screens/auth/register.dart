@@ -2,6 +2,7 @@ import 'package:eduplay/screens/auth/widgets/auth_bg.dart';
 import 'package:eduplay/screens/auth/widgets/auth_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../routes/app_routes.dart';
 import '../../theme/app_colors.dart';
 import 'auth_controller.dart';
 
@@ -18,14 +19,11 @@ class RegisterView extends StatelessWidget {
     final isConvert = args is Map && args['convert'] == true;
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        // No back button: it used to shove the Hero logo off-center, and the
-        // form has its own dismiss affordances (tabs / footer link).
-        automaticallyImplyLeading: false,
-      ),
+      // No AppBar: there's no back button (the form has its own dismiss
+      // affordances via the tabs / footer link), and the empty AppBar was
+      // still nudging the Hero logo's landing position down. Matching
+      // login's plain SafeArea-on-body structure keeps the Hero flight
+      // purely a fade/slide with no vertical drift.
       body: AuthBackground(
         child: SafeArea(
           child: GestureDetector(
@@ -33,28 +31,20 @@ class RegisterView extends StatelessWidget {
             onTap: () => FocusScope.of(context).unfocus(),
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  FadeSlideIn(
-                    child: Center(
-                      child: Hero(
-                        tag: 'auth-logo',
-                        child: Image.asset(
-                          'assets/images/logo.png',
-                          height: 76,
-                        ),
-                      ),
-                    ),
+                  Center(
+                    child: Image.asset('assets/images/logo.png', height: 92),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 12),
                   if (!isConvert) ...[
                     FadeSlideIn(
                       delayMs: 80,
                       child: AuthTabs(
                         isLoginSelected: false,
-                        onLogin: () => Get.back(),
+                        onLogin: () => Get.offNamed(AppRoutes.login),
                         onRegister: () {},
                       ),
                     ),
@@ -165,7 +155,9 @@ class RegisterView extends StatelessWidget {
                                 ? 'Changed your mind? '
                                 : 'Already have an account? ',
                             actionText: isConvert ? 'Go back' : 'Sign In',
-                            onTap: () => Get.back(),
+                            onTap: () => isConvert
+                                ? Get.back()
+                                : Get.offNamed(AppRoutes.login),
                           ),
                         ],
                       ),

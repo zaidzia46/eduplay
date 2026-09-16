@@ -34,15 +34,10 @@ class LoginView extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        FadeSlideIn(
-                          child: Center(
-                            child: Hero(
-                              tag: 'auth-logo',
-                              child: Image.asset(
-                                'assets/images/logo.png',
-                                height: 92,
-                              ),
-                            ),
+                        Center(
+                          child: Image.asset(
+                            'assets/images/logo.png',
+                            height: 92,
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -51,7 +46,7 @@ class LoginView extends StatelessWidget {
                           child: AuthTabs(
                             isLoginSelected: true,
                             onLogin: () {},
-                            onRegister: () => Get.toNamed(AppRoutes.register),
+                            onRegister: () => Get.offNamed(AppRoutes.register),
                           ),
                         ),
                         const SizedBox(height: 18),
@@ -135,10 +130,12 @@ class LoginView extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 12),
+                                const AuthDivider(text: 'Or'),
+                                const SizedBox(height: 12),
                                 Obx(
                                   () => AuthButton(
                                     label: 'Explore as guest',
-                                    isLoading: vm.isLoading.value,
+                                    isLoading: vm.isLoadingGuest.value,
                                     onPressed: vm.continueAsGuest,
                                   ),
                                 ),
@@ -175,7 +172,7 @@ class LoginView extends StatelessWidget {
                                 AuthFooterLink(
                                   text: "Don't have an account? ",
                                   actionText: 'Sign Up',
-                                  onTap: () => Get.toNamed(AppRoutes.register),
+                                  onTap: () => Get.offNamed(AppRoutes.register),
                                 ),
                               ],
                             ),
