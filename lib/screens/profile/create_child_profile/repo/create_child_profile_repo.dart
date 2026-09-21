@@ -53,6 +53,17 @@ class ChildProfileRepository {
     return childId;
   }
 
+  Future<void> updateChildProfile(
+    int childId, {
+    required String name,
+    required String username,
+  }) async {
+    await supabase
+        .from('children')
+        .update({'name': name, 'username': username})
+        .eq('id', childId);
+  }
+
   Future<String> uploadAvatar(int childId, String localFilePath) async {
     final parentId = supabase.auth.currentUser!.id;
     final path = '$parentId/children/$childId.png';

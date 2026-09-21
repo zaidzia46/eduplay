@@ -21,6 +21,9 @@ class ProfileViewModel extends GetxController {
 
   final RxBool avatarChanged = false.obs;
 
+  final RxBool isSavingProfile = false.obs;
+  final Rx<String?> profileUpdateError = Rx<String?>(null);
+
   @override
   void onInit() {
     super.onInit();
@@ -75,6 +78,68 @@ class ProfileViewModel extends GetxController {
       localPreviewPath.value = null;
     } finally {
       isUploadingAvatar.value = false;
+    }
+  }
+
+  /// Updates the active child's display name and username.
+  /// Returns true on success so the UI can close its edit sheet.
+  Future<bool> updateNameAndUsername({
+    required String name,
+    required String username,
+  }) async {
+    final currentChild = child.value;
+    if (currentChild == null) return false;
+
+    final trimmedName = name.trim();
+    final trimmedUsername = username.trim();
+
+    if (trimmedName.isEmpty) {
+      profileUpdateError.value = 'Name cannot be empty';
+      return false;
+    }
+    if (trimmedUsername.isEmpty) {
+      profileUpdateError.value = 'Username cannot be empty';
+      return false;
+    }
+
+    // No-op if nothing actually changed.
+    if (trimmedName == currentChild.name &&
+        trimmedUsername == currentChild.username) {
+      return true;
+    }
+
+    profileUpdateError.value = null;
+    isSavingProfile.value = true;
+
+    try {
+      // NOTE: assumes ChildProfileRepository exposes an update method with
+      // this signature. Rename to match your actual repo method if different.
+      await _childRepo.updateChildProfile(
+        currentChild.id,
+        name: trimmedName,
+        username: trimmedUsername,
+      );
+
+      final updatedChild = currentChild.copyWith(
+        name: trimmedName,
+        username: trimmedUsername,
+      );
+      child.value = updatedChild;
+      await _session.setActiveChild(updatedChild);
+
+      if (Get.isRegistered<ProfileSwitcherViewModel>()) {
+        Get.find<ProfileSwitcherViewModel>().updateChild(
+          updatedChild,
+          avatarUrl: avatarUrl.value,
+        );
+      }
+      return true;
+    } catch (e) {
+      log('Profile update failed: $e');
+      profileUpdateError.value = 'Could not update profile. Try again.';
+      return false;
+    } finally {
+      isSavingProfile.value = false;
     }
   }
 }

@@ -29,10 +29,6 @@ class _ProfileSwitcherViewState extends State<ProfileSwitcherView>
   late final AnimationController _controller;
   late final Worker _worker;
 
-  /// True only when this screen was pushed from the child-profile screen, which
-  /// passes {'showBackButton': true}. Every other entry point (auth, splash,
-  /// create-child) reaches the switcher via offAllNamed with no arguments, so
-  /// it's the root of the stack and shows no back button.
   late final bool _showBackButton;
 
   // Tracks which set of (childId -> avatarUrl) pairs we last kicked off
@@ -154,7 +150,7 @@ class _ProfileSwitcherViewState extends State<ProfileSwitcherView>
                             "You're doing a wonderful job supporting your children's journey.",
                         childrenCount: vm.children.length,
                         starsCount: vm.totalStars.value,
-                        userName: session.parentName.value ?? 'User',
+                        userName: session.parentName.value ?? 'Parent',
                       );
                     }),
                   );

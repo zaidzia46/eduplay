@@ -334,14 +334,31 @@ class _ProfileViewState extends State<ProfileView>
 
             const SizedBox(height: 16),
 
-            Text(
-              child.name,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.h2.copyWith(
-                fontSize: 24,
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFF1E1B4B),
-              ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Text(
+                    child.name,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.h2.copyWith(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF1E1B4B),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                GestureDetector(
+                  onTap: () => _showEditProfileSheet(context, child, vm),
+                  child: Icon(
+                    Icons.edit_rounded,
+                    size: 18,
+                    color: AppColors.primary.withOpacity(.7),
+                  ),
+                ),
+              ],
             ),
 
             const SizedBox(height: 7),
@@ -364,6 +381,144 @@ class _ProfileViewState extends State<ProfileView>
           ],
         ),
       ),
+    );
+  }
+
+  void _showEditProfileSheet(
+    BuildContext context,
+    dynamic child,
+    ProfileViewModel vm,
+  ) {
+    final nameController = TextEditingController(text: child.name);
+    final usernameController = TextEditingController(text: child.username);
+    final formKey = GlobalKey<FormState>();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
+          ),
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+            ),
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE5E1FA),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ),
+                  Text(
+                    'Edit Profile',
+                    style: AppTextStyles.h2.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF1E1B4B),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  TextFormField(
+                    controller: nameController,
+                    textCapitalization: TextCapitalization.words,
+                    decoration: const InputDecoration(
+                      labelText: 'Name',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) =>
+                        (value == null || value.trim().isEmpty)
+                        ? 'Name cannot be empty'
+                        : null,
+                  ),
+                  const SizedBox(height: 14),
+                  TextFormField(
+                    controller: usernameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Username',
+                      prefixText: '@',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) =>
+                        (value == null || value.trim().isEmpty)
+                        ? 'Username cannot be empty'
+                        : null,
+                  ),
+                  const SizedBox(height: 20),
+                  Obx(() {
+                    final error = vm.profileUpdateError.value;
+                    if (error == null) return const SizedBox.shrink();
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Text(
+                        error,
+                        style: const TextStyle(color: Colors.red, fontSize: 13),
+                      ),
+                    );
+                  }),
+                  Obx(() {
+                    final saving = vm.isSavingProfile.value;
+                    return ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      onPressed: saving
+                          ? null
+                          : () async {
+                              if (!(formKey.currentState?.validate() ??
+                                  false)) {
+                                return;
+                              }
+                              final success = await vm.updateNameAndUsername(
+                                name: nameController.text,
+                                username: usernameController.text,
+                              );
+                              if (success && sheetContext.mounted) {
+                                Navigator.of(sheetContext).pop();
+                              }
+                            },
+                      child: saving
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text(
+                              'Save',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                    );
+                  }),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
