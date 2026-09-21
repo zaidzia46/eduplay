@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:eduplay/controller/session_controller.dart';
 import 'package:get/get.dart';
 
-import '../../../models/continue_learning_model.dart';
 import '../subjects/subject_repo.dart';
 import '../subjects/subjects_model.dart';
 import '../../profile/create_child_profile/repo/create_child_profile_repo.dart';
@@ -22,7 +21,7 @@ class DashboardController extends GetxController {
   var isDashboardSubjectsLoading = true.obs;
   var errorSubjectMessage = ''.obs;
 
-  var continueLearning = <ContinueLearningModel>[].obs;
+  // var continueLearning = <ContinueLearningModel>[].obs;
   var isLessonLoading = true.obs;
   var errorLessonMessage = ''.obs;
 

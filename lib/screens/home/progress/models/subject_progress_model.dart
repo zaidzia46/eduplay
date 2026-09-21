@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../fns/hexToColor.dart';
+import '../../../../fns/hexToColor.dart';
 
 /// Per-subject progress row inside [ProgressOverviewModel]. `percent` is the
 /// share of the subject's chapters the child has completed (all quizzes in

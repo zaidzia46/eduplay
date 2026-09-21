@@ -2,9 +2,9 @@ import 'package:flutter/material.dart' show Color;
 
 import '../../../core/supabase_client.dart';
 import '../../../fns/hexToColor.dart';
-import '../../../models/chapter_progress_model.dart';
-import '../../../models/progress_overview_model.dart';
-import '../../../models/recent_act_model.dart';
+import 'models/chapter_progress_model.dart';
+import 'models/progress_overview_model.dart';
+import 'models/recent_act_model.dart';
 
 class ProgressRepository {
   Future<ProgressOverviewModel> getOverview(int childId) async {

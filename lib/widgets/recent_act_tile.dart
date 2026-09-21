@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../fns/time_ago.dart';
-import '../models/recent_act_model.dart';
+import '../screens/home/progress/models/recent_act_model.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 

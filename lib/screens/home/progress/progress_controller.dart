@@ -3,9 +3,9 @@ import 'dart:developer';
 import 'package:eduplay/controller/session_controller.dart';
 import 'package:get/get.dart';
 
-import '../../../models/activity_category_model.dart';
-import '../../../models/progress_overview_model.dart';
-import '../../../models/recent_act_model.dart';
+import 'models/activity_category_model.dart';
+import 'models/progress_overview_model.dart';
+import 'models/recent_act_model.dart';
 import 'progress_repo.dart';
 
 class ProgressController extends GetxController {

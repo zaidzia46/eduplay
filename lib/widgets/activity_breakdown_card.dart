@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:linear_progress_bar/ui/circular_percent_indicator.dart';
 import 'package:visibility_detector/visibility_detector.dart';
-import '../models/activity_category_model.dart';
+import '../screens/home/progress/models/activity_category_model.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_text_styles.dart';
 
