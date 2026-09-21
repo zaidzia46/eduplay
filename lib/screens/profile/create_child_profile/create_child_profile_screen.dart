@@ -44,12 +44,12 @@ class CreateProfileView extends StatelessWidget {
               children: [
                 if (vm.isGuest) ...[
                   Text(
-                    'Pick your grade to start exploring',
+                    'Pick your or your child grade to start exploring',
                     style: AppTextStyles.h3,
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Tell us where you study so we can show you the right '
+                    'Tell us where you or your child study so we can show you the right '
                     'subjects. You can set up a full profile later.',
                     style: AppTextStyles.bodySecondary,
                   ),
