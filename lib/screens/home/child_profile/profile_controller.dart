@@ -39,12 +39,6 @@ class ProfileViewModel extends GetxController {
   }
 
   Future<void> changeAvatar() async {
-    // A child avatar belongs to a real account; a guest would lose it on logout,
-    // so steer them to convert instead of uploading.
-    if (_session.isGuest) {
-      _session.promptSignUp('Sign up to add a profile photo.');
-      return;
-    }
     final currentChild = child.value;
     if (currentChild == null) return;
 

@@ -463,7 +463,7 @@ class _GuestSaveBanner extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Sign up to save your progress',
+                        'Back up your data',
                         style: AppTextStyles.bodySmall.copyWith(
                           color: AppColors.white,
                           fontWeight: FontWeight.bold,
@@ -471,7 +471,7 @@ class _GuestSaveBanner extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        "You're exploring as a guest.",
+                        'Sign in to keep a backup of your progress.',
                         style: AppTextStyles.caption.copyWith(
                           color: AppColors.white,
                         ),

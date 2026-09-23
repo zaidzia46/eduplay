@@ -116,7 +116,7 @@ class RegisterView extends StatelessWidget {
                                   : 'Create Account',
                               isLoading: vm.isLoading.value,
                               onPressed: isConvert
-                                  ? vm.convertGuest
+                                  ? vm.signUpAndBackup
                                   : vm.register,
                             ),
                           ),

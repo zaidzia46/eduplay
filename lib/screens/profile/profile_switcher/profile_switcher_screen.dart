@@ -3,11 +3,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eduplay/controller/session_controller.dart';
 import 'package:eduplay/screens/profile/profile_switcher/profile_switcher_controller.dart';
 import 'package:eduplay/widgets/staggered_anime.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/add_profile_card.dart';
@@ -150,7 +148,7 @@ class _ProfileSwitcherViewState extends State<ProfileSwitcherView>
                             "You're doing a wonderful job supporting your children's journey.",
                         childrenCount: vm.children.length,
                         starsCount: vm.totalStars.value,
-                        userName: session.parentName.value ?? 'Parent',
+                        userName: session.parentName.value ?? 'Guardian',
                       );
                     }),
                   );
@@ -208,12 +206,8 @@ class _ProfileSwitcherViewState extends State<ProfileSwitcherView>
                         return const ProfileCardSkeletonList();
                       }
 
-                      // The trailing null renders the add-child card. A guest
-                      // may own only one child (enforced server-side by the RLS
-                      // cap), so omit it for them — they can't add a second.
-                      final items = session.isGuest
-                          ? [...vm.children]
-                          : [...vm.children, null];
+                      // The trailing null renders the add-child card.
+                      final items = [...vm.children, null];
 
                       return ListView.builder(
                         padding: EdgeInsets.symmetric(horizontal: 12),
@@ -241,41 +235,6 @@ class _ProfileSwitcherViewState extends State<ProfileSwitcherView>
                   );
                 }),
               ),
-              session.isGuest
-                  ? Expanded(
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: RichText(
-                          text: TextSpan(
-                            style: const TextStyle(
-                              color: AppColors.textPrimary,
-                              fontSize: 14,
-                            ),
-                            children: [
-                              const TextSpan(
-                                text: 'Want to add more children? Please ',
-                              ),
-                              TextSpan(
-                                text: 'Sign Up',
-                                style: const TextStyle(
-                                  color: AppColors.primary,
-                                  fontWeight: FontWeight.bold,
-                                  decoration: TextDecoration.underline,
-                                ),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
-                                    Get.toNamed(
-                                      AppRoutes.register,
-                                      arguments: {'convert': true},
-                                    );
-                                  },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                  : SizedBox(),
             ],
           ),
           if (_showBackButton)

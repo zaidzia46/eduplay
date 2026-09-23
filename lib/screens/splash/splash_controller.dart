@@ -1,11 +1,8 @@
-import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/supabase_client.dart';
 import '../../routes/app_routes.dart';
-import '../parent_settings/parent_settings_controller.dart';
 import '../parent_settings/parent_settings_repo.dart';
 import '../profile/profile_switcher/profile_switcher_controller.dart';
 
@@ -62,48 +59,54 @@ class SplashController extends GetxController
       ),
     ]);
 
-    final session = supabase.auth.currentSession;
+    var session = supabase.auth.currentSession;
 
-    if (session != null) {
-      final profileVm = Get.put(ProfileSwitcherViewModel(), permanent: true);
-      await profileVm.loadingFuture;
-
-      // A returning guest (anonymous session) skips the parent-facing switcher:
-      // they own exactly one child, so drop them straight back into the app.
-      // selectChild sets the active child, precaches the home assets and
-      // navigates. If the child is missing (sign-up abandoned before the
-      // cascade completed), send them back to pick a grade.
-      if (supabase.auth.currentUser?.isAnonymous ?? false) {
-        if (profileVm.children.isNotEmpty) {
-          await profileVm.selectChild(profileVm.children.first);
-        } else {
-          Get.offAllNamed(AppRoutes.createProfile, arguments: {'guest': true});
-        }
+    // No session means a fresh install (or a cleared one). Rather than gate the
+    // app behind a login screen, sign the user in anonymously so they land
+    // straight in as a full parent — they can create children, play quizzes and
+    // use everything. A single dashboard banner nudges them to sign up later to
+    // back up their data. Only if the anonymous sign-in itself fails do we fall
+    // back to the login screen.
+    if (session == null) {
+      try {
+        final res = await supabase.auth.signInAnonymously();
+        session = res.session;
+      } catch (_) {
+        Get.offAllNamed(AppRoutes.login);
         return;
       }
-
-      final parentRepo = ParentRepository();
-      final parentId = supabase.auth.currentUser!.id;
-      String? parentAvatarUrl;
-      try {
-        parentAvatarUrl = await parentRepo.getAvatarSignedUrl(
-          '$parentId/parent.png',
-        );
-      } catch (e) {
-        parentAvatarUrl = null;
-      }
-      await Future.wait([
-        ...profileVm.avatarUrlByChild.values.whereType<String>().map(
-          (url) => precacheImage(CachedNetworkImageProvider(url), context),
-        ),
-        if (parentAvatarUrl != null)
-          precacheImage(CachedNetworkImageProvider(parentAvatarUrl), context),
-      ]);
-
-      Get.offAllNamed(AppRoutes.profileSwitcher);
-    } else {
-      Get.offAllNamed(AppRoutes.login);
     }
+
+    if (session == null) {
+      Get.offAllNamed(AppRoutes.login);
+      return;
+    }
+
+    // Anonymous and permanent users are treated identically from here on: load
+    // the switcher, warm the avatar caches, and land on the profile switcher
+    // (which shows an add-child card when there are no children yet).
+    final profileVm = Get.put(ProfileSwitcherViewModel(), permanent: true);
+    await profileVm.loadingFuture;
+
+    final parentRepo = ParentRepository();
+    final parentId = supabase.auth.currentUser!.id;
+    String? parentAvatarUrl;
+    try {
+      parentAvatarUrl = await parentRepo.getAvatarSignedUrl(
+        '$parentId/parent.png',
+      );
+    } catch (e) {
+      parentAvatarUrl = null;
+    }
+    await Future.wait([
+      ...profileVm.avatarUrlByChild.values.whereType<String>().map(
+        (url) => precacheImage(CachedNetworkImageProvider(url), context),
+      ),
+      if (parentAvatarUrl != null)
+        precacheImage(CachedNetworkImageProvider(parentAvatarUrl), context),
+    ]);
+
+    Get.offAllNamed(AppRoutes.profileSwitcher);
   }
 
   @override

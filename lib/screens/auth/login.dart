@@ -129,16 +129,6 @@ class LoginView extends StatelessWidget {
                                     onPressed: vm.login,
                                   ),
                                 ),
-                                const SizedBox(height: 12),
-                                const AuthDivider(text: 'Or'),
-                                const SizedBox(height: 12),
-                                Obx(
-                                  () => AuthButton(
-                                    label: 'Explore as guest',
-                                    isLoading: vm.isLoadingGuest.value,
-                                    onPressed: vm.continueAsGuest,
-                                  ),
-                                ),
                                 const SizedBox(height: 22),
 
                                 const AuthDivider(),

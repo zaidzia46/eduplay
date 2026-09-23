@@ -41,7 +41,7 @@ class ParentSettingsView extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          'Parent Settings',
+          'Guardian Settings',
           style: AppTextStyles.h3.copyWith(color: AppColors.white),
         ),
       ),
@@ -152,7 +152,7 @@ class ParentSettingsView extends StatelessWidget {
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: Text(
-                        session.parentName.value ?? 'Parent',
+                        session.parentName.value ?? 'Guardian',
                         style: AppTextStyles.h4.copyWith(
                           color: AppColors.textPrimary,
                         ),
@@ -196,7 +196,7 @@ class ParentSettingsView extends StatelessWidget {
                     child: ActionTile(
                       icon: Icons.logout_rounded,
                       label: 'Log Out',
-                      subtitle: 'Sign out of your parent account',
+                      subtitle: 'Sign out of your guardian account',
                       color: AppColors.error,
                       onTap: () => _showLogoutDialog(context, vm),
                     ),

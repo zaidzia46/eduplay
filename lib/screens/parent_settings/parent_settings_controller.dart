@@ -54,12 +54,6 @@ class ParentSettingsController extends GetxController {
   }
 
   Future<void> setParentAvatar() async {
-    // A profile photo belongs to a real account; guests are steered to sign up
-    // rather than uploading something they'd lose the moment they log out.
-    if (session.isGuest) {
-      session.promptSignUp('Sign up to add a profile photo.');
-      return;
-    }
     final imagePath = await ImagePickerService.pickImage(ImageSource.gallery);
     if (imagePath == null) return;
     profileImagePath.value = imagePath;

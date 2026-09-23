@@ -10,7 +10,8 @@
 -- DASHBOARD PREREQUISITE (required, not SQL)
 --   Authentication → Sign In / Providers → "Anonymous sign-ins" → ENABLE.
 --   Without it, supabase.auth.signInAnonymously() returns HTTP 422 and the
---   "Explore as guest" button fails.
+--   app cannot get past the splash screen (every fresh launch signs in
+--   anonymously before routing anywhere).
 --
 -- DASHBOARD DECISION — email confirmation (your call, not SQL)
 --   Authentication → ... → "Confirm email".
@@ -88,48 +89,21 @@ create policy "Parents can update own row"
 
 
 -- ─────────────────────────────────────────────────────────────────────────
--- 3. children: cap guests at exactly one child.
+-- 3. children: guests have FULL access (no per-guest cap).
 --
 -- Anonymous users carry the 'authenticated' role, so every existing
--- authenticated policy already applies to them — a guest is just a parent with
--- one child. The only extra rule: a guest may not create a SECOND child.
+-- authenticated policy already applies to them — a guest IS a full parent and
+-- may create as many children (and quiz attempts, etc.) as a real one. There
+-- is deliberately no extra restriction here.
 --
--- This is a RESTRICTIVE policy, so it is AND-ed with (not OR-ed against) your
--- existing PERMISSIVE insert policy on children — it can only ever tighten,
--- never widen. It assumes RLS is already enabled on children and a permissive
--- INSERT policy already exists (it must, since real parents create children
--- today). The claim check short-circuits to TRUE for non-anonymous users, so
--- real parents are entirely unaffected.
+-- Earlier builds capped guests at a single child via a RESTRICTIVE "Guest
+-- child cap" policy (and an optional enforce_guest_child_cap trigger). If you
+-- ran an earlier version of this file, the statements below REMOVE those so
+-- guests regain full access. They are no-ops if the objects never existed.
 -- ─────────────────────────────────────────────────────────────────────────
 drop policy if exists "Guest child cap" on public.children;
-create policy "Guest child cap"
-  on public.children
-  as restrictive
-  for insert
-  to authenticated
-  with check (
-    not coalesce((auth.jwt() ->> 'is_anonymous')::boolean, false)
-    or (select count(*) from public.children where parent_id = auth.uid()) = 0
-  );
-
--- Alternative / defense-in-depth (optional): a BEFORE INSERT trigger giving a
--- friendlier error. Uncomment if you prefer it over (or alongside) the policy:
---
--- create or replace function public.enforce_guest_child_cap()
--- returns trigger language plpgsql security definer set search_path = public as $$
--- begin
---   if coalesce((auth.jwt() ->> 'is_anonymous')::boolean, false)
---      and (select count(*) from public.children where parent_id = new.parent_id) >= 1 then
---     raise exception 'Guests can create only one child — sign up to add more.'
---       using errcode = 'check_violation';
---   end if;
---   return new;
--- end;
--- $$;
--- drop trigger if exists trg_guest_child_cap on public.children;
--- create trigger trg_guest_child_cap
---   before insert on public.children
---   for each row execute function public.enforce_guest_child_cap();
+drop trigger if exists trg_guest_child_cap on public.children;
+drop function if exists public.enforce_guest_child_cap();
 
 
 -- ─────────────────────────────────────────────────────────────────────────
@@ -155,9 +129,9 @@ create policy "Guest child cap"
 -- ─────────────────────────────────────────────────────────────────────────
 -- 5. Stale-guest cleanup (bounds auth.users growth).
 --
--- Every "Explore as guest" tap that is never converted leaves an anonymous
--- auth.users row (plus its parents/children/attempts) forever. Delete anon
--- users idle for > 30 days. This CASCADES only if the FK chain
+-- Every fresh launch that is never converted leaves an anonymous auth.users
+-- row (plus its parents/children/attempts) forever. Delete anon users idle
+-- for > 30 days. This CASCADES only if the FK chain
 --   auth.users → parents → children → quiz_attempts / child_standard_enrollment
 -- is ON DELETE CASCADE. Verify first, then uncomment the delete.
 --
@@ -184,8 +158,9 @@ create policy "Guest child cap"
 
 -- ── Post-setup sanity checks (run after enabling Anonymous sign-ins) ──
 -- 1) An anon sign-in should create a parents row:
---    (sign in as guest from the app, then, as the service role / SQL editor)
+--    (launch the app fresh, then, as the service role / SQL editor)
 --    select id, name from public.parents order by id desc limit 5;
--- 2) A guest must NOT be able to insert a 2nd child — the app hides the button,
---    but a direct insert of a second children row for the same parent_id should
---    be rejected by the "Guest child cap" policy above.
+-- 2) A guest has FULL access: creating multiple children, quiz attempts, etc.
+--    should all succeed for an anonymous parent exactly as for a real one —
+--    there is no per-guest cap. Confirm a second children row for the same
+--    anonymous parent_id inserts without error.

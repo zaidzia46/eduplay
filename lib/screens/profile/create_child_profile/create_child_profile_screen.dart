@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -25,14 +24,16 @@ class CreateProfileView extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: AppColors.textPrimary),
-          onPressed: () => Get.back(),
-        ),
-        title: Text(
-          vm.isGuest ? 'Choose Your Grade' : 'Add Child Profile',
-          style: AppTextStyles.h3,
-        ),
+        leading: Navigator.canPop(context)
+            ? IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  color: AppColors.textPrimary,
+                ),
+                onPressed: () => Get.back(),
+              )
+            : null,
+        title: Text('Add Child Profile', style: AppTextStyles.h3),
       ),
       extendBodyBehindAppBar: true,
       body: ProfileBackground(
@@ -42,99 +43,80 @@ class CreateProfileView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (vm.isGuest) ...[
-                  Text(
-                    'Pick your or your child grade to start exploring',
-                    style: AppTextStyles.h3,
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'Tell us where you or your child study so we can show you the right '
-                    'subjects. You can set up a full profile later.',
-                    style: AppTextStyles.bodySecondary,
-                  ),
-                  const SizedBox(height: 24),
-                ],
-                if (!vm.isGuest) ...[
-                  Center(
-                    child: GestureDetector(
-                      onTap: vm.pickAvatar,
-                      child: Obx(() {
-                        final path = vm.profileImagePath.value;
-                        log("Child image path: $path");
-                        return Stack(
-                          children: [
-                            Container(
-                              width: avatarSize,
-                              height: avatarSize,
+                Center(
+                  child: GestureDetector(
+                    onTap: vm.pickAvatar,
+                    child: Obx(() {
+                      final path = vm.profileImagePath.value;
+                      return Stack(
+                        children: [
+                          Container(
+                            width: avatarSize,
+                            height: avatarSize,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: const Color(0xffFFD84E),
+                              border: Border.all(color: Colors.white, width: 4),
+                            ),
+                            child: CircleAvatar(
+                              radius: avatarSize / 2,
+                              backgroundColor: AppColors.primaryDark,
+                              backgroundImage: path != null
+                                  ? FileImage(File(path))
+                                  : null,
+                              child: path == null
+                                  ? Icon(Icons.person, size: avatarSize * 0.5)
+                                  : null,
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
                               decoration: BoxDecoration(
+                                color: AppColors.primary,
                                 shape: BoxShape.circle,
-                                color: const Color(0xffFFD84E),
                                 border: Border.all(
                                   color: Colors.white,
-                                  width: 4,
+                                  width: 2,
                                 ),
                               ),
-                              child: CircleAvatar(
-                                radius: avatarSize / 2,
-                                backgroundColor: AppColors.primaryDark,
-                                backgroundImage: path != null
-                                    ? FileImage(File(path))
-                                    : null,
-                                child: path == null
-                                    ? Icon(Icons.person, size: avatarSize * 0.5)
-                                    : null,
+                              child: const Icon(
+                                Icons.camera_alt,
+                                size: 16,
+                                color: Colors.white,
                               ),
                             ),
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: Container(
-                                padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: AppColors.primary,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.white,
-                                    width: 2,
-                                  ),
-                                ),
-                                child: const Icon(
-                                  Icons.camera_alt,
-                                  size: 16,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      }),
-                    ),
+                          ),
+                        ],
+                      );
+                    }),
                   ),
-                  const SizedBox(height: 24),
+                ),
+                const SizedBox(height: 24),
 
-                  Text("Child's Name", style: AppTextStyles.label),
-                  const SizedBox(height: 6),
-                  TextField(
-                    controller: vm.nameController,
-                    decoration: InputDecoration(
-                      hintText: 'e.g. John Elijah',
-                      prefixIcon: _prefixIcon(FontAwesomeIcons.userGraduate),
-                    ),
+                Text("Child's Name", style: AppTextStyles.label),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: vm.nameController,
+                  decoration: InputDecoration(
+                    hintText: 'e.g. John Elijah',
+                    prefixIcon: _prefixIcon(FontAwesomeIcons.userGraduate),
                   ),
-                  const SizedBox(height: 16),
+                ),
+                const SizedBox(height: 16),
 
-                  Text('Username', style: AppTextStyles.label),
-                  const SizedBox(height: 6),
-                  TextField(
-                    controller: vm.usernameController,
-                    decoration: InputDecoration(
-                      hintText: 'e.g. john123',
-                      prefixIcon: _prefixIcon(FontAwesomeIcons.at),
-                    ),
+                Text('Username', style: AppTextStyles.label),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: vm.usernameController,
+                  decoration: InputDecoration(
+                    hintText: 'e.g. john123',
+                    prefixIcon: _prefixIcon(FontAwesomeIcons.at),
                   ),
-                  const SizedBox(height: 24),
-                ],
+                ),
+                const SizedBox(height: 24),
 
                 Text('City', style: AppTextStyles.label),
                 const SizedBox(height: 6),
@@ -279,7 +261,7 @@ class CreateProfileView extends StatelessWidget {
                               strokeWidth: 2,
                             ),
                           )
-                        : Text(vm.isGuest ? 'Start Exploring' : 'Add Child'),
+                        : const Text('Add Child'),
                   ),
                 ),
                 const SizedBox(height: 32),

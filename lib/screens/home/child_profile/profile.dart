@@ -351,7 +351,9 @@ class _ProfileViewState extends State<ProfileView>
                 ),
                 const SizedBox(width: 6),
                 GestureDetector(
-                  onTap: () => _showEditProfileSheet(context, child, vm),
+                  onTap: () {
+                    _showEditProfileSheet(context, child, vm);
+                  },
                   child: Icon(
                     Icons.edit_rounded,
                     size: 18,
