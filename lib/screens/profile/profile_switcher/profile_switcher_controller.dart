@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:eduplay/controller/session_controller.dart';
+import 'package:eduplay/fns/image_constant.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -67,24 +68,24 @@ class ProfileSwitcherViewModel extends GetxController {
     }
   }
 
-  Future<void> selectChild(ChildProfileModel child) async {
+  Future<void> selectChild(
+    ChildProfileModel child, {
+    int initialTab = 0,
+  }) async {
     await session.setActiveChild(child);
     final context = Get.context!;
     await Future.wait([
       //dashboard bg is used in both dashboard and profile tab.
-      precacheImage(
-        const AssetImage('assets/images/dashboard_bg.png'),
-        context,
-      ),
-      precacheImage(const AssetImage('assets/images/subjects_bg.png'), context),
-      precacheImage(const AssetImage('assets/images/progress_bg.png'), context),
-      precacheImage(
-        const AssetImage('assets/images/profile_card_bg.png'),
-        context,
-      ),
-      precacheImage(const AssetImage('assets/images/banner.png'), context),
+      precacheImage(const AssetImage(ImageConstant.dashboardBg), context),
+      precacheImage(const AssetImage(ImageConstant.subjectsBg), context),
+      precacheImage(const AssetImage(ImageConstant.progressBg), context),
+      precacheImage(const AssetImage(ImageConstant.profileCardBg), context),
+      precacheImage(const AssetImage(ImageConstant.banner), context),
     ]);
-    Get.offAllNamed(AppRoutes.home);
+    // initialTab lets callers (the parent dashboard's "View Progress") land on
+    // a specific Home tab; BottomNavController.onInit reads it. Default 0 keeps
+    // the switcher's own behaviour identical.
+    Get.offAllNamed(AppRoutes.home, arguments: {'initialTab': initialTab});
   }
 
   void updateChild(ChildProfileModel updatedChild, {String? avatarUrl}) {

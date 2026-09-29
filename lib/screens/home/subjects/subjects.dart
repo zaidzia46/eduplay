@@ -1,3 +1,4 @@
+import 'package:eduplay/fns/image_constant.dart';
 import 'package:eduplay/screens/home/subjects/subjects_controller.dart';
 import 'package:eduplay/screens/home/subjects/widgets/subject_progress_row_skeleton.dart';
 import 'package:eduplay/screens/home/subjects/widgets/subject_progress_row.dart';
@@ -84,7 +85,7 @@ class _SubjectViewState extends State<SubjectView>
               bottomLeft: Radius.circular(24),
               bottomRight: Radius.circular(24),
             ),
-            child: Image.asset('assets/images/subjects_bg.png'),
+            child: Image.asset(ImageConstant.subjectsBg),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),

@@ -1,3 +1,4 @@
+import 'package:eduplay/fns/image_constant.dart';
 import 'package:eduplay/screens/home/progress/progress_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -132,7 +133,7 @@ class _ProgressViewState extends State<ProgressView>
                     bottomLeft: Radius.circular(20),
                     bottomRight: Radius.circular(20),
                   ),
-                  child: Image.asset('assets/images/progress_bg.png'),
+                  child: Image.asset(ImageConstant.progressBg),
                 ),
                 Transform.translate(
                   offset: const Offset(0, -20),

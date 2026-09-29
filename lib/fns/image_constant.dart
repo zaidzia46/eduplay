@@ -1,0 +1,29 @@
+class ImageConstant {
+  static const String baseURL = 'assets';
+  static const imgURL = '$baseURL/images';
+  static const splashImage = '$imgURL/profile_switch_bg.png';
+  static const logo = '$imgURL/logo.png';
+  static const logo2 = '$imgURL/logo2.png';
+  static const appDashboard = '$imgURL/app_dashboard_banner.png';
+  static const profileBg = '$imgURL/profile_bg.png';
+  static const profileBg2 = '$imgURL/profile_bg2.png';
+  static const profileCardBg = '$imgURL/profile_card_bg.png';
+  static const profileSecBg = '$imgURL/profile_sec_bg.png';
+  static const profileSecNullBg = '$imgURL/profile_sec_null_bg.png';
+  static const profileSecBanner = '$imgURL/profile_sec_banner.png';
+  static const profileSwitchBg = '$imgURL/profile_switch_bg.png';
+  static const dashboardBg = '$imgURL/dashboard_bg.png';
+  static const banner = '$imgURL/banner.png';
+  static const subjectsBg = '$imgURL/subjects_bg.png';
+  static const progressBg = '$imgURL/progress_bg.png';
+  static const arts = '$imgURL/arts.png';
+  static const computer = '$imgURL/comp.png';
+  static const english = '$imgURL/eng.png';
+  static const gk = '$imgURL/gk.png';
+  static const islam = '$imgURL/islam.png';
+  static const maths = '$imgURL/maths.png';
+  static const sci = '$imgURL/sci.png';
+  static const socialStd = '$imgURL/social.png';
+  static const urdu = '$imgURL/urdu.png';
+  static const mQuiz = '$imgURL/mquiz.png';
+}

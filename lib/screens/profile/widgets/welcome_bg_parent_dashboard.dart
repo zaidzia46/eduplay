@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../../../controller/session_controller.dart';
 import '../../../widgets/expanded_avatar.dart';
 import 'skeleton_avatar_loader.dart';
 import '../../../theme/app_colors.dart';
@@ -16,20 +15,12 @@ class WelcomeBackground extends StatelessWidget {
   final String welcomeText;
   final String userName;
   final String subtitleText;
-  final int childrenCount;
-  final int starsCount;
-  final String childrenLabel;
-  final String starsLabel;
 
   const WelcomeBackground({
     super.key,
     required this.welcomeText,
     required this.userName,
     required this.subtitleText,
-    required this.childrenCount,
-    required this.starsCount,
-    this.childrenLabel = 'Children',
-    this.starsLabel = 'Total Stars',
   });
 
   @override
@@ -121,29 +112,6 @@ class WelcomeBackground extends StatelessWidget {
                           style: AppTextStyles.bodySmall.copyWith(
                             color: AppColors.white,
                             fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 18),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: [
-                              _StatCard(
-                                icon: Icons.people_alt_rounded,
-                                iconColor: const Color(0xFFC98A1B),
-                                bgColor: const Color(0xFFFCEBB0),
-                                value: '$childrenCount',
-                                label: childrenLabel,
-                              ),
-                              const SizedBox(width: 12),
-                              _StatCard(
-                                icon: Icons.star_rounded,
-                                iconColor: const Color(0xFFC98A1B),
-                                bgColor: const Color(0xFFFCEBB0),
-                                value: '$starsCount',
-                                label: starsLabel,
-                              ),
-                            ],
                           ),
                         ),
                       ],
@@ -243,59 +211,5 @@ class WelcomeBackground extends StatelessWidget {
         ],
       );
     });
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final Color bgColor;
-  final String value;
-  final String label;
-
-  const _StatCard({
-    required this.icon,
-    required this.iconColor,
-    required this.bgColor,
-    required this.value,
-    required this.label,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: iconColor, size: 15),
-          const SizedBox(width: 6),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                value,
-                style: TextStyle(
-                  color: iconColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                ),
-              ),
-              Text(
-                label,
-                style: TextStyle(
-                  color: iconColor.withOpacity(0.8),
-                  fontSize: 10,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
   }
 }

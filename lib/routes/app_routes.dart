@@ -5,6 +5,8 @@ abstract class AppRoutes {
   static const onboardingReady = '/onboarding/ready';
   static const String login = '/login';
   static const String register = '/register';
+  static const String appDashboard = '/app-dashboard';
+  static const String parentDashboard = '/parent-dashboard';
   static const String profileSwitcher = '/profile-switcher';
   static const String createProfile = '/create-profile';
   static const home = '/home';

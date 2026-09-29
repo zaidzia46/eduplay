@@ -6,23 +6,23 @@ import 'package:eduplay/routes/app_routes.dart';
 
 import 'package:eduplay/screens/splash/splash_screen.dart';
 
+import '../screens/app_dashboard/app_dashboard_bin.dart';
 import '../screens/auth/auth_binding.dart';
 import '../screens/auth/login.dart';
 import '../screens/auth/register.dart';
+import '../screens/app_dashboard/app_dashboard_screen.dart';
 import '../screens/home/bottom_nav/bottomNavbar_bin.dart';
 import '../screens/home/child_profile/profile_bin.dart';
 import '../screens/home/dashboard/dashboard_bin.dart';
 import '../screens/home/home.dart';
-import '../screens/home/progress/progress.dart';
 import '../screens/home/subjects/chapters/chapter_bin.dart';
 import '../screens/home/subjects/chapters/chapter_screen.dart';
 import '../screens/home/subjects/chapters/quiz/quiz_bin.dart';
 import '../screens/home/subjects/chapters/quiz/quiz_screen.dart';
 import '../screens/home/subjects/chapters/quiz_list/quiz_list_bin.dart';
 import '../screens/home/subjects/chapters/quiz_list/quiz_list_screen.dart';
-import '../screens/parent_settings/parent_settings_bin.dart';
-import '../screens/parent_settings/parent_settings_screen.dart';
-import '../screens/profile/create_child_profile/create_child_profile_bin.dart';
+import '../screens/parent_dashboard/parent_dashboard_bin.dart';
+import '../screens/parent_dashboard/parent_dashboard_screen.dart';
 import '../screens/profile/create_child_profile/create_child_profile_screen.dart';
 import '../screens/profile/profile_switcher/profile_switcher_bin.dart';
 import '../screens/profile/profile_switcher/profile_switcher_screen.dart';
@@ -66,6 +66,18 @@ abstract class AppPages {
       name: AppRoutes.register,
       page: () => const RegisterView(),
       binding: AuthBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.appDashboard,
+      page: () => const AppDashboardView(),
+      binding: AppDashboardBinding(),
+      transition: Transition.fadeIn,
+    ),
+    GetPage(
+      name: AppRoutes.parentDashboard,
+      page: () => const ParentDashboardView(),
+      binding: ParentDashboardBinding(),
+      transition: Transition.fadeIn,
     ),
     GetPage(
       name: AppRoutes.profileSwitcher,

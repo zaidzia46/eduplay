@@ -24,20 +24,6 @@ class TitleRow extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
         ),
-        SizedBox(width: 12),
-        GestureDetector(
-          onTap: onTap,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                'View all',
-                style: AppTextStyles.label.copyWith(color: AppColors.primary),
-              ),
-              Icon(Icons.chevron_right, color: AppColors.primary, size: 18),
-            ],
-          ),
-        ),
       ],
     );
   }

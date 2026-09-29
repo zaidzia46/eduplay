@@ -152,15 +152,14 @@ class CreateProfileViewModel extends GetxController {
         await _childRepo.uploadAvatar(childId, profileImagePath.value!);
       }
 
-      // The switcher's ProfileSwitcherViewModel is permanent (created in
-      // SplashController), so returning to it reuses the live instance without
-      // re-running onInit → fetchChildren. Refresh it explicitly here, or the
-      // new child won't appear until the app is restarted.
       if (Get.isRegistered<ProfileSwitcherViewModel>()) {
         await Get.find<ProfileSwitcherViewModel>().fetchChildren();
       }
 
-      Get.offAllNamed(AppRoutes.profileSwitcher);
+      Get.offAllNamed(
+        AppRoutes.parentDashboard,
+        arguments: {'convert': 'trueByProfile'},
+      );
     } on PostgrestException catch (e) {
       errorMessage.value = e.code == '23505'
           ? 'That username is already taken.'

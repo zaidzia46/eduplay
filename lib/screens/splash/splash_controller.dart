@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../core/supabase_client.dart';
+import '../../fns/image_constant.dart';
 import '../../routes/app_routes.dart';
 import '../parent_settings/parent_settings_repo.dart';
 import '../profile/profile_switcher/profile_switcher_controller.dart';
@@ -53,10 +54,7 @@ class SplashController extends GetxController
     final context = Get.context!;
 
     await Future.wait([
-      precacheImage(
-        const AssetImage('assets/images/profile_switch_bg.png'),
-        context,
-      ),
+      precacheImage(const AssetImage(ImageConstant.splashImage), context),
     ]);
 
     var session = supabase.auth.currentSession;
@@ -83,8 +81,9 @@ class SplashController extends GetxController
     }
 
     // Anonymous and permanent users are treated identically from here on: load
-    // the switcher, warm the avatar caches, and land on the profile switcher
-    // (which shows an add-child card when there are no children yet).
+    // the switcher, warm the avatar caches, and land on the app dashboard (the
+    // public landing hub). The switcher VM is still created here so the Parent
+    // Dashboard's family data is ready the moment the user taps into it.
     final profileVm = Get.put(ProfileSwitcherViewModel(), permanent: true);
     await profileVm.loadingFuture;
 
@@ -106,7 +105,7 @@ class SplashController extends GetxController
         precacheImage(CachedNetworkImageProvider(parentAvatarUrl), context),
     ]);
 
-    Get.offAllNamed(AppRoutes.profileSwitcher);
+    Get.offAllNamed(AppRoutes.appDashboard);
   }
 
   @override

@@ -1,3 +1,4 @@
+import 'package:eduplay/fns/image_constant.dart';
 import 'package:flutter/material.dart';
 
 import '../subjects_model.dart';
@@ -33,7 +34,7 @@ class SubjectProgressRow extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(5),
                 child: Image.asset(
-                  "assets/images/${subject.iconPath}",
+                  "${ImageConstant.imgURL}/${subject.iconPath}",
                   errorBuilder: (_, __, ___) => Icon(
                     Icons.book_rounded,
                     color: subject.colorHex,

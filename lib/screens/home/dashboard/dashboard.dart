@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:eduplay/fns/image_constant.dart';
 import 'package:eduplay/routes/app_routes.dart';
 import 'package:eduplay/controller/session_controller.dart';
 import 'package:eduplay/screens/home/game_demo/game.dart';
@@ -101,10 +102,7 @@ class _DashBoardState extends State<DashBoard>
               ).createShader(bounds);
             },
             blendMode: BlendMode.dstIn,
-            child: Image.asset(
-              'assets/images/dashboard_bg.png',
-              fit: BoxFit.cover,
-            ),
+            child: Image.asset(ImageConstant.dashboardBg, fit: BoxFit.cover),
           ),
 
           SafeArea(
@@ -209,7 +207,7 @@ class _DashBoardState extends State<DashBoard>
                             child: AspectRatio(
                               aspectRatio: 1871 / 841,
                               child: Image.asset(
-                                'assets/images/banner.png',
+                                ImageConstant.banner,
                                 width: double.infinity,
                                 height: double.infinity,
                                 fit: BoxFit.cover,

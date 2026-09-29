@@ -168,7 +168,7 @@ class _ProfileViewState extends State<ProfileView>
 
                             const SizedBox(height: 22),
 
-                            _buildSwitchProfile(),
+                            _buildParentDashboardTile(),
 
                             const SizedBox(height: 32),
                           ],
@@ -608,7 +608,7 @@ class _ProfileViewState extends State<ProfileView>
     );
   }
 
-  Widget _buildSwitchProfile() {
+  Widget _buildParentDashboardTile() {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -623,14 +623,14 @@ class _ProfileViewState extends State<ProfileView>
         ],
       ),
       child: ActionTile(
-        icon: Icons.switch_account_rounded,
-        label: 'Switch Profile',
-        subtitle: 'Change to a different child',
+        icon: Icons.dashboard_rounded,
+        label: 'Parent Dashboard',
+        subtitle: 'Back to your dashboard',
         color: AppColors.primary,
         onTap: () {
-          Get.toNamed(
-            AppRoutes.profileSwitcher,
-            arguments: {'showBackButton': true},
+          Get.offAllNamed(
+            AppRoutes.parentDashboard,
+            arguments: {'convert': 'trueByProfile'},
           );
         },
       ),

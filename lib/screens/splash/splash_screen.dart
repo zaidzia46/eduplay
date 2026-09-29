@@ -1,7 +1,11 @@
 import 'package:eduplay/screens/splash/splash_controller.dart';
-import 'package:eduplay/screens/splash/widgets/splash_scene.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:eduplay/screens/splash/widgets/rainbow_widget.dart';
+
+import '../splash/widgets/animated_bg.dart';
+import '../splash/widgets/logo_widget.dart';
+import '../splash/widgets/mascot_widget.dart';
 
 class SplashScreen extends GetView<SplashController> {
   const SplashScreen({super.key});
@@ -12,7 +16,18 @@ class SplashScreen extends GetView<SplashController> {
       body: AnimatedBuilder(
         animation: controller.animation,
         builder: (_, __) {
-          return SplashScene(controller: controller);
+          return AnimatedBackground(
+            child: Stack(
+              children: [
+                RainbowWidget(animation: controller.rainbowAnimation),
+                MascotWidget(animation: controller.mascotAnimation),
+                LogoWidget(
+                  scaleAnimation: controller.logoScaleAnimation,
+                  opacityAnimation: controller.logoOpacityAnimation,
+                ),
+              ],
+            ),
+          );
         },
       ),
     );
