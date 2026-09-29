@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../widgets/action_tile.dart';
+import '../../widgets/circle_back_button.dart';
 import '../../widgets/recent_act_tile.dart';
 import '../../widgets/staggered_anime.dart';
 import '../../widgets/title_row.dart';
@@ -16,7 +17,6 @@ import '../parent_settings/parent_settings_screen.dart';
 import '../profile/widgets/skeleton_card_loader.dart';
 import '../profile/widgets/welcome_bg_parent_dashboard.dart';
 import 'parent_dashboard_controller.dart';
-import 'widgets/classified_ad_card.dart';
 import 'widgets/parent_child_card.dart';
 
 class ParentDashboardView extends StatefulWidget {
@@ -97,9 +97,7 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
                     padding: const EdgeInsets.fromLTRB(12, 4, 15, 0),
                     child: Align(
                       alignment: Alignment.centerLeft,
-                      child: _buildBackButton(() {
-                        Get.back();
-                      }),
+                      child: CircleBackButton(onTap: () => Get.back()),
                     ),
                   ),
                 if (isConvertForAppDashboard)
@@ -107,49 +105,22 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
                     padding: const EdgeInsets.fromLTRB(12, 4, 15, 0),
                     child: Align(
                       alignment: Alignment.centerLeft,
-                      child: _buildBackButton(() {
-                        Get.offAllNamed(AppRoutes.appDashboard);
-                      }),
+                      child: CircleBackButton(
+                        onTap: () => Get.offAllNamed(AppRoutes.appDashboard),
+                      ),
                     ),
                   ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
                 _buildHeader(),
-                const SizedBox(height: 18),
+                const SizedBox(height: 10),
                 _buildChildrenSection(),
                 const SizedBox(height: 4),
                 _buildManageSection(),
-                const SizedBox(height: 22),
+                const SizedBox(height: 12),
                 _buildRecentActivity(),
-                const SizedBox(height: 32),
+                const SizedBox(height: 12),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBackButton(VoidCallback onTap) {
-    return Material(
-      color: AppColors.white,
-      shape: const CircleBorder(),
-      elevation: 4,
-      shadowColor: AppColors.primary.withOpacity(0.30),
-      child: InkWell(
-        customBorder: const CircleBorder(),
-        onTap: onTap,
-        child: Container(
-          width: 46,
-          height: 46,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: AppColors.border),
-          ),
-          child: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: AppColors.primary,
-            size: 18,
           ),
         ),
       ),
@@ -224,7 +195,7 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TitleRow(title: 'Your Children', onTap: controller.manageChildren),
-          const SizedBox(height: 12),
+          const SizedBox(height: 2),
           Obx(() {
             if (controller.isLoading.value) {
               return const SizedBox(

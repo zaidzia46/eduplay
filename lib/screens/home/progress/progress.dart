@@ -7,6 +7,7 @@ import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/activity_breakdown_card.dart';
 import '../../../widgets/morphing_progress_indicator.dart';
+import '../../../widgets/circle_back_button.dart';
 import '../../../widgets/recent_act_tile.dart';
 import '../../../widgets/staggered_anime.dart';
 import '../../../widgets/stat_chip.dart';
@@ -17,7 +18,14 @@ import 'widgets/subject_progress_tile.dart';
 import '../bottom_nav/bottomNavigation_controller.dart';
 
 class ProgressView extends StatefulWidget {
-  const ProgressView({super.key});
+  /// When true the screen is shown standalone — e.g. a parent peeking at a
+  /// child's progress from the Parent Dashboard. In this mode there is no
+  /// bottom-nav shell to react to, a back button is shown at the top-left, and
+  /// the subject rows are static (tapping them must not navigate into the
+  /// child's subjects/chapters). Defaults to the embedded child-facing tab.
+  final bool readOnly;
+
+  const ProgressView({super.key, this.readOnly = false});
 
   @override
   State<ProgressView> createState() => _ProgressViewState();
@@ -28,7 +36,7 @@ class _ProgressViewState extends State<ProgressView>
   late final AnimationController _controller;
   late final ScrollController _scrollController;
   final ValueNotifier<double> _morphT = ValueNotifier(0);
-  late final Worker _tabWorker;
+  Worker? _tabWorker;
   late final Worker _loadingWorker;
   bool _hasAnimated = false;
 
@@ -72,12 +80,18 @@ class _ProgressViewState extends State<ProgressView>
       });
     }
 
-    _tabWorker = ever(Get.find<BottomNavController>().currentIndex, (index) {
-      if (index == 2) {
-        vm.reload();
-        _controller.forward(from: 0);
-      }
-    });
+    // The tab worker only makes sense inside the Home shell's IndexedStack,
+    // where switching to the Progress tab (index 2) should refresh the data and
+    // replay the entrance animation. In read-only (standalone) mode there is no
+    // BottomNavController registered, so we skip it entirely.
+    if (!widget.readOnly) {
+      _tabWorker = ever(Get.find<BottomNavController>().currentIndex, (index) {
+        if (index == 2) {
+          vm.reload();
+          _controller.forward(from: 0);
+        }
+      });
+    }
   }
 
   void _handleScroll() {
@@ -96,7 +110,7 @@ class _ProgressViewState extends State<ProgressView>
     _scrollController.removeListener(_handleScroll);
     _scrollController.dispose();
     _morphT.dispose();
-    _tabWorker.dispose();
+    _tabWorker?.dispose();
     _loadingWorker.dispose();
     super.dispose();
   }
@@ -108,7 +122,9 @@ class _ProgressViewState extends State<ProgressView>
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Obx(() {
+      body: Stack(
+        children: [
+          Obx(() {
         // An error only blocks the whole screen when there's nothing to show
         // yet; background-refresh failures keep existing data (see controller).
         if (vm.errorMessage.isNotEmpty && vm.overview.value == null) {
@@ -289,22 +305,26 @@ class _ProgressViewState extends State<ProgressView>
                             index: index,
                             child: SubjectProgressTile(
                               subject: subject,
-                              onTap: () {
-                                Get.toNamed(
-                                  AppRoutes.chapters,
-                                  arguments: {
-                                    'subject': SubjectModel(
-                                      id: subject.subjectId,
-                                      standardSubjectId:
-                                          subject.standardSubjectId,
-                                      name: subject.name,
-                                      colorHex: subject.color,
-                                      iconPath: subject.iconPath,
-                                      progressPercent: subject.percent,
-                                    ),
-                                  },
-                                );
-                              },
+                              // Parents viewing a child's progress get static
+                              // rows — tapping must not drill into chapters.
+                              onTap: widget.readOnly
+                                  ? null
+                                  : () {
+                                      Get.toNamed(
+                                        AppRoutes.chapters,
+                                        arguments: {
+                                          'subject': SubjectModel(
+                                            id: subject.subjectId,
+                                            standardSubjectId:
+                                                subject.standardSubjectId,
+                                            name: subject.name,
+                                            colorHex: subject.color,
+                                            iconPath: subject.iconPath,
+                                            progressPercent: subject.percent,
+                                          ),
+                                        },
+                                      );
+                                    },
                             ),
                           );
                         }),
@@ -341,7 +361,20 @@ class _ProgressViewState extends State<ProgressView>
             ),
           ],
         );
-      }),
+          }),
+          if (widget.readOnly)
+            Positioned(
+              top: 0,
+              left: 0,
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 12, top: 8),
+                  child: CircleBackButton(onTap: () => Get.back()),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

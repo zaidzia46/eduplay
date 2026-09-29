@@ -7,10 +7,6 @@ import '../../../widgets/stat_chip.dart';
 import '../../profile/profile_switcher/models/child_profile_model.dart';
 import '../../profile/widgets/skeleton_avatar_loader.dart';
 
-/// A child row on the Parent Dashboard. Unlike [ProfileCard] (whose single tap
-/// runs a ~1.1s ring animation before selecting), this card exposes two
-/// explicit actions — Continue Learning and View Progress — so the parent picks
-/// what to do with the child rather than just "enter".
 class ParentChildCard extends StatelessWidget {
   final ChildProfileModel child;
   final int stars;
@@ -31,82 +27,76 @@ class ParentChildCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const double avatarSize = 58;
+    const double avatarSize = 52;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.fromLTRB(12, 12, 10, 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.border),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildAvatar(avatarSize),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          _buildAvatar(avatarSize),
+          const SizedBox(width: 12),
+
+          // Info
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  child.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.h4.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  child.standard?.name ?? 'Not enrolled yet',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.primaryDark,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Row(
                   children: [
-                    Text(
-                      child.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.h4.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      child.standard?.name ?? 'Not enrolled yet',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.primaryDark,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        StatChip.stars(value: '$stars'),
-                        const SizedBox(width: 8),
-                        StatChip.streak(value: '$streak'),
-                      ],
-                    ),
+                    StatChip.stars(value: '$stars'),
+                    const SizedBox(width: 8),
+                    StatChip.streak(value: '$streak'),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 8),
+                _buildProgress(),
+              ],
+            ),
           ),
-          const SizedBox(height: 14),
-          _buildProgress(),
-          const SizedBox(height: 14),
-          Row(
+
+          const SizedBox(width: 10),
+
+          // Right side: icon actions
+          Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Expanded(
-                flex: 3,
-                child: _ActionButton(
-                  label: 'Continue Learning',
-                  icon: Icons.play_arrow_rounded,
-                  filled: true,
-                  onTap: onContinue,
-                ),
+              _IconAction(
+                icon: Icons.arrow_forward_rounded,
+                tooltip: 'Continue Learning',
+                filled: true,
+                onTap: onContinue,
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                flex: 2,
-                child: _ActionButton(
-                  label: 'Progress',
-                  icon: Icons.insights_rounded,
-                  filled: false,
-                  onTap: onViewProgress,
-                ),
+              const SizedBox(height: 8),
+              _IconAction(
+                icon: Icons.insights_rounded,
+                tooltip: 'View Progress',
+                filled: false,
+                onTap: onViewProgress,
               ),
             ],
           ),
@@ -123,7 +113,7 @@ class ParentChildCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             child: LinearProgressIndicator(
               value: child.overallPercent / 100,
-              minHeight: 8,
+              minHeight: 6,
               backgroundColor: AppColors.primarySurface,
               valueColor: const AlwaysStoppedAnimation<Color>(
                 AppColors.primary,
@@ -131,7 +121,7 @@ class ParentChildCard extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 8),
         Text(
           '${child.overallPercent}%',
           style: AppTextStyles.bodySmall.copyWith(
@@ -169,15 +159,15 @@ class ParentChildCard extends StatelessWidget {
   }
 }
 
-class _ActionButton extends StatelessWidget {
-  final String label;
+class _IconAction extends StatelessWidget {
   final IconData icon;
+  final String tooltip;
   final bool filled;
   final VoidCallback onTap;
 
-  const _ActionButton({
-    required this.label,
+  const _IconAction({
     required this.icon,
+    required this.tooltip,
     required this.filled,
     required this.onTap,
   });
@@ -186,28 +176,18 @@ class _ActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final fg = filled ? AppColors.white : AppColors.primary;
 
-    return Material(
-      color: filled ? AppColors.primary : AppColors.primarySurface,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: filled ? AppColors.primary : AppColors.primarySurface,
         borderRadius: BorderRadius.circular(12),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 18, color: fg),
-              const SizedBox(width: 6),
-              Flexible(
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.buttonMedium.copyWith(color: fg),
-                ),
-              ),
-            ],
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: onTap,
+          child: SizedBox(
+            width: 42,
+            height: 38,
+            child: Icon(icon, size: 20, color: fg),
           ),
         ),
       ),

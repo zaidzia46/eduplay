@@ -1,4 +1,5 @@
 import 'package:eduplay/screens/home/game_demo/game.dart';
+import 'package:eduplay/screens/home/progress/progress.dart';
 import 'package:eduplay/screens/home/progress/progress_bin.dart';
 import 'package:eduplay/screens/home/subjects/subjects_bin.dart';
 import 'package:get/get.dart';
@@ -103,6 +104,17 @@ abstract class AppPages {
         ProgressBinding().dependencies();
         ChildProfileBinding().dependencies();
       }),
+    ),
+
+    // Standalone, read-only Progress screen — used by the Parent Dashboard's
+    // "View Progress" so a parent can peek at the active child's progress
+    // without the bottom-nav shell (and with static, non-navigating subject
+    // rows). The child-facing Progress tab lives inside [Home] above.
+    GetPage(
+      name: AppRoutes.progress,
+      page: () => const ProgressView(readOnly: true),
+      binding: ProgressBinding(),
+      transition: Transition.rightToLeft,
     ),
 
     GetPage(

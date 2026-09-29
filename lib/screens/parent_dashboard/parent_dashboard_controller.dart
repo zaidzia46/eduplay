@@ -67,8 +67,15 @@ class ParentDashboardController extends GetxController {
 
   void continueLearning(ChildProfileModel child) => switcher.selectChild(child);
 
-  void viewProgress(ChildProfileModel child) =>
-      switcher.selectChild(child, initialTab: 2);
+  /// Opens the child's Progress screen standalone (no bottom-nav shell) so the
+  /// parent can peek at it and return here via the back button. We set the
+  /// active child first — [ProgressController] is driven by
+  /// `SessionController.activeChild` — then push (not replace) the route so
+  /// `Get.back()` lands back on this dashboard.
+  Future<void> viewProgress(ChildProfileModel child) async {
+    await session.setActiveChild(child);
+    Get.toNamed(AppRoutes.progress);
+  }
 
   void addChild() => switcher.goToCreateProfile();
 
