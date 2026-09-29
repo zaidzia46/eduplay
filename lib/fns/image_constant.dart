@@ -26,4 +26,7 @@ class ImageConstant {
   static const socialStd = '$imgURL/social.png';
   static const urdu = '$imgURL/urdu.png';
   static const mQuiz = '$imgURL/mquiz.png';
+  static const pttb = '$imgURL/pttb.png';
+  static const sttb = '$imgURL/sttb.png';
+  static const LSGLahore = '$imgURL/lsgLahore.png';
 }

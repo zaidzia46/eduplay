@@ -75,7 +75,7 @@ class _AppDashboardViewState extends State<AppDashboardView>
                     ),
                     const SizedBox(height: 24),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: _Entrance(
                         animation: _entrance,
                         interval: const Interval(
@@ -86,9 +86,9 @@ class _AppDashboardViewState extends State<AppDashboardView>
                         child: const _ParentEntryCard(),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 14),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: _Entrance(
                         animation: _entrance,
                         interval: const Interval(
@@ -99,7 +99,7 @@ class _AppDashboardViewState extends State<AppDashboardView>
                         child: const _PromoBanner(),
                       ),
                     ),
-                    const SizedBox(height: 26),
+                    const SizedBox(height: 9),
                     _Entrance(
                       animation: _entrance,
                       interval: const Interval(
@@ -111,13 +111,13 @@ class _AppDashboardViewState extends State<AppDashboardView>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            padding: const EdgeInsets.symmetric(horizontal: 14),
                             child: TitleRow(
                               title: 'Classified Ads',
                               onTap: _viewAllClassifieds,
                             ),
                           ),
-                          const SizedBox(height: 2),
+                          const SizedBox(height: 1),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: Text(
@@ -125,7 +125,7 @@ class _AppDashboardViewState extends State<AppDashboardView>
                               style: AppTextStyles.caption,
                             ),
                           ),
-                          const SizedBox(height: 14),
+                          const SizedBox(height: 4),
                           SizedBox(
                             height: 180,
                             child: ListView.separated(
@@ -275,124 +275,134 @@ class _PromoBanner extends StatelessWidget {
 class _ParentEntryCard extends StatelessWidget {
   const _ParentEntryCard();
 
+  void _continueAsGuest() =>
+      Get.toNamed(AppRoutes.parentDashboard, arguments: {'convert': true});
+
+  void _login() => Get.toNamed(AppRoutes.login);
+
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF4B1F8C).withOpacity(0.28),
-            blurRadius: 26,
-            offset: const Offset(0, 12),
+            color: const Color(0xFF4B1F8C).withOpacity(0.26),
+            blurRadius: 22,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: Material(
-          color: Colors.transparent,
-          child: Ink(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFF4B1F8C),
-                  Color(0xFF7A35C9),
-                  Color(0xFFE7A23D),
-                  Color(0xFFF6C544),
-                ],
-                stops: [0.0, 0.4, 0.78, 1.0],
-              ),
+        borderRadius: BorderRadius.circular(22),
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF4B1F8C),
+                Color(0xFF7A35C9),
+                Color(0xFFE7A23D),
+                Color(0xFFF6C544),
+              ],
+              stops: [0.0, 0.4, 0.78, 1.0],
             ),
-            child: Stack(
-              children: [
-                // Decorative glass circles for depth.
-                Positioned(top: -34, right: -24, child: _deco(120, 0.10)),
-                Positioned(bottom: -46, left: -18, child: _deco(140, 0.08)),
-                InkWell(
-                  onTap: () => Get.toNamed(
-                    AppRoutes.parentDashboard,
-                    arguments: {'convert': true},
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(18),
-                    child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            // Glassy avatar bubble.
-                            _buildAvatar(),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Guardian',
-                                    style: AppTextStyles.h3.copyWith(
-                                      color: AppColors.white,
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    'Continue to your family',
-                                    style: AppTextStyles.bodySmall.copyWith(
-                                      color: AppColors.white.withOpacity(0.9),
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            // Circular chevron badge.
-                            Container(
-                              width: 34,
-                              height: 34,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.16),
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white.withOpacity(0.35),
+          ),
+          child: Stack(
+            children: [
+              Positioned(top: -34, right: -24, child: _deco(110, 0.10)),
+              Positioned(bottom: -46, left: -18, child: _deco(120, 0.08)),
+              Padding(
+                padding: const EdgeInsets.all(14),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    _buildAvatar(),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Title + "optional" chip on one line
+                          Row(
+                            children: [
+                              Text(
+                                'Welcome',
+                                style: AppTextStyles.h3.copyWith(
+                                  color: AppColors.white,
+                                  fontWeight: FontWeight.w800,
                                 ),
                               ),
-                              child: const Icon(
-                                Icons.arrow_forward_rounded,
-                                color: AppColors.white,
-                                size: 18,
+                              const SizedBox(width: 12),
+                              Flexible(
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 3,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.18),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      'Login is optional',
+                                      maxLines: 1,
+                                      style: AppTextStyles.caption.copyWith(
+                                        color: AppColors.white,
+                                        fontSize: 10.5,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        // Hairline separator between the header and actions.
-                        Container(
-                          height: 1,
-                          color: Colors.white.withOpacity(0.22),
-                        ),
-                        const SizedBox(height: 16),
-                        _CardButton(
-                          label: 'Login / Register',
-                          filled: true,
-                          onTap: () => Get.toNamed(AppRoutes.login),
-                        ),
-                      ],
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          // Actions: side by side, same height
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 10,
+                                child: _CardButton(
+                                  label: 'Continue',
+                                  icon: Icons.arrow_forward_rounded,
+                                  filled: true,
+                                  onTap: _continueAsGuest,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                flex: 13,
+                                child: _CardButton(
+                                  label: 'Login / Register',
+                                  filled: false,
+                                  onTap: _login,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
+  // Avatar slightly smaller (56) to keep the card short.
   Widget _buildAvatar() {
     final vm = Get.find<ParentSettingsController>();
-    double avatarSize = 65;
+    const double avatarSize = 56;
 
     return Obx(() {
       final localPath = vm.localPreviewPath.value;
@@ -449,17 +459,17 @@ class _ParentEntryCard extends StatelessWidget {
             right: -2,
             bottom: -2,
             child: Container(
-              width: 22,
-              height: 22,
+              width: 20,
+              height: 20,
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 color: Color(0xFFF6C544),
               ),
-              child: Center(
+              child: const Center(
                 child: FaIcon(
                   FontAwesomeIcons.crown,
                   color: Colors.white,
-                  size: 14,
+                  size: 12,
                 ),
               ),
             ),
@@ -481,6 +491,7 @@ class _ParentEntryCard extends StatelessWidget {
 
 class _CardButton extends StatelessWidget {
   final String label;
+  final IconData? icon; // optional trailing icon
   final bool filled;
   final VoidCallback onTap;
 
@@ -488,38 +499,50 @@ class _CardButton extends StatelessWidget {
     required this.label,
     required this.filled,
     required this.onTap,
+    this.icon,
   });
 
   @override
   Widget build(BuildContext context) {
+    final fg = filled ? AppColors.primary : AppColors.white;
+
     return Material(
-      color: filled ? AppColors.white : Colors.white.withOpacity(0.12),
-      borderRadius: BorderRadius.circular(14),
+      color: filled ? AppColors.white : Colors.white.withOpacity(0.14),
+      borderRadius: BorderRadius.circular(12),
+      elevation: filled ? 2 : 0,
+      shadowColor: Colors.black.withOpacity(0.25),
       child: InkWell(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
         onTap: onTap,
         child: Container(
-          height: 46,
+          height: 34,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(12),
             border: filled
                 ? null
-                : Border.all(color: Colors.white.withOpacity(0.8), width: 1.5),
-            boxShadow: filled
-                ? [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.15),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ]
-                : null,
+                : Border.all(color: Colors.white.withOpacity(0.75), width: 1.2),
           ),
-          child: Text(
-            label,
-            style: AppTextStyles.buttonMedium.copyWith(
-              color: filled ? AppColors.primary : AppColors.white,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  label,
+                  maxLines: 1,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: fg,
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                if (icon != null) ...[
+                  const SizedBox(width: 4),
+                  Icon(icon, size: 15, color: fg),
+                ],
+              ],
             ),
           ),
         ),
