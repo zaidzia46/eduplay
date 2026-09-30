@@ -144,7 +144,7 @@ class ParentSettingsController extends GetxController {
       Get.delete<DashboardController>(force: true);
       ChildProfileRepository.clearCache();
       ParentRepository.clearCache();
-      Get.offAllNamed(AppRoutes.login);
+      Get.offAllNamed(AppRoutes.appDashboard);
     } catch (e) {
       log('Logout failed: $e');
       isLoggingOut.value = false;
