@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:eduplay/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -8,7 +7,6 @@ import 'package:image_picker/image_picker.dart';
 
 import '../core/supabase_client.dart';
 import '../fns/image_picker_service.dart';
-import '../routes/app_routes.dart';
 import '../screens/profile/create_child_profile/models/standard_model.dart';
 import '../screens/profile/profile_switcher/models/child_profile_model.dart';
 
@@ -89,11 +87,6 @@ class SessionController extends GetxController {
     await _box.write(_activeChildKey, updated.toCacheJson());
   }
 
-  /// Re-read the server-maintained gamification counters for the active child
-  /// (a trigger on quiz_attempts keeps stars, streak and overall_progress
-  /// current) and mirror them onto the cached active child. Watched by
-  /// ProgressController, so calling this after a quiz also refreshes the
-  /// Progress tab.
   Future<void> refreshActiveChildCounters() async {
     final current = activeChild.value;
     if (current == null) return;
@@ -131,25 +124,6 @@ class SessionController extends GetxController {
   }
 
   int? get currentStandardId => currentStandard.value?.id;
-
-  bool get isGuest => supabase.auth.currentUser?.isAnonymous ?? false;
-
-  void promptSignUp([String message = 'Sign up to save your progress.']) {
-    Get.snackbar(
-      'Create an account',
-      message,
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: AppColors.primary,
-      colorText: AppColors.white,
-      mainButton: TextButton(
-        onPressed: () {
-          if (Get.isSnackbarOpen) Get.closeCurrentSnackbar();
-          Get.toNamed(AppRoutes.register, arguments: {'convert': true});
-        },
-        child: const Text('Sign up', style: TextStyle(color: Colors.white)),
-      ),
-    );
-  }
 
   Future<void> logout() async {
     await supabase.auth.signOut();
