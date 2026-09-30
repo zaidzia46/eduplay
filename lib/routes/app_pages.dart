@@ -28,6 +28,7 @@ import '../screens/profile/create_child_profile/create_child_profile_screen.dart
 import '../screens/profile/profile_switcher/profile_switcher_bin.dart';
 import '../screens/profile/profile_switcher/profile_switcher_screen.dart';
 import '../screens/splash/splash_bin.dart';
+import 'auth_middleware.dart';
 
 abstract class AppPages {
   static final pages = [
@@ -74,22 +75,27 @@ abstract class AppPages {
       binding: AppDashboardBinding(),
       transition: Transition.fadeIn,
     ),
+    // ----- Authenticated routes: guarded by [AuthGuard] so a logged-out user
+    // is redirected to the public App Dashboard before any binding/DB call. -----
     GetPage(
       name: AppRoutes.parentDashboard,
       page: () => const ParentDashboardView(),
       binding: ParentDashboardBinding(),
+      middlewares: [AuthGuard()],
       transition: Transition.fadeIn,
     ),
     GetPage(
       name: AppRoutes.profileSwitcher,
       page: () => const ProfileSwitcherView(),
       binding: ProfileSwitcherBinding(),
+      middlewares: [AuthGuard()],
       transition: Transition.fadeIn,
     ),
     GetPage(
       name: AppRoutes.createProfile,
       page: () => const CreateProfileView(),
       binding: ChildProfileBinding(),
+      middlewares: [AuthGuard()],
       transition: Transition.rightToLeft,
       transitionDuration: const Duration(milliseconds: 400),
     ),
@@ -97,6 +103,7 @@ abstract class AppPages {
     GetPage(
       name: AppRoutes.home,
       page: () => Home(),
+      middlewares: [AuthGuard()],
       binding: BindingsBuilder(() {
         BottomNavBinding().dependencies();
         DashboardBinding().dependencies();
@@ -114,6 +121,7 @@ abstract class AppPages {
       name: AppRoutes.progress,
       page: () => const ProgressView(readOnly: true),
       binding: ProgressBinding(),
+      middlewares: [AuthGuard()],
       transition: Transition.rightToLeft,
     ),
 
@@ -121,6 +129,7 @@ abstract class AppPages {
       name: AppRoutes.chapters,
       page: () => ChapterScreen(),
       binding: ChapterBinding(),
+      middlewares: [AuthGuard()],
       transition: Transition.fadeIn,
     ),
 
@@ -128,6 +137,7 @@ abstract class AppPages {
       name: AppRoutes.quizList,
       page: () => QuizListScreen(),
       binding: QuizListBinding(),
+      middlewares: [AuthGuard()],
       transition: Transition.fadeIn,
     ),
 
@@ -135,6 +145,7 @@ abstract class AppPages {
       name: AppRoutes.quiz,
       page: () => QuizScreen(),
       binding: QuizBinding(),
+      middlewares: [AuthGuard()],
       transition: Transition.fadeIn,
     ),
 

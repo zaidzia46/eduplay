@@ -12,11 +12,6 @@ class RegisterView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vm = Get.find<AuthViewModel>();
-    final args = Get.arguments;
-    // Entered from inside the app by a guest tapping "save my progress"; the
-    // same form then converts the anonymous account instead of creating a new
-    // one. Reached from the login screen (normal signup) with no arguments.
-    final isConvert = args is Map && args['convert'] == true;
 
     return Scaffold(
       // No AppBar: there's no back button (the form has its own dismiss
@@ -39,30 +34,25 @@ class RegisterView extends StatelessWidget {
                     child: Image.asset('assets/images/logo.png', height: 92),
                   ),
                   const SizedBox(height: 12),
-                  if (!isConvert) ...[
-                    FadeSlideIn(
-                      delayMs: 80,
-                      child: AuthTabs(
-                        isLoginSelected: false,
-                        onLogin: () => Get.offNamed(AppRoutes.login),
-                        onRegister: () {},
-                      ),
+                  FadeSlideIn(
+                    delayMs: 80,
+                    child: AuthTabs(
+                      isLoginSelected: false,
+                      onLogin: () => Get.offNamed(AppRoutes.login),
+                      onRegister: () {},
                     ),
-                    const SizedBox(height: 18),
-                  ],
+                  ),
+                  const SizedBox(height: 18),
                   FadeSlideIn(
                     delayMs: 160,
                     child: GlassCard(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AuthHeading(
-                            title: isConvert
-                                ? 'Save your progress'
-                                : 'Create Account',
-                            subtitle: isConvert
-                                ? 'Create an account so your stars and progress are never lost.'
-                                : "Sign up to start your child's learning adventure.",
+                          const AuthHeading(
+                            title: 'Create Account',
+                            subtitle:
+                                "Sign up to start your child's learning adventure.",
                           ),
                           const SizedBox(height: 24),
 
@@ -111,13 +101,9 @@ class RegisterView extends StatelessWidget {
 
                           Obx(
                             () => AuthButton(
-                              label: isConvert
-                                  ? 'Sign Up & Save Progress'
-                                  : 'Create Account',
+                              label: 'Create Account',
                               isLoading: vm.isLoading.value,
-                              onPressed: isConvert
-                                  ? vm.signUpAndBackup
-                                  : vm.register,
+                              onPressed: vm.register,
                             ),
                           ),
                           const SizedBox(height: 22),
@@ -151,13 +137,9 @@ class RegisterView extends StatelessWidget {
                           const SizedBox(height: 22),
 
                           AuthFooterLink(
-                            text: isConvert
-                                ? 'Changed your mind? '
-                                : 'Already have an account? ',
-                            actionText: isConvert ? 'Go back' : 'Sign In',
-                            onTap: () => isConvert
-                                ? Get.back()
-                                : Get.offNamed(AppRoutes.login),
+                            text: 'Already have an account? ',
+                            actionText: 'Sign In',
+                            onTap: () => Get.offNamed(AppRoutes.login),
                           ),
                         ],
                       ),

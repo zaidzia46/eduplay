@@ -156,10 +156,7 @@ class CreateProfileViewModel extends GetxController {
         await Get.find<ProfileSwitcherViewModel>().fetchChildren();
       }
 
-      Get.offAllNamed(
-        AppRoutes.parentDashboard,
-        arguments: {'convert': 'trueByProfile'},
-      );
+      Get.offAllNamed(AppRoutes.parentDashboard);
     } on PostgrestException catch (e) {
       errorMessage.value = e.code == '23505'
           ? 'That username is already taken.'

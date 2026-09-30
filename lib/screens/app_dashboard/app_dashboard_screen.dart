@@ -1,20 +1,13 @@
-import 'dart:io';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eduplay/fns/image_constant.dart';
 import 'package:eduplay/widgets/bg.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
 import '../../routes/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
-import '../../widgets/expanded_avatar.dart';
 import '../../widgets/title_row.dart';
 import '../parent_dashboard/widgets/classified_ad_card.dart';
-import '../parent_settings/parent_settings_controller.dart';
-import '../profile/widgets/skeleton_avatar_loader.dart';
 
 class AppDashboardView extends StatefulWidget {
   const AppDashboardView({super.key});
@@ -275,10 +268,9 @@ class _PromoBanner extends StatelessWidget {
 class _ParentEntryCard extends StatelessWidget {
   const _ParentEntryCard();
 
-  void _continueAsGuest() =>
-      Get.toNamed(AppRoutes.parentDashboard, arguments: {'convert': true});
-
   void _login() => Get.toNamed(AppRoutes.login);
+
+  void _register() => Get.toNamed(AppRoutes.register);
 
   @override
   Widget build(BuildContext context) {
@@ -318,70 +310,45 @@ class _ParentEntryCard extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    _buildAvatar(),
+                    _buildEmblem(),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Title + "optional" chip on one line
-                          Row(
-                            children: [
-                              Text(
-                                'Welcome',
-                                style: AppTextStyles.h3.copyWith(
-                                  color: AppColors.white,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Flexible(
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 3,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.18),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    child: Text(
-                                      'Login is optional',
-                                      maxLines: 1,
-                                      style: AppTextStyles.caption.copyWith(
-                                        color: AppColors.white,
-                                        fontSize: 10.5,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
+                          Text(
+                            'Welcome to EduPlay',
+                            style: AppTextStyles.h3.copyWith(
+                              color: AppColors.white,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            'Sign in to manage your children and track their progress.',
+                            style: AppTextStyles.caption.copyWith(
+                              color: AppColors.white,
+                            ),
                           ),
                           const SizedBox(height: 10),
                           // Actions: side by side, same height
                           Row(
                             children: [
                               Expanded(
-                                flex: 10,
                                 child: _CardButton(
-                                  label: 'Continue',
+                                  label: 'Login',
                                   icon: Icons.arrow_forward_rounded,
                                   filled: true,
-                                  onTap: _continueAsGuest,
+                                  onTap: _login,
                                 ),
                               ),
                               const SizedBox(width: 8),
                               Expanded(
-                                flex: 13,
                                 child: _CardButton(
-                                  label: 'Login / Register',
+                                  label: 'Register',
                                   filled: false,
-                                  onTap: _login,
+                                  onTap: _register,
                                 ),
                               ),
                             ],
@@ -399,84 +366,23 @@ class _ParentEntryCard extends StatelessWidget {
     );
   }
 
-  // Avatar slightly smaller (56) to keep the card short.
-  Widget _buildAvatar() {
-    final vm = Get.find<ParentSettingsController>();
-    const double avatarSize = 56;
-
-    return Obx(() {
-      final localPath = vm.localPreviewPath.value;
-      final url = vm.profileImagePath.value;
-      final isLoading = vm.isLoadingAvatar.value;
-
-      Widget avatarContent;
-
-      if (localPath != null) {
-        avatarContent = ExpandableAvatar(
-          avatarSize: avatarSize,
-          localPreviewPath: localPath,
-          collapsedChild: CircleAvatar(
-            radius: avatarSize / 2,
-            backgroundColor: AppColors.primaryDark,
-            backgroundImage: FileImage(File(localPath)),
-          ),
-        );
-      } else if (isLoading) {
-        avatarContent = SkeletonAvatarLoader(avatarSize: avatarSize);
-      } else if (url != null) {
-        avatarContent = ExpandableAvatar(
-          imageUrl: url,
-          avatarSize: avatarSize,
-          collapsedChild: ClipOval(
-            child: CachedNetworkImage(
-              imageUrl: url,
-              width: avatarSize,
-              height: avatarSize,
-              fit: BoxFit.cover,
-              placeholder: (context, url) =>
-                  SkeletonAvatarLoader(avatarSize: avatarSize),
-              errorWidget: (context, url, error) => CircleAvatar(
-                radius: avatarSize / 2,
-                backgroundColor: AppColors.primaryDark,
-                child: Icon(Icons.person, size: avatarSize * 0.5),
-              ),
-            ),
-          ),
-        );
-      } else {
-        avatarContent = CircleAvatar(
-          radius: avatarSize / 2,
-          backgroundColor: AppColors.primaryDark,
-          child: Icon(Icons.person, size: avatarSize * 0.5),
-        );
-      }
-
-      return Stack(
-        clipBehavior: Clip.none,
-        children: [
-          avatarContent,
-          Positioned(
-            right: -2,
-            bottom: -2,
-            child: Container(
-              width: 20,
-              height: 20,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Color(0xFFF6C544),
-              ),
-              child: const Center(
-                child: FaIcon(
-                  FontAwesomeIcons.crown,
-                  color: Colors.white,
-                  size: 12,
-                ),
-              ),
-            ),
-          ),
-        ],
-      );
-    });
+  // A static emblem for the logged-out card — no user/avatar data is read here.
+  Widget _buildEmblem() {
+    const double size = 56;
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white.withOpacity(0.18),
+        border: Border.all(color: Colors.white.withOpacity(0.6), width: 2),
+      ),
+      child: const Icon(
+        Icons.family_restroom_rounded,
+        color: Colors.white,
+        size: 30,
+      ),
+    );
   }
 
   Widget _deco(double size, double opacity) => Container(

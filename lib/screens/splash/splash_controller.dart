@@ -57,33 +57,20 @@ class SplashController extends GetxController
       precacheImage(const AssetImage(ImageConstant.splashImage), context),
     ]);
 
-    var session = supabase.auth.currentSession;
+    final session = supabase.auth.currentSession;
 
-    // No session means a fresh install (or a cleared one). Rather than gate the
-    // app behind a login screen, sign the user in anonymously so they land
-    // straight in as a full parent — they can create children, play quizzes and
-    // use everything. A single dashboard banner nudges them to sign up later to
-    // back up their data. Only if the anonymous sign-in itself fails do we fall
-    // back to the login screen.
+    // Logged out: open the public App Dashboard. We deliberately do NOT create
+    // an anonymous session and do NOT load any profile/child data — nothing
+    // user-specific is created or read just because the app was opened. The
+    // user reaches authenticated screens only by logging in or registering.
     if (session == null) {
-      try {
-        final res = await supabase.auth.signInAnonymously();
-        session = res.session;
-      } catch (_) {
-        Get.offAllNamed(AppRoutes.login);
-        return;
-      }
-    }
-
-    if (session == null) {
-      Get.offAllNamed(AppRoutes.login);
+      Get.offAllNamed(AppRoutes.appDashboard);
       return;
     }
 
-    // Anonymous and permanent users are treated identically from here on: load
-    // the switcher, warm the avatar caches, and land on the app dashboard (the
-    // public landing hub). The switcher VM is still created here so the Parent
-    // Dashboard's family data is ready the moment the user taps into it.
+    // Returning, authenticated user: warm the family data + avatar caches so the
+    // Parent Dashboard is ready the moment it appears, then continue into the
+    // authenticated flow.
     final profileVm = Get.put(ProfileSwitcherViewModel(), permanent: true);
     await profileVm.loadingFuture;
 
@@ -105,7 +92,7 @@ class SplashController extends GetxController
         precacheImage(CachedNetworkImageProvider(parentAvatarUrl), context),
     ]);
 
-    Get.offAllNamed(AppRoutes.appDashboard);
+    Get.offAllNamed(AppRoutes.parentDashboard);
   }
 
   @override

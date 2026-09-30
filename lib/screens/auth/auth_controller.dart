@@ -81,50 +81,6 @@ class AuthViewModel extends GetxController {
     }
   }
 
-  Future<void> signUpAndBackup() async {
-    if (!_validateRegisterForm()) return;
-    try {
-      isLoading.value = true;
-      errorMessage.value = '';
-
-      final name = nameController.text.trim();
-
-      final response = await supabase.auth.updateUser(
-        UserAttributes(
-          email: emailController.text.trim(),
-          password: passwordController.text,
-          data: {'name': name},
-        ),
-      );
-
-      await supabase
-          .from('parents')
-          .update({'name': name})
-          .eq('id', supabase.auth.currentUser!.id);
-
-      await session.setParentName(name);
-
-      final pendingEmail = response.user?.newEmail;
-      Get.back(); // back into the app they were already using
-      if (pendingEmail != null && pendingEmail.isNotEmpty) {
-        Get.snackbar(
-          'Almost there',
-          'Check $pendingEmail to confirm your email. Your progress is already saved.',
-        );
-      } else {
-        Get.snackbar('Account saved', 'Your progress is now safe.');
-      }
-    } on AuthException catch (e) {
-      errorMessage.value = _extractErrorMessage(e);
-    } catch (e) {
-      errorMessage.value = e is Exception
-          ? e.toString().replaceFirst('Exception: ', '')
-          : 'Could not save your account. Please try again.';
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
   Future<void> _handleAuthSuccess(AuthResponse response) async {
     final user = response.user;
     final accessToken = response.session?.accessToken;
