@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:eduplay/routes/app_routes.dart';
 import 'package:eduplay/screens/parent_settings/parent_settings_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -165,32 +164,15 @@ class ParentSettingsView extends StatelessWidget {
                   const SizedBox(height: 28),
 
                   // ---- Actions ----
-                  Obx(() {
-                    session.parentName.value; // reactive trigger
-                    if (session.isGuest) {
-                      return _PremiumTile(
-                        child: ActionTile(
-                          icon: Icons.person_add_alt_1_outlined,
-                          label: 'Sign up to save your account',
-                          subtitle: 'Keep your stars and progress forever',
-                          color: AppColors.primary,
-                          onTap: () => Get.toNamed(
-                            AppRoutes.register,
-                            arguments: {'convert': true},
-                          ),
-                        ),
-                      );
-                    }
-                    return _PremiumTile(
-                      child: ActionTile(
-                        icon: Icons.lock_outline_rounded,
-                        label: 'Change Password',
-                        subtitle: 'Update your account password',
-                        color: AppColors.primary,
-                        onTap: () => _showChangePasswordSheet(context, vm),
-                      ),
-                    );
-                  }),
+                  _PremiumTile(
+                    child: ActionTile(
+                      icon: Icons.lock_outline_rounded,
+                      label: 'Change Password',
+                      subtitle: 'Update your account password',
+                      color: AppColors.primary,
+                      onTap: () => _showChangePasswordSheet(context, vm),
+                    ),
+                  ),
                   const SizedBox(height: 14),
                   _PremiumTile(
                     child: ActionTile(
@@ -360,33 +342,15 @@ class ParentSettingsView extends StatelessWidget {
   }
 
   void _showLogoutDialog(BuildContext context, ParentSettingsController vm) {
-    // A guest's session is the only handle to their account: signing out
-    // orphans the child + stars + progress with no way back. Warn them and
-    // offer conversion first, but still allow a deliberate "log out anyway".
-    final isGuest = vm.session.isGuest;
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text(
-          isGuest ? 'Leave without saving?' : 'Log Out?',
-          style: AppTextStyles.h3,
-        ),
+        title: Text('Log Out?', style: AppTextStyles.h3),
         content: Text(
-          isGuest
-              ? "You're exploring as a guest. Log out now and your stars and "
-                    'progress are gone for good — sign up to keep them.'
-              : 'You\'ll need to sign in again to access EduPlay.',
+          'You\'ll need to sign in again to access EduPlay.',
           style: AppTextStyles.bodySecondary,
         ),
         actions: [
-          if (isGuest)
-            TextButton(
-              onPressed: () {
-                Get.back();
-                Get.toNamed(AppRoutes.register, arguments: {'convert': true});
-              },
-              child: const Text('Sign Up & Save'),
-            ),
           Obx(
             () => ElevatedButton(
               onPressed: vm.isLoggingOut.value ? null : vm.logout,
@@ -405,10 +369,7 @@ class ParentSettingsView extends StatelessWidget {
                         color: Colors.white,
                       ),
                     )
-                  : Text(
-                      isGuest ? 'Log out anyway' : 'Log Out',
-                      style: const TextStyle(color: Colors.white),
-                    ),
+                  : const Text('Log Out', style: TextStyle(color: Colors.white)),
             ),
           ),
         ],
