@@ -1,6 +1,5 @@
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:eduplay/routes/app_routes.dart';
 import 'package:eduplay/widgets/bg.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,7 +7,6 @@ import 'package:get/get.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../widgets/action_tile.dart';
-import '../../widgets/circle_back_button.dart';
 import '../../widgets/recent_act_tile.dart';
 import '../../widgets/staggered_anime.dart';
 import '../../widgets/title_row.dart';
@@ -32,7 +30,6 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
 
   late final AnimationController _staggerController;
   late final Worker _worker;
-  final args = Get.arguments;
 
   String? _precachedKey;
   Future<void>? _precacheFuture;
@@ -79,9 +76,6 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
 
   @override
   Widget build(BuildContext context) {
-    final isConvert = args is Map && args['convert'] == true;
-    final isConvertForAppDashboard =
-        args is Map && args['convert'] == 'trueByProfile';
     return Scaffold(
       // backgroundColor: AppColors.primaryDark,
       body: SoftBackground(
@@ -92,24 +86,6 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (isConvert)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 4, 15, 0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: CircleBackButton(onTap: () => Get.back()),
-                    ),
-                  ),
-                if (isConvertForAppDashboard)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 4, 15, 0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: CircleBackButton(
-                        onTap: () => Get.offAllNamed(AppRoutes.appDashboard),
-                      ),
-                    ),
-                  ),
                 const SizedBox(height: 8),
                 _buildHeader(),
                 const SizedBox(height: 10),
