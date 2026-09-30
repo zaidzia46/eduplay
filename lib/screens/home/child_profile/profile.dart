@@ -628,10 +628,7 @@ class _ProfileViewState extends State<ProfileView>
         subtitle: 'Back to your dashboard',
         color: AppColors.primary,
         onTap: () {
-          Get.offAllNamed(
-            AppRoutes.parentDashboard,
-            arguments: {'convert': 'trueByProfile'},
-          );
+          Get.offAllNamed(AppRoutes.parentDashboard);
         },
       ),
     );
