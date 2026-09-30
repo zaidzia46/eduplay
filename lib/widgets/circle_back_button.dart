@@ -13,7 +13,7 @@ class CircleBackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.white,
+      color: AppColors.white.withOpacity(0.6),
       shape: const CircleBorder(),
       elevation: 4,
       shadowColor: AppColors.primary.withOpacity(0.30),
@@ -21,8 +21,8 @@ class CircleBackButton extends StatelessWidget {
         customBorder: const CircleBorder(),
         onTap: onTap,
         child: Container(
-          width: 46,
-          height: 46,
+          width: 36,
+          height: 36,
           alignment: Alignment.center,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
