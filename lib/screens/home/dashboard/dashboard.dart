@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eduplay/fns/image_constant.dart';
 import 'package:eduplay/routes/app_routes.dart';
-import 'package:eduplay/controller/session_controller.dart';
 import 'package:eduplay/screens/home/game_demo/game.dart';
 import 'package:eduplay/widgets/expanded_avatar.dart';
 import 'package:eduplay/screens/home/subjects/subjects_controller.dart';
@@ -36,7 +35,6 @@ class _DashBoardState extends State<DashBoard>
   final vm = Get.find<DashboardController>();
   final subjectController = Get.find<SubjectsController>();
   final bottomNavConn = Get.find<BottomNavController>();
-  final session = Get.find<SessionController>();
   late final AnimationController _controller;
   late final Worker _worker;
 
@@ -198,7 +196,6 @@ class _DashBoardState extends State<DashBoard>
                           ],
                         );
                       }),
-                      _GuestSaveBanner(session: session),
                       SizedBox(height: 20),
                       Stack(
                         children: [
@@ -423,66 +420,5 @@ class _DashBoardState extends State<DashBoard>
         ],
       ),
     );
-  }
-}
-
-class _GuestSaveBanner extends StatelessWidget {
-  const _GuestSaveBanner({required this.session});
-
-  final SessionController session;
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      session.parentName.value; // reactive trigger — see class doc
-      if (!session.isGuest) return const SizedBox.shrink();
-      return Padding(
-        padding: const EdgeInsets.only(top: 16),
-        child: GestureDetector(
-          onTap: () =>
-              Get.toNamed(AppRoutes.register, arguments: {'convert': true}),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.18),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.white.withOpacity(0.55)),
-            ),
-            child: Row(
-              children: [
-                const Icon(
-                  Icons.cloud_upload_outlined,
-                  color: AppColors.white,
-                  size: 22,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Back up your data',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        'Sign in to keep a backup of your progress.',
-                        style: AppTextStyles.caption.copyWith(
-                          color: AppColors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Icon(Icons.chevron_right, color: AppColors.white),
-              ],
-            ),
-          ),
-        ),
-      );
-    });
   }
 }
