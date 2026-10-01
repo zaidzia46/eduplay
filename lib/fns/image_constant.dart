@@ -4,7 +4,9 @@ class ImageConstant {
   static const splashImage = '$imgURL/profile_switch_bg.png';
   static const logo = '$imgURL/logo.png';
   static const logo2 = '$imgURL/logo2.png';
-  static const appDashboard = '$imgURL/app_dashboard_banner.png';
+  static const appDashboardBanner1 = '$imgURL/appDashBanner1.png';
+  static const appDashboardBanner2 = '$imgURL/appDashBanner2.png';
+  static const appDashboardBanner3 = '$imgURL/appDashBanner3.png';
   static const profileBg = '$imgURL/profile_bg.png';
   static const profileBg2 = '$imgURL/profile_bg2.png';
   static const profileCardBg = '$imgURL/profile_card_bg.png';

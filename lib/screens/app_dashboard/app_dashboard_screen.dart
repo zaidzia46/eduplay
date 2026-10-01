@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:eduplay/fns/image_constant.dart';
 import 'package:eduplay/widgets/bg.dart';
 import 'package:flutter/material.dart';
@@ -80,17 +81,14 @@ class _AppDashboardViewState extends State<AppDashboardView>
                       ),
                     ),
                     const SizedBox(height: 14),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
-                      child: _Entrance(
-                        animation: _entrance,
-                        interval: const Interval(
-                          0.24,
-                          0.72,
-                          curve: Curves.easeOutCubic,
-                        ),
-                        child: const _PromoBanner(),
+                    _Entrance(
+                      animation: _entrance,
+                      interval: const Interval(
+                        0.24,
+                        0.72,
+                        curve: Curves.easeOutCubic,
                       ),
+                      child: const _PromoBanner(),
                     ),
                     const SizedBox(height: 9),
                     _Entrance(
@@ -237,30 +235,74 @@ class _Entrance extends StatelessWidget {
   }
 }
 
-class _PromoBanner extends StatelessWidget {
+class _PromoBanner extends StatefulWidget {
   const _PromoBanner();
 
   @override
+  State<_PromoBanner> createState() => _PromoBannerState();
+}
+
+class _PromoBannerState extends State<_PromoBanner> {
+  int _current = 0;
+
+  final List<String> _banners = [
+    ImageConstant.appDashboardBanner1,
+    ImageConstant.appDashboardBanner2,
+    ImageConstant.appDashboardBanner3,
+  ];
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF4B1F8C).withValues(alpha: 0.14),
-            blurRadius: 24,
-            offset: const Offset(0, 10),
+    return Column(
+      children: [
+        CarouselSlider.builder(
+          itemCount: _banners.length,
+          options: CarouselOptions(
+            aspectRatio: 16 / 7, // match your banner image ratio
+            viewportFraction: 0.88, // <1 makes neighbours peek at the edges
+            enlargeCenterPage: false,
+            enableInfiniteScroll: true,
+            autoPlay: true,
+            autoPlayInterval: const Duration(seconds: 4),
+            onPageChanged: (index, _) => setState(() => _current = index),
           ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(22),
-        child: Image.asset(
-          ImageConstant.appDashboard,
-          width: double.infinity,
-          fit: BoxFit.fitWidth,
+          itemBuilder: (context, index, _) {
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 6),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(22),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(22),
+                child: Image.asset(
+                  _banners[index],
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            );
+          },
         ),
-      ),
+        const SizedBox(height: 12),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(_banners.length, (i) {
+            final active = i == _current;
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              margin: const EdgeInsets.symmetric(horizontal: 3),
+              width: active ? 16 : 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: active
+                    ? const Color(0xFF4B1F8C)
+                    : const Color(0xFF4B1F8C).withValues(alpha: 0.25),
+                borderRadius: BorderRadius.circular(4),
+              ),
+            );
+          }),
+        ),
+      ],
     );
   }
 }
