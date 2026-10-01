@@ -47,7 +47,7 @@ class ClassifiedAdCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 220,
+      clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -56,40 +56,41 @@ class ClassifiedAdCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Stack(
-            children: [
-              Container(
-                width: double.infinity,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
+          AspectRatio(
+            aspectRatio: 16 / 10, // same image area on every card
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Container(
                   color: ad.color.withOpacity(0.12),
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(16),
+                  child: FittedBox(
+                    fit: BoxFit.cover,
+                    clipBehavior: Clip.hardEdge,
+                    child: ad.image,
                   ),
                 ),
-                child: ad.image,
-              ),
-              Positioned(
-                top: 8,
-                left: 8,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.textPrimary.withOpacity(0.72),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    'Sponsored',
-                    style: AppTextStyles.caption.copyWith(
-                      color: AppColors.white,
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.textPrimary.withOpacity(0.72),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      'Sponsored',
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.white,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           Expanded(
             child: Padding(

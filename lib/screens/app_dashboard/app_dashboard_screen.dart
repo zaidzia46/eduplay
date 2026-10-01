@@ -117,20 +117,21 @@ class _AppDashboardViewState extends State<AppDashboardView>
                             ),
                           ),
                           const SizedBox(height: 4),
-                          SizedBox(
-                            height: 180,
-                            child: ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-                              physics: const BouncingScrollPhysics(),
-                              itemCount: kClassifiedAds.length,
-                              separatorBuilder: (_, __) =>
-                                  const SizedBox(width: 12),
-                              itemBuilder: (context, index) =>
-                                  ClassifiedAdCard(ad: kClassifiedAds[index]),
-                            ),
+                          GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            itemCount: kClassifiedAds.length,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 12,
+                                  mainAxisSpacing: 12,
+                                  childAspectRatio:
+                                      0.82, // width / height, lower = taller cards
+                                ),
+                            itemBuilder: (context, index) =>
+                                ClassifiedAdCard(ad: kClassifiedAds[index]),
                           ),
                         ],
                       ),
