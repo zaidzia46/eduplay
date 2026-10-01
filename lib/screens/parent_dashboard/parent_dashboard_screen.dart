@@ -34,6 +34,15 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
   String? _precachedKey;
   Future<void>? _precacheFuture;
 
+  // Roster signature (child ids) the stagger animation last played for. A
+  // background refresh re-emits `children` with the same roster but updated
+  // counters; replaying the entrance animation on that just flickers the list
+  // (fade out / fade in), so we only re-stagger when the roster really changes.
+  String _rosterKey = '';
+
+  String get _currentRosterKey =>
+      controller.children.map((c) => c.id).join(',');
+
   @override
   void initState() {
     super.initState();
@@ -42,7 +51,11 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
       duration: const Duration(milliseconds: 700),
     );
 
+    _rosterKey = _currentRosterKey;
     _worker = ever(controller.children, (_) {
+      final key = _currentRosterKey;
+      if (key == _rosterKey) return;
+      _rosterKey = key;
       _staggerController
         ..reset()
         ..forward();

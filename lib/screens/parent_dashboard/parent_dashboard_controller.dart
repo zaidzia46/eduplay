@@ -34,6 +34,12 @@ class ParentDashboardController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    // ProfileSwitcherViewModel is permanent (first filled at splash), so its
+    // stars/streak/overall% would otherwise stay frozen for the whole session —
+    // a streak moved by a quiz or the daily decay job wouldn't show until a cold
+    // restart. Re-read the family data on every open; silent so the existing
+    // cards stay put (no skeleton flash) and just update when fresh data lands.
+    switcher.fetchChildren(silent: true);
     _loadRecentActivity();
   }
 

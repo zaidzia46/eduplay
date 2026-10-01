@@ -34,10 +34,33 @@ class DashboardController extends GetxController {
     _loadAvatarUrl();
     _fetchDashboardSubjects();
     _activeChildWorker = ever(_session.activeChild, (updatedChild) {
+      final previous = child.value;
       child.value = updatedChild;
-      _loadAvatarUrl();
-      _fetchDashboardSubjects();
+      // A pure counter refresh (stars / streak / overall%) still has to update
+      // child.value so the stat chips rebuild, but it shouldn't re-hit the
+      // subjects / avatar endpoints — only reload those when the child identity
+      // or its enrollment actually changed.
+      if (_needsContentReload(previous, updatedChild)) {
+        _loadAvatarUrl();
+        _fetchDashboardSubjects();
+      }
     });
+    // The cached active child can hold a stale streak / stars — e.g. after the
+    // daily streak-decay job or a quiz played elsewhere — so re-read the server
+    // counters on every open to keep the chips in sync with the backend. The
+    // worker above picks up the result and rebuilds the chips.
+    _session.refreshActiveChildCounters().catchError((_) {});
+  }
+
+  bool _needsContentReload(
+    ChildProfileModel? previous,
+    ChildProfileModel? next,
+  ) {
+    if (previous == null || next == null) return true;
+    return previous.id != next.id ||
+        previous.curriculumId != next.curriculumId ||
+        previous.standard?.id != next.standard?.id ||
+        previous.avatar != next.avatar;
   }
 
   Future<void> _loadAvatarUrl() async {

@@ -10,11 +10,13 @@
 --
 -- Streak rule: a calendar day (in app_timezone()) with >= 1 quiz attempt —
 -- pass OR fail — extends the streak. A fully-missed day breaks the run; the
--- next play starts a new run at 1. current_streak reflects the run ending on
--- the child's LAST play day and deliberately does NOT decay between plays:
--- it shows the last achieved streak until the child plays again. This keeps
--- the trigger and the backfill consistent (both anchor on max(day), never on
--- "today") and is kinder for kids.
+-- next play starts a new run at 1. current_streak counts the run ending on the
+-- most recent play day, but ONLY while that day is today or yesterday in
+-- app_timezone(): once a child goes a whole calendar day without playing, it
+-- decays back to 0 instead of freezing on the last achieved value. Two writers
+-- keep the stored column honest — the AFTER INSERT trigger (section 3) moves it
+-- up on each play, and a daily pg_cron job (section 5) decays it the morning
+-- after a missed day. longest_streak is an all-time high-water mark, no decay.
 --
 -- The whole file is idempotent — safe to re-run.
 -- ════════════════════════════════════════════════════════════════════════
@@ -83,10 +85,16 @@ as $$
     group by grp
   )
   select
-    -- current run = the run whose last day is the most recent play day
+    -- current run = the run ending on the most recent play day, but it counts
+    -- ONLY while that day is today or yesterday (app_timezone). A fully-missed
+    -- calendar day leaves this WHERE with no row -> coalesce -> 0, so the
+    -- streak decays instead of freezing on the last achieved value.
     coalesce((select r.len
               from runs r
-              where r.last_day = (select max(last_day) from runs)), 0) as current_streak,
+              where r.last_day = (select max(last_day) from runs)
+                and r.last_day >= (now() at time zone public.app_timezone())::date - 1
+             ), 0) as current_streak,
+    -- longest_streak is an all-time high-water mark — the longest run ever, no decay
     coalesce((select max(r.len) from runs r), 0) as longest_streak;
 $$;
 
@@ -131,13 +139,14 @@ create trigger trg_sync_streak_on_attempt
 
 
 -- ─────────────────────────────────────────────────────────────────────────
--- 4. One-time backfill so existing children reflect their real streak now
---    instead of staying frozen until their next attempt. The LATERAL rides an
---    INNER children scan (c) and we join back on id — an UPDATE's own target
---    table (ch) can't be referenced from its FROM/LATERAL (error 42P10), so we
---    can't write `from lateral compute_child_streak(ch.id)`. Computes once per
---    child. Branch-independent; also the exact line to RECONCILE anytime.
---    Safe to re-run.
+-- 4. Backfill so existing children reflect their real streak now instead of
+--    staying frozen until their next attempt. The LATERAL rides an INNER
+--    children scan (c) and we join back on id — an UPDATE's own target table
+--    (ch) can't be referenced from its FROM/LATERAL (error 42P10), so we can't
+--    write `from lateral compute_child_streak(ch.id)`. Computes once per child.
+--    Now that compute_child_streak() is today-aware, re-running this ALSO
+--    decays every already-stale child straight to 0 — the instant correction
+--    for rows created under the old non-decaying rule. Safe to re-run.
 -- ─────────────────────────────────────────────────────────────────────────
 update public.children ch
    set current_streak = s.current_streak,
@@ -153,7 +162,50 @@ update public.children ch
 
 
 -- ─────────────────────────────────────────────────────────────────────────
--- 5. Expose to the client roles used by supabase_flutter.
+-- 5. Daily decay. The section-3 trigger only ever fires on a NEW attempt, so a
+--    child who STOPS playing is never re-evaluated and the stored current_streak
+--    would otherwise sit frozen forever. pg_cron runs the same freshness test
+--    once a day and zeroes any child whose most recent play day is now older
+--    than yesterday (app_timezone). This is the piece that makes "miss a day ->
+--    streak back to 0" happen on its own, with no app code involved.
+--
+--    Enable pg_cron once: Supabase Dashboard → Database → Extensions → enable
+--    `pg_cron` (or the CREATE EXTENSION below — both are fine; it's a no-op if
+--    already enabled). Jobs run on the server clock (UTC). Asia/Karachi is
+--    UTC+5 with no DST, so 19:10 UTC == 00:10 Karachi next day — just after the
+--    calendar day rolls over. If app_timezone() changes, move this hour to match.
+--
+--    Idempotent: the unschedule SELECT returns no rows (and does nothing) when
+--    the job doesn't exist yet, so it's safe before the first schedule. The job
+--    writes only the children it actually decays (nonzero streak AND now stale);
+--    active children are never touched and longest_streak is left alone.
+-- ─────────────────────────────────────────────────────────────────────────
+create extension if not exists pg_cron;
+
+select cron.unschedule(jobid)
+  from cron.job
+ where jobname = 'reset-stale-streaks';
+
+select cron.schedule(
+  'reset-stale-streaks',
+  '10 19 * * *',
+  $cron$
+    update public.children ch
+       set current_streak = 0
+     where coalesce(ch.current_streak, 0) <> 0
+       and not exists (
+         select 1
+         from public.quiz_attempts a
+         where a.child_id = ch.id
+           and (a.attempted_at at time zone public.app_timezone())::date
+               >= (now() at time zone public.app_timezone())::date - 1
+       );
+  $cron$
+);
+
+
+-- ─────────────────────────────────────────────────────────────────────────
+-- 6. Expose to the client roles used by supabase_flutter.
 -- ─────────────────────────────────────────────────────────────────────────
 grant execute on function public.app_timezone() to anon, authenticated;
 grant execute on function public.compute_child_streak(bigint) to anon, authenticated;

@@ -31,10 +31,16 @@ class ProfileSwitcherViewModel extends GetxController {
     loadingFuture = fetchChildren();
   }
 
-  Future<void> fetchChildren() async {
+  Future<void> fetchChildren({bool silent = false}) async {
+    // silent = refresh already-visible data in the background: don't flip to the
+    // loading skeleton or the error state, just swap in fresh values when they
+    // arrive (used by the parent dashboard on every open). The default (non-
+    // silent) path keeps the splash / first-load behaviour with skeleton + error.
     try {
-      isLoading.value = true;
-      errorMessage.value = '';
+      if (!silent) {
+        isLoading.value = true;
+        errorMessage.value = '';
+      }
 
       final fetchedChildren = await _repo.getChildren();
       log("Fetched Children: $fetchedChildren");
@@ -62,9 +68,11 @@ class ProfileSwitcherViewModel extends GetxController {
       // fetched value instead of forcing 0.
       children.value = fetchedChildren;
     } catch (e) {
-      errorMessage.value = 'Could not load profiles.';
+      // Silent refresh of already-shown data: keep the current list on screen
+      // rather than replacing it with an error.
+      if (!silent) errorMessage.value = 'Could not load profiles.';
     } finally {
-      isLoading.value = false;
+      if (!silent) isLoading.value = false;
     }
   }
 
