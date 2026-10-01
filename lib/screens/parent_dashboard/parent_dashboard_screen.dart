@@ -220,22 +220,28 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
                   );
                 }
 
-                return Column(
-                  children: List.generate(controller.children.length, (index) {
-                    final child = controller.children[index];
-                    return StaggeredAnimation(
-                      controller: _staggerController,
-                      index: index,
-                      child: ParentChildCard(
-                        child: child,
-                        stars: controller.starsByChild[child.id] ?? 0,
-                        streak: controller.streakByChild[child.id] ?? 0,
-                        avatarUrl: controller.avatarUrlByChild[child.id],
-                        onContinue: () => controller.continueLearning(child),
-                        onViewProgress: () => controller.viewProgress(child),
-                      ),
-                    );
-                  }),
+                return SizedBox(
+                  height: MediaQuery.of(context).size.height / 3,
+                  child: ListView.builder(
+                    padding: EdgeInsets.zero,
+                    physics: const BouncingScrollPhysics(),
+                    itemCount: controller.children.length,
+                    itemBuilder: (context, index) {
+                      final child = controller.children[index];
+                      return StaggeredAnimation(
+                        controller: _staggerController,
+                        index: index,
+                        child: ParentChildCard(
+                          child: child,
+                          stars: controller.starsByChild[child.id] ?? 0,
+                          streak: controller.streakByChild[child.id] ?? 0,
+                          avatarUrl: controller.avatarUrlByChild[child.id],
+                          onContinue: () => controller.continueLearning(child),
+                          onViewProgress: () => controller.viewProgress(child),
+                        ),
+                      );
+                    },
+                  ),
                 );
               },
             );
