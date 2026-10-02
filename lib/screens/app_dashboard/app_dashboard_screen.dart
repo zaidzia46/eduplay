@@ -8,7 +8,7 @@ import '../../routes/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../widgets/title_row.dart';
-import '../parent_dashboard/widgets/classified_ad_card.dart';
+import 'widgets/classified_ad_card.dart';
 
 class AppDashboardView extends StatefulWidget {
   const AppDashboardView({super.key});
@@ -117,21 +117,37 @@ class _AppDashboardViewState extends State<AppDashboardView>
                             ),
                           ),
                           const SizedBox(height: 4),
-                          GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            itemCount: kClassifiedAds.length,
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 12,
-                                  mainAxisSpacing: 12,
-                                  childAspectRatio:
-                                      0.82, // width / height, lower = taller cards
-                                ),
-                            itemBuilder: (context, index) =>
-                                ClassifiedAdCard(ad: kClassifiedAds[index]),
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              const spacing = 12.0;
+                              final cardWidth =
+                                  (constraints.maxWidth - spacing) / 2;
+                              final imageHeight =
+                                  cardWidth *
+                                  10 /
+                                  16; // matches the card's 16/10 ratio
+                              final textScale = MediaQuery.textScalerOf(
+                                context,
+                              ).scale(1);
+                              final textArea = 100 * textScale;
+
+                              return GridView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: kClassifiedAds.length,
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      crossAxisSpacing: spacing,
+                                      mainAxisSpacing: spacing,
+                                      mainAxisExtent:
+                                          imageHeight +
+                                          textArea, // replaces childAspectRatio
+                                    ),
+                                itemBuilder: (context, index) =>
+                                    ClassifiedAdCard(ad: kClassifiedAds[index]),
+                              );
+                            },
                           ),
                         ],
                       ),
