@@ -18,11 +18,6 @@ import 'widgets/subject_progress_tile.dart';
 import '../bottom_nav/bottomNavigation_controller.dart';
 
 class ProgressView extends StatefulWidget {
-  /// When true the screen is shown standalone — e.g. a parent peeking at a
-  /// child's progress from the Parent Dashboard. In this mode there is no
-  /// bottom-nav shell to react to, a back button is shown at the top-left, and
-  /// the subject rows are static (tapping them must not navigate into the
-  /// child's subjects/chapters). Defaults to the embedded child-facing tab.
   final bool readOnly;
 
   const ProgressView({super.key, this.readOnly = false});
@@ -80,10 +75,6 @@ class _ProgressViewState extends State<ProgressView>
       });
     }
 
-    // The tab worker only makes sense inside the Home shell's IndexedStack,
-    // where switching to the Progress tab (index 2) should refresh the data and
-    // replay the entrance animation. In read-only (standalone) mode there is no
-    // BottomNavController registered, so we skip it entirely.
     if (!widget.readOnly) {
       _tabWorker = ever(Get.find<BottomNavController>().currentIndex, (index) {
         if (index == 2) {
@@ -125,127 +116,123 @@ class _ProgressViewState extends State<ProgressView>
       body: Stack(
         children: [
           Obx(() {
-        // An error only blocks the whole screen when there's nothing to show
-        // yet; background-refresh failures keep existing data (see controller).
-        if (vm.errorMessage.isNotEmpty && vm.overview.value == null) {
-          return Center(
-            child: Text(vm.errorMessage.value, style: AppTextStyles.body),
-          );
-        }
+            if (vm.errorMessage.isNotEmpty && vm.overview.value == null) {
+              return Center(
+                child: Text(vm.errorMessage.value, style: AppTextStyles.body),
+              );
+            }
 
-        // First load: the page chrome and the Stars / Day Streak tiles render
-        // for real (instant from the cached child); only the fetched sections
-        // — ring, breakdown, subjects, recent activity — show skeletons.
-        final loading = vm.isLoading.value;
-        final overview = vm.overview.value;
+            final loading = vm.isLoading.value;
+            final overview = vm.overview.value;
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
-                  ),
-                  child: Image.asset(ImageConstant.progressBg),
-                ),
-                Transform.translate(
-                  offset: const Offset(0, -20),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: AppColors.border),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Overall Progress',
-                                style: AppTextStyles.sectionHeader,
+                Column(
+                  children: [
+                    ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                      child: Image.asset(ImageConstant.progressBg),
+                    ),
+                    Transform.translate(
+                      offset: const Offset(0, -20),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: AppColors.border),
                               ),
-                              const SizedBox(height: 16),
-                              Column(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  loading
-                                      ? const Padding(
-                                          padding: EdgeInsets.symmetric(
-                                            vertical: 8,
-                                          ),
-                                          child: ProgressRingSkeleton(),
-                                        )
-                                      : ValueListenableBuilder<double>(
-                                          valueListenable: _morphT,
-                                          builder: (context, t, _) {
-                                            return Stack(
-                                              alignment: Alignment.center,
-                                              children: [
-                                                MorphingProgressIndicator(
-                                                  percent:
-                                                      (overview?.overallPercent ??
-                                                              0)
-                                                          .toDouble(),
-                                                  t: t,
-                                                  circleDiameter: 100,
-                                                  strokeWidth: 10,
-                                                  trackColor:
-                                                      AppColors.primarySurface,
-                                                  progressColor:
-                                                      AppColors.primary,
-                                                  bubbleColor:
-                                                      AppColors.primaryDark,
-                                                ),
-                                                Opacity(
-                                                  opacity: (1 - t * 2).clamp(
-                                                    0.0,
-                                                    1.0,
-                                                  ),
-                                                  child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      Text(
-                                                        '${overview?.overallPercent ?? 0}%',
-                                                        style: AppTextStyles.h2,
-                                                      ),
-                                                      Text(
-                                                        'Overall',
-                                                        style: AppTextStyles
-                                                            .caption,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        ),
-                                  const SizedBox(height: 20),
+                                  Text(
+                                    'Overall Progress',
+                                    style: AppTextStyles.sectionHeader,
+                                  ),
+                                  const SizedBox(height: 16),
                                   Column(
                                     children: [
-                                      Row(
+                                      loading
+                                          ? const Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                vertical: 8,
+                                              ),
+                                              child: ProgressRingSkeleton(),
+                                            )
+                                          : ValueListenableBuilder<double>(
+                                              valueListenable: _morphT,
+                                              builder: (context, t, _) {
+                                                return Stack(
+                                                  alignment: Alignment.center,
+                                                  children: [
+                                                    MorphingProgressIndicator(
+                                                      percent:
+                                                          (overview?.overallPercent ??
+                                                                  0)
+                                                              .toDouble(),
+                                                      t: t,
+                                                      circleDiameter: 100,
+                                                      strokeWidth: 10,
+                                                      trackColor: AppColors
+                                                          .primarySurface,
+                                                      progressColor:
+                                                          AppColors.primary,
+                                                      bubbleColor:
+                                                          AppColors.primaryDark,
+                                                    ),
+                                                    Opacity(
+                                                      opacity: (1 - t * 2)
+                                                          .clamp(0.0, 1.0),
+                                                      child: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                          Text(
+                                                            '${overview?.overallPercent ?? 0}%',
+                                                            style: AppTextStyles
+                                                                .h2,
+                                                          ),
+                                                          Text(
+                                                            'Overall',
+                                                            style: AppTextStyles
+                                                                .caption,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            ),
+                                      const SizedBox(height: 20),
+                                      Column(
                                         children: [
-                                          Expanded(
-                                            child: StatChip.stars(
-                                              value: '${vm.starsEarned}',
-                                              label: 'Stars Earned',
-                                            ),
-                                          ),
-                                          const SizedBox(width: 12),
-                                          Expanded(
-                                            child: StatChip.streak(
-                                              value: '${vm.dayStreak}',
-                                              label: 'Day Streak',
-                                            ),
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: StatChip.stars(
+                                                  value: '${vm.starsEarned}',
+                                                  label: 'Stars Earned',
+                                                ),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Expanded(
+                                                child: StatChip.streak(
+                                                  value: '${vm.dayStreak}',
+                                                  label: 'Day Streak',
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
@@ -253,114 +240,116 @@ class _ProgressViewState extends State<ProgressView>
                                   ),
                                 ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 12),
+                          loading
+                              ? const ActivityBreakdownSkeleton()
+                              : ActivityBreakdownCard(
+                                  categories: vm.activityBreakdown,
+                                ),
+
+                          if (loading) ...[
+                            const SizedBox(height: 12),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'Subjects',
+                                style: AppTextStyles.sectionHeader,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            const SubjectListSkeleton(),
+                          ] else if (overview != null &&
+                              overview.subjects.isNotEmpty) ...[
+                            const SizedBox(height: 12),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'Subjects',
+                                style: AppTextStyles.sectionHeader,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            ...List.generate(overview.subjects.length, (index) {
+                              final subject = overview.subjects[index];
+                              return StaggeredAnimation(
+                                controller: _controller,
+                                index: index,
+                                child: SubjectProgressTile(
+                                  subject: subject,
+                                  // Parents viewing a child's progress get static
+                                  // rows — tapping must not drill into chapters.
+                                  onTap: widget.readOnly
+                                      ? null
+                                      : () {
+                                          Get.toNamed(
+                                            AppRoutes.chapters,
+                                            arguments: {
+                                              'subject': SubjectModel(
+                                                id: subject.subjectId,
+                                                standardSubjectId:
+                                                    subject.standardSubjectId,
+                                                name: subject.name,
+                                                colorHex: subject.color,
+                                                iconPath: subject.iconPath,
+                                                progressPercent:
+                                                    subject.percent,
+                                              ),
+                                            },
+                                          );
+                                        },
+                                ),
+                              );
+                            }),
+                          ],
+
+                          const SizedBox(height: 12),
+                          vm.recentActivity.isEmpty
+                              ? const SizedBox()
+                              : Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Recent Activity',
+                                      style: AppTextStyles.sectionHeader,
+                                    ),
+                                  ],
+                                ),
+                          const SizedBox(height: 12),
+                          if (loading)
+                            const RecentActivityListSkeleton()
+                          else
+                            ...List.generate(
+                              vm.recentActivity.length,
+                              (index) => StaggeredAnimation(
+                                controller: _controller,
+                                index: index,
+                                child: RecentActivityTile(
+                                  activity: vm.recentActivity[index],
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ],
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 12),
-                      loading
-                          ? const ActivityBreakdownSkeleton()
-                          : ActivityBreakdownCard(
-                              categories: vm.activityBreakdown,
-                            ),
-
-                      if (loading) ...[
-                        const SizedBox(height: 12),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Subjects',
-                            style: AppTextStyles.sectionHeader,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        const SubjectListSkeleton(),
-                      ] else if (overview != null &&
-                          overview.subjects.isNotEmpty) ...[
-                        const SizedBox(height: 12),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Subjects',
-                            style: AppTextStyles.sectionHeader,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        ...List.generate(overview.subjects.length, (index) {
-                          final subject = overview.subjects[index];
-                          return StaggeredAnimation(
-                            controller: _controller,
-                            index: index,
-                            child: SubjectProgressTile(
-                              subject: subject,
-                              // Parents viewing a child's progress get static
-                              // rows — tapping must not drill into chapters.
-                              onTap: widget.readOnly
-                                  ? null
-                                  : () {
-                                      Get.toNamed(
-                                        AppRoutes.chapters,
-                                        arguments: {
-                                          'subject': SubjectModel(
-                                            id: subject.subjectId,
-                                            standardSubjectId:
-                                                subject.standardSubjectId,
-                                            name: subject.name,
-                                            colorHex: subject.color,
-                                            iconPath: subject.iconPath,
-                                            progressPercent: subject.percent,
-                                          ),
-                                        },
-                                      );
-                                    },
-                            ),
-                          );
-                        }),
-                      ],
-
-                      const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Recent Activity',
-                            style: AppTextStyles.sectionHeader,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      if (loading)
-                        const RecentActivityListSkeleton()
-                      else
-                        ...List.generate(
-                          vm.recentActivity.length,
-                          (index) => StaggeredAnimation(
-                            controller: _controller,
-                            index: index,
-                            child: RecentActivityTile(
-                              activity: vm.recentActivity[index],
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
+            );
           }),
           if (widget.readOnly)
             Positioned(

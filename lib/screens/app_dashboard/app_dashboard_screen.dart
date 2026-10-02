@@ -8,6 +8,7 @@ import '../../routes/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../widgets/title_row.dart';
+import 'classified_ads_controller.dart';
 import 'widgets/classified_ad_card.dart';
 
 class AppDashboardView extends StatefulWidget {
@@ -24,6 +25,9 @@ class _AppDashboardViewState extends State<AppDashboardView>
     duration: const Duration(milliseconds: 900),
   )..forward();
 
+  final ClassifiedAdsController _adsController =
+      Get.find<ClassifiedAdsController>();
+
   @override
   void dispose() {
     _entrance.dispose();
@@ -39,6 +43,82 @@ class _AppDashboardViewState extends State<AppDashboardView>
       colorText: AppColors.white,
       snackPosition: SnackPosition.BOTTOM,
     );
+  }
+
+  /// The Classified Ads section, driven by [ClassifiedAdsController]. While
+  /// loading it shows skeleton cards; once loaded it renders the real ads. If
+  /// there are no ads (empty table or a fetch error), the whole section is
+  /// hidden so the logged-out landing stays clean.
+  Widget _buildClassifieds() {
+    return Obx(() {
+      final loading = _adsController.isLoading.value;
+      final ads = _adsController.ads;
+
+      if (!loading && ads.isEmpty) {
+        return const SizedBox.shrink();
+      }
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            child: TitleRow(
+              title: 'Classified Ads',
+              onTap: _viewAllClassifieds,
+            ),
+          ),
+          const SizedBox(height: 1),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              'Find tutors, books, school essentials and more.',
+              style: AppTextStyles.caption,
+            ),
+          ),
+          const SizedBox(height: 4),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              const spacing = 12.0;
+              final cardWidth = (constraints.maxWidth - spacing) / 2;
+              final imageHeight =
+                  cardWidth * 10 / 16; // matches the card's 16/10 ratio
+              final textScale = MediaQuery.textScalerOf(context).scale(1);
+              final textArea = 100 * textScale;
+
+              final gridDelegate =
+                  SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: spacing,
+                    mainAxisSpacing: spacing,
+                    mainAxisExtent:
+                        imageHeight + textArea, // replaces childAspectRatio
+                  );
+
+              if (loading) {
+                return GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: 4,
+                  gridDelegate: gridDelegate,
+                  itemBuilder: (context, index) =>
+                      const ClassifiedAdCardSkeleton(),
+                );
+              }
+
+              return GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: ads.length,
+                gridDelegate: gridDelegate,
+                itemBuilder: (context, index) =>
+                    ClassifiedAdCard(ad: ads[index]),
+              );
+            },
+          ),
+        ],
+      );
+    });
   }
 
   @override
@@ -98,59 +178,7 @@ class _AppDashboardViewState extends State<AppDashboardView>
                         0.85,
                         curve: Curves.easeOutCubic,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 14),
-                            child: TitleRow(
-                              title: 'Classified Ads',
-                              onTap: _viewAllClassifieds,
-                            ),
-                          ),
-                          const SizedBox(height: 1),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Text(
-                              'Find tutors, books, school essentials and more.',
-                              style: AppTextStyles.caption,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          LayoutBuilder(
-                            builder: (context, constraints) {
-                              const spacing = 12.0;
-                              final cardWidth =
-                                  (constraints.maxWidth - spacing) / 2;
-                              final imageHeight =
-                                  cardWidth *
-                                  10 /
-                                  16; // matches the card's 16/10 ratio
-                              final textScale = MediaQuery.textScalerOf(
-                                context,
-                              ).scale(1);
-                              final textArea = 100 * textScale;
-
-                              return GridView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: kClassifiedAds.length,
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2,
-                                      crossAxisSpacing: spacing,
-                                      mainAxisSpacing: spacing,
-                                      mainAxisExtent:
-                                          imageHeight +
-                                          textArea, // replaces childAspectRatio
-                                    ),
-                                itemBuilder: (context, index) =>
-                                    ClassifiedAdCard(ad: kClassifiedAds[index]),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
+                      child: _buildClassifieds(),
                     ),
                     const SizedBox(height: 32),
                   ],
