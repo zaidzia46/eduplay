@@ -78,43 +78,46 @@ class _AppDashboardViewState extends State<AppDashboardView>
             ),
           ),
           const SizedBox(height: 4),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              const spacing = 12.0;
-              final cardWidth = (constraints.maxWidth - spacing) / 2;
-              final imageHeight =
-                  cardWidth * 10 / 16; // matches the card's 16/10 ratio
-              final textScale = MediaQuery.textScalerOf(context).scale(1);
-              final textArea = 100 * textScale;
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 13.0),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                const spacing = 12.0;
+                final cardWidth = (constraints.maxWidth - spacing) / 2;
+                final imageHeight =
+                    cardWidth * 10 / 16; // matches the card's 16/10 ratio
+                final textScale = MediaQuery.textScalerOf(context).scale(1);
+                final textArea = 100 * textScale;
 
-              final gridDelegate = SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: spacing,
-                mainAxisSpacing: spacing,
-                mainAxisExtent:
-                    imageHeight + textArea, // replaces childAspectRatio
-              );
+                final gridDelegate = SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: spacing,
+                  mainAxisSpacing: spacing,
+                  mainAxisExtent:
+                      imageHeight + textArea, // replaces childAspectRatio
+                );
 
-              if (loading) {
+                if (loading) {
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: 4,
+                    gridDelegate: gridDelegate,
+                    itemBuilder: (context, index) =>
+                        const ClassifiedAdCardSkeleton(),
+                  );
+                }
+
                 return GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: 4,
+                  itemCount: ads.length,
                   gridDelegate: gridDelegate,
                   itemBuilder: (context, index) =>
-                      const ClassifiedAdCardSkeleton(),
+                      ClassifiedAdCard(ad: ads[index]),
                 );
-              }
-
-              return GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: ads.length,
-                gridDelegate: gridDelegate,
-                itemBuilder: (context, index) =>
-                    ClassifiedAdCard(ad: ads[index]),
-              );
-            },
+              },
+            ),
           ),
         ],
       );
