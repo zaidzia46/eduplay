@@ -221,9 +221,12 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
                 }
 
                 return SizedBox(
-                  height: MediaQuery.of(context).size.height / 3,
+                  height: controller.children.length > 2
+                      ? MediaQuery.of(context).size.height / 3
+                      : null,
                   child: ListView.builder(
                     padding: EdgeInsets.zero,
+                    shrinkWrap: true,
                     physics: const BouncingScrollPhysics(),
                     itemCount: controller.children.length,
                     itemBuilder: (context, index) {
