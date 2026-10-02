@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 
-import 'classified_ads_controller.dart';
+import 'controllers/classified_ads_controller.dart';
+import 'controllers/promo_banner_controller.dart';
 
 /// The App Dashboard is the public, logged-out landing screen. It shows static
 /// content (logo, welcome/login card, promo banner) plus the classified ads.
@@ -12,5 +13,6 @@ class AppDashboardBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<ClassifiedAdsController>(() => ClassifiedAdsController());
+    Get.lazyPut<PromoBannerController>(() => PromoBannerController());
   }
 }

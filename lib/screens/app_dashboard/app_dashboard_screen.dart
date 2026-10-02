@@ -8,7 +8,8 @@ import '../../routes/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../widgets/title_row.dart';
-import 'classified_ads_controller.dart';
+import 'controllers/classified_ads_controller.dart';
+import 'controllers/promo_banner_controller.dart';
 import 'widgets/classified_ad_card.dart';
 
 class AppDashboardView extends StatefulWidget {
@@ -86,14 +87,13 @@ class _AppDashboardViewState extends State<AppDashboardView>
               final textScale = MediaQuery.textScalerOf(context).scale(1);
               final textArea = 100 * textScale;
 
-              final gridDelegate =
-                  SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: spacing,
-                    mainAxisSpacing: spacing,
-                    mainAxisExtent:
-                        imageHeight + textArea, // replaces childAspectRatio
-                  );
+              final gridDelegate = SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: spacing,
+                mainAxisSpacing: spacing,
+                mainAxisExtent:
+                    imageHeight + textArea, // replaces childAspectRatio
+              );
 
               if (loading) {
                 return GridView.builder(
@@ -280,28 +280,20 @@ class _Entrance extends StatelessWidget {
   }
 }
 
-class _PromoBanner extends StatefulWidget {
+/// The promo carousel. All of its state (banner list + active page) lives in
+/// [PromoBannerController], so this is a plain [StatelessWidget] — the dot
+/// indicator rebuilds via [Obx] instead of `setState`.
+class _PromoBanner extends StatelessWidget {
   const _PromoBanner();
 
   @override
-  State<_PromoBanner> createState() => _PromoBannerState();
-}
-
-class _PromoBannerState extends State<_PromoBanner> {
-  int _current = 0;
-
-  final List<String> _banners = [
-    ImageConstant.appDashboardBanner1,
-    ImageConstant.appDashboardBanner2,
-    ImageConstant.appDashboardBanner3,
-  ];
-
-  @override
   Widget build(BuildContext context) {
+    final controller = Get.find<PromoBannerController>();
+
     return Column(
       children: [
         CarouselSlider.builder(
-          itemCount: _banners.length,
+          itemCount: controller.banners.length,
           options: CarouselOptions(
             aspectRatio: 16 / 7, // match your banner image ratio
             viewportFraction: 0.88, // <1 makes neighbours peek at the edges
@@ -309,7 +301,7 @@ class _PromoBannerState extends State<_PromoBanner> {
             enableInfiniteScroll: true,
             autoPlay: true,
             autoPlayInterval: const Duration(seconds: 4),
-            onPageChanged: (index, _) => setState(() => _current = index),
+            onPageChanged: (index, _) => controller.onPageChanged(index),
           ),
           itemBuilder: (context, index, _) {
             return Container(
@@ -320,7 +312,7 @@ class _PromoBannerState extends State<_PromoBanner> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(22),
                 child: Image.asset(
-                  _banners[index],
+                  controller.banners[index],
                   width: double.infinity,
                   fit: BoxFit.cover,
                 ),
@@ -329,23 +321,25 @@ class _PromoBannerState extends State<_PromoBanner> {
           },
         ),
         const SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(_banners.length, (i) {
-            final active = i == _current;
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              margin: const EdgeInsets.symmetric(horizontal: 3),
-              width: active ? 16 : 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: active
-                    ? const Color(0xFF4B1F8C)
-                    : const Color(0xFF4B1F8C).withValues(alpha: 0.25),
-                borderRadius: BorderRadius.circular(4),
-              ),
-            );
-          }),
+        Obx(
+          () => Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(controller.banners.length, (i) {
+              final active = i == controller.currentIndex.value;
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                margin: const EdgeInsets.symmetric(horizontal: 3),
+                width: active ? 16 : 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: active
+                      ? const Color(0xFF4B1F8C)
+                      : const Color(0xFF4B1F8C).withValues(alpha: 0.25),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              );
+            }),
+          ),
         ),
       ],
     );
