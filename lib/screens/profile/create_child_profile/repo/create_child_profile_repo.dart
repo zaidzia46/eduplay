@@ -66,15 +66,17 @@ class ChildProfileRepository {
 
   Future<String> uploadAvatar(int childId, String localFilePath) async {
     final parentId = supabase.auth.currentUser!.id;
-    final path = '$parentId/children/$childId.png';
+    final old = await supabase
+        .from('children')
+        .select('avatar_path')
+        .eq('id', childId)
+        .single();
+    final oldPath = old['avatar_path'] as String?;
 
-    await supabase.storage
-        .from('avatars')
-        .upload(
-          path,
-          File(localFilePath),
-          fileOptions: const FileOptions(upsert: true),
-        );
+    final path =
+        '$parentId/children/${childId}_${DateTime.now().millisecondsSinceEpoch}.png';
+
+    await supabase.storage.from('avatars').upload(path, File(localFilePath));
 
     await supabase
         .from('children')
@@ -82,6 +84,13 @@ class ChildProfileRepository {
         .eq('id', childId);
 
     await _refreshAvatarSignedUrl(path);
+
+    if (oldPath != null && oldPath != path) {
+      try {
+        await supabase.storage.from('avatars').remove([oldPath]);
+        _avatarUrlCache.remove(oldPath);
+      } catch (_) {} // non-fatal
+    }
 
     return path;
   }
