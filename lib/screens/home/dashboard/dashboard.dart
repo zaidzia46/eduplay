@@ -275,14 +275,7 @@ class _DashBoardState extends State<DashBoard>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          TitleRow(
-                            title: 'Choose a Subject',
-                            onTap: () {
-                              bottomNavConn.currentIndex.value = 1;
-                              subjectController.activeFilter.value =
-                                  SubjectFilter.all;
-                            },
-                          ),
+                          TitleRow(title: 'Choose a Subject'),
                           SizedBox(height: 8),
                           SizedBox(
                             child: Obx(() {
@@ -314,7 +307,7 @@ class _DashBoardState extends State<DashBoard>
                             }),
                           ),
                           SizedBox(height: 20),
-                          TitleRow(title: 'Fun Games', onTap: () {}),
+                          TitleRow(title: 'Fun Games'),
                           SizedBox(height: 8),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,

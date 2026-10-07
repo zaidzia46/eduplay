@@ -1,5 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:eduplay/screens/parent_dashboard/widgets/family_tile_activity.dart';
+import 'package:eduplay/screens/parent_dashboard/widgets/summary_tile.dart';
 import 'package:eduplay/widgets/bg.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -153,7 +155,7 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
             () => Row(
               children: [
                 Expanded(
-                  child: _SummaryTile(
+                  child: SummaryTile(
                     icon: Icons.people_alt_rounded,
                     color: AppColors.primary,
                     value: '${controller.children.length}',
@@ -162,7 +164,7 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: _SummaryTile(
+                  child: SummaryTile(
                     icon: Icons.star_rounded,
                     color: AppColors.star,
                     value: '${controller.totalStars.value}',
@@ -183,7 +185,7 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TitleRow(title: 'Your Children', onTap: controller.manageChildren),
+          TitleRow(title: 'Your Children'),
           const SizedBox(height: 2),
           Obx(() {
             if (controller.isLoading.value) {
@@ -302,113 +304,14 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Recent Activity',
-              style: AppTextStyles.bodyLarge.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            TitleRow(title: 'Recent Activity'),
             const SizedBox(height: 12),
             ...controller.recentActivity.map(
-              (item) => _FamilyActivityTile(item: item),
+              (item) => FamilyActivityTile(item: item),
             ),
           ],
         ),
       );
     });
-  }
-}
-
-/// A recent-activity row tagged with the child's name. Reuses the existing
-/// [RecentActivityTile] verbatim and prepends a small child-name label, since
-/// the shared tile has no per-child field.
-class _FamilyActivityTile extends StatelessWidget {
-  final FamilyActivity item;
-
-  const _FamilyActivityTile({required this.item});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 4),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            decoration: BoxDecoration(
-              color: AppColors.primarySurface,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              item.childName,
-              style: AppTextStyles.caption.copyWith(color: AppColors.primary),
-            ),
-          ),
-        ),
-        RecentActivityTile(activity: item.activity),
-      ],
-    );
-  }
-}
-
-/// A single family-summary stat, shown below the header card. Matches the app's
-/// white card aesthetic (rounded, bordered) with a tinted leading icon.
-class _SummaryTile extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final String value;
-  final String label;
-
-  const _SummaryTile({
-    required this.icon,
-    required this.color,
-    required this.value,
-    required this.label,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: color, size: 22),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  value,
-                  style: AppTextStyles.h3,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  label,
-                  style: AppTextStyles.bodySmall,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

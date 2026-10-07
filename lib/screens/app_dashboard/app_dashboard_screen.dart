@@ -64,10 +64,7 @@ class _AppDashboardViewState extends State<AppDashboardView>
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 14),
-            child: TitleRow(
-              title: 'Classified Ads',
-              onTap: _viewAllClassifieds,
-            ),
+            child: TitleRow(title: 'Classified Ads'),
           ),
           const SizedBox(height: 1),
           Padding(
