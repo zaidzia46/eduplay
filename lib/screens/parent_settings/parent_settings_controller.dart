@@ -54,7 +54,9 @@ class ParentSettingsController extends GetxController {
   }
 
   Future<void> setParentAvatar() async {
-    final imagePath = await ImagePickerService.pickImage(ImageSource.gallery);
+    final imagePath = await ImagePickerService.pickAndCropImage(
+      ImageSource.gallery,
+    );
     if (imagePath == null) return;
     profileImagePath.value = imagePath;
 
@@ -136,7 +138,7 @@ class ParentSettingsController extends GetxController {
   }
 
   Future<void> logout() async {
-    if (isLoggingOut.value) return; // guard against a double-tap
+    if (isLoggingOut.value) return;
     isLoggingOut.value = true;
     try {
       await session.logout();

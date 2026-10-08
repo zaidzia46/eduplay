@@ -4,6 +4,7 @@ import 'package:eduplay/widgets/bg.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../core/supabase_client.dart';
 import '../../routes/app_routes.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
@@ -351,10 +352,12 @@ class _ParentEntryCard extends StatelessWidget {
 
   void _login() => Get.toNamed(AppRoutes.login);
 
-  void _register() => Get.toNamed(AppRoutes.register);
+  void _continue() => Get.toNamed(AppRoutes.parentDashboard);
 
   @override
   Widget build(BuildContext context) {
+    final loggedIn = supabase.auth.currentSession != null;
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(22),
@@ -368,81 +371,102 @@ class _ParentEntryCard extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(22),
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF4B1F8C),
-                Color(0xFF7A35C9),
-                Color(0xFFE7A23D),
-                Color(0xFFF6C544),
-              ],
-              stops: [0.0, 0.4, 0.78, 1.0],
-            ),
-          ),
-          child: Stack(
-            children: [
-              Positioned(top: -34, right: -24, child: _deco(110, 0.10)),
-              Positioned(bottom: -46, left: -18, child: _deco(120, 0.08)),
-              Padding(
-                padding: const EdgeInsets.all(14),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    _buildEmblem(),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Welcome to EduPlay',
-                            style: AppTextStyles.h3.copyWith(
-                              color: AppColors.white,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                          const SizedBox(height: 3),
-                          Text(
-                            'Sign in to manage your children and track their progress.',
-                            style: AppTextStyles.caption.copyWith(
-                              color: AppColors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          // Actions: side by side, same height
-                          Row(
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            // Logged in: the whole card taps through to the Parent Dashboard.
+            // Logged out: not tappable — the Sign in button inside handles it.
+            onTap: loggedIn ? _continue : null,
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFF4B1F8C),
+                    Color(0xFF7A35C9),
+                    Color(0xFFE7A23D),
+                    Color(0xFFF6C544),
+                  ],
+                  stops: [0.0, 0.4, 0.78, 1.0],
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(top: -34, right: -24, child: _deco(110, 0.10)),
+                  Positioned(bottom: -46, left: -18, child: _deco(120, 0.08)),
+                  Padding(
+                    padding: const EdgeInsets.all(14),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        _buildEmblem(),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(
-                                child: _CardButton(
-                                  label: 'Login',
+                              Text(
+                                'Welcome to EduPlay',
+                                style: AppTextStyles.h3.copyWith(
+                                  color: AppColors.white,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              const SizedBox(height: 3),
+                              Text(
+                                loggedIn
+                                    ? 'Continue to your family dashboard.'
+                                    : 'Sign in to manage your children and track their progress.',
+                                style: AppTextStyles.caption.copyWith(
+                                  color: AppColors.white,
+                                ),
+                              ),
+                              if (!loggedIn) ...[
+                                const SizedBox(height: 10),
+                                _CardButton(
+                                  label: 'Sign in / Sign up',
                                   icon: Icons.arrow_forward_rounded,
                                   filled: true,
                                   onTap: _login,
                                 ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: _CardButton(
-                                  label: 'Register',
-                                  filled: false,
-                                  onTap: _register,
-                                ),
-                              ),
+                              ],
                             ],
                           ),
+                        ),
+                        if (loggedIn) ...[
+                          const SizedBox(width: 10),
+                          _buildNextArrow(),
                         ],
-                      ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  // A circular forward arrow shown on the logged-in card, signalling that the
+  // card taps through to the next screen (the Parent Dashboard).
+  Widget _buildNextArrow() {
+    const double size = 44;
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white.withOpacity(0.18),
+        border: Border.all(color: Colors.white.withOpacity(0.6), width: 2),
+      ),
+      child: const Icon(
+        Icons.arrow_forward_rounded,
+        color: Colors.white,
+        size: 24,
       ),
     );
   }

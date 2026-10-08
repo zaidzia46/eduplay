@@ -47,7 +47,7 @@ class CreateProfileViewModel extends GetxController {
   }
 
   Future<void> pickAvatar() async {
-    final path = await ImagePickerService.pickImage(ImageSource.gallery);
+    final path = await ImagePickerService.pickAndCropImage(ImageSource.gallery);
     if (path != null) {
       profileImagePath.value = path;
     }

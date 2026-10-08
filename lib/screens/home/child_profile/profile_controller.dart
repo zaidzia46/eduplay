@@ -42,7 +42,9 @@ class ProfileViewModel extends GetxController {
     final currentChild = child.value;
     if (currentChild == null) return;
 
-    final pickedPath = await ImagePickerService.pickImage(ImageSource.gallery);
+    final pickedPath = await ImagePickerService.pickAndCropImage(
+      ImageSource.gallery,
+    );
     if (pickedPath == null) return;
     avatarChanged.value = !avatarChanged.value;
 

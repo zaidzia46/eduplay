@@ -69,8 +69,9 @@ class SplashController extends GetxController
     }
 
     // Returning, authenticated user: warm the family data + avatar caches so the
-    // Parent Dashboard is ready the moment it appears, then continue into the
-    // authenticated flow.
+    // Parent Dashboard is ready the instant it appears, then open the App
+    // Dashboard — the shared landing hub — from which the user taps through to
+    // the Parent Dashboard.
     final profileVm = Get.put(ProfileSwitcherViewModel(), permanent: true);
     await profileVm.loadingFuture;
 
@@ -92,7 +93,7 @@ class SplashController extends GetxController
         precacheImage(CachedNetworkImageProvider(parentAvatarUrl), context),
     ]);
 
-    Get.offAllNamed(AppRoutes.parentDashboard);
+    Get.offAllNamed(AppRoutes.appDashboard);
   }
 
   @override

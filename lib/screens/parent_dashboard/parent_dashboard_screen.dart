@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_text_styles.dart';
 import '../../widgets/action_tile.dart';
+import '../../widgets/circle_back_button.dart';
 import '../../widgets/recent_act_tile.dart';
 import '../../widgets/staggered_anime.dart';
 import '../../widgets/title_row.dart';
@@ -32,6 +33,7 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
 
   late final AnimationController _staggerController;
   late final Worker _worker;
+  late final bool _goToAppDashboard;
 
   String? _precachedKey;
   Future<void>? _precacheFuture;
@@ -52,6 +54,8 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
       vsync: this,
       duration: const Duration(milliseconds: 700),
     );
+    final args = Get.arguments;
+    _goToAppDashboard = args is Map && args['convert'] == true;
 
     _rosterKey = _currentRosterKey;
     _worker = ever(controller.children, (_) {
@@ -101,14 +105,22 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                  child: CircleBackButton(
+                    onTap: () {
+                      _goToAppDashboard
+                          ? Get.offAllNamed('/app-dashboard')
+                          : Get.back();
+                    },
+                  ),
+                ),
                 const SizedBox(height: 8),
                 _buildHeader(),
                 const SizedBox(height: 10),
                 _buildChildrenSection(),
                 const SizedBox(height: 4),
                 _buildManageSection(),
-                const SizedBox(height: 12),
-                _buildRecentActivity(),
                 const SizedBox(height: 12),
               ],
             ),
@@ -222,31 +234,26 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
                   );
                 }
 
-                return SizedBox(
-                  height: controller.children.length > 2
-                      ? MediaQuery.of(context).size.height / 3
-                      : null,
-                  child: ListView.builder(
-                    padding: EdgeInsets.zero,
-                    shrinkWrap: true,
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: controller.children.length,
-                    itemBuilder: (context, index) {
-                      final child = controller.children[index];
-                      return StaggeredAnimation(
-                        controller: _staggerController,
-                        index: index,
-                        child: ParentChildCard(
-                          child: child,
-                          stars: controller.starsByChild[child.id] ?? 0,
-                          streak: controller.streakByChild[child.id] ?? 0,
-                          avatarUrl: controller.avatarUrlByChild[child.id],
-                          onContinue: () => controller.continueLearning(child),
-                          onViewProgress: () => controller.viewProgress(child),
-                        ),
-                      );
-                    },
-                  ),
+                return ListView.builder(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: controller.children.length,
+                  itemBuilder: (context, index) {
+                    final child = controller.children[index];
+                    return StaggeredAnimation(
+                      controller: _staggerController,
+                      index: index,
+                      child: ParentChildCard(
+                        child: child,
+                        stars: controller.starsByChild[child.id] ?? 0,
+                        streak: controller.streakByChild[child.id] ?? 0,
+                        avatarUrl: controller.avatarUrlByChild[child.id],
+                        onContinue: () => controller.continueLearning(child),
+                        onViewProgress: () => controller.viewProgress(child),
+                      ),
+                    );
+                  },
                 );
               },
             );
@@ -291,27 +298,5 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
         ],
       ),
     );
-  }
-
-  Widget _buildRecentActivity() {
-    return Obx(() {
-      if (controller.recentActivity.isEmpty) {
-        return const SizedBox.shrink();
-      }
-
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TitleRow(title: 'Recent Activity'),
-            const SizedBox(height: 12),
-            ...controller.recentActivity.map(
-              (item) => FamilyActivityTile(item: item),
-            ),
-          ],
-        ),
-      );
-    });
   }
 }
