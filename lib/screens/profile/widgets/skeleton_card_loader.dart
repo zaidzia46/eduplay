@@ -9,7 +9,6 @@ class ProfileCardSkeletonList extends StatelessWidget {
     return Shimmer(
       color: Colors.grey.shade300,
       child: ListView.builder(
-        padding: EdgeInsets.symmetric(horizontal: 12),
         itemCount: 4,
         itemBuilder: (context, index) => const ProfileCardSkeleton(),
       ),
