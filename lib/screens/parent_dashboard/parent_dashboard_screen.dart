@@ -95,34 +95,42 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // backgroundColor: AppColors.primaryDark,
-      body: SoftBackground(
-        child: SafeArea(
-          bottom: false,
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                  child: CircleBackButton(
-                    onTap: () {
-                      _goToAppDashboard
-                          ? Get.offAllNamed('/app-dashboard')
-                          : Get.back();
-                    },
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          Get.offAllNamed('/app-dashboard');
+        }
+      },
+      child: Scaffold(
+        // backgroundColor: AppColors.primaryDark,
+        body: SoftBackground(
+          child: SafeArea(
+            bottom: false,
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                    child: CircleBackButton(
+                      onTap: () {
+                        _goToAppDashboard
+                            ? Get.offAllNamed('/app-dashboard')
+                            : Get.back();
+                      },
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                _buildHeader(),
-                const SizedBox(height: 10),
-                _buildChildrenSection(),
-                const SizedBox(height: 4),
-                _buildManageSection(),
-                const SizedBox(height: 12),
-              ],
+                  const SizedBox(height: 8),
+                  _buildHeader(),
+                  const SizedBox(height: 10),
+                  _buildChildrenSection(),
+                  const SizedBox(height: 4),
+                  _buildManageSection(),
+                  const SizedBox(height: 12),
+                ],
+              ),
             ),
           ),
         ),

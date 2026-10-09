@@ -26,17 +26,14 @@ class Home extends StatelessWidget {
     ProfileView(),
   ];
 
-  Future<bool> _handleBackPressed() async {
-    if (vm.currentIndex.value != 0) {
-      vm.changePage(0);
-      return false;
-    }
-    return true;
-  }
-
   Widget build(context) {
-    return WillPopScope(
-      onWillPop: _handleBackPressed,
+    return PopScope(
+      canPop: vm.currentIndex.value == 0,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop && vm.currentIndex.value != 0) {
+          vm.changePage(0);
+        }
+      },
       child: Scaffold(
         body: Obx(() {
           final index = vm.currentIndex.value;
