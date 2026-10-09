@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:eduplay/screens/profile/create_child_profile/repo/create_child_profile_repo.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../controller/session_controller.dart';
 import '../../../fns/image_picker_service.dart';
@@ -130,9 +131,15 @@ class ProfileViewModel extends GetxController {
         );
       }
       return true;
+    } on PostgrestException catch (e) {
+      if (e.code == '23505') {
+        profileUpdateError.value = 'This username is already taken';
+      } else {
+        profileUpdateError.value = 'Could not save profile. Please try again.';
+      }
+      return false;
     } catch (e) {
-      log('Profile update failed: $e');
-      profileUpdateError.value = 'Could not update profile. Try again.';
+      profileUpdateError.value = 'Something went wrong. Please try again.';
       return false;
     } finally {
       isSavingProfile.value = false;
