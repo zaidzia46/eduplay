@@ -34,10 +34,10 @@ class WelcomeBackground extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF4B1F8C),
-              Color(0xFF7A35C9),
-              Color(0xFFE7A23D),
-              Color(0xFFF6C544),
+              AppColors.primary,
+              AppColors.primary,
+              AppColors.primaryDark,
+              AppColors.primary,
             ],
             stops: [0.0, 0.4, 0.78, 1.0],
           ),
@@ -45,30 +45,9 @@ class WelcomeBackground extends StatelessWidget {
         child: Stack(
           clipBehavior: Clip.hardEdge,
           children: [
-            Positioned(
-              left: -70,
-              bottom: -80,
-              child: _blurCircle(
-                200,
-                const Color(0xFF3B1770).withOpacity(0.45),
-              ),
-            ),
-            Positioned(
-              left: -10,
-              bottom: -100,
-              child: _blurCircle(
-                170,
-                const Color(0xFF3B1770).withOpacity(0.35),
-              ),
-            ),
-            Positioned(
-              right: -50,
-              bottom: -90,
-              child: _blurCircle(
-                220,
-                const Color(0xFFF8D77A).withOpacity(0.25),
-              ),
-            ),
+            Positioned(left: -70, bottom: -70, child: _deco(120, 0.08)),
+            Positioned(right: -20, top: -40, child: _deco(120, 0.08)),
+            Positioned(right: -50, bottom: -50, child: _deco(110, 0.10)),
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
@@ -125,6 +104,15 @@ class WelcomeBackground extends StatelessWidget {
       ),
     );
   }
+
+  Widget _deco(double size, double opacity) => Container(
+    width: size,
+    height: size,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      color: Colors.white.withOpacity(opacity),
+    ),
+  );
 
   Widget _blurCircle(double size, Color color) {
     return Container(

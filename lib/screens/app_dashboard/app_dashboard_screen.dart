@@ -36,21 +36,76 @@ class _AppDashboardViewState extends State<AppDashboardView>
     super.dispose();
   }
 
-  void _viewAllClassifieds() {
-    Get.snackbar(
-      'Classifieds',
-      'The full classifieds marketplace is coming soon.',
-      backgroundColor: AppColors.primary,
-      barBlur: 12.0,
-      colorText: AppColors.white,
-      snackPosition: SnackPosition.BOTTOM,
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SoftBackground(
+        child: Stack(
+          children: [
+            // const _DashboardBackdrop(),
+            SafeArea(
+              bottom: false,
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20),
+                    _Entrance(
+                      animation: _entrance,
+                      interval: const Interval(
+                        0.00,
+                        0.45,
+                        curve: Curves.easeOutCubic,
+                      ),
+                      child: Center(
+                        child: Image.asset(ImageConstant.logo, height: 84),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      child: _Entrance(
+                        animation: _entrance,
+                        interval: const Interval(
+                          0.12,
+                          0.60,
+                          curve: Curves.easeOutCubic,
+                        ),
+                        child: const _ParentEntryCard(),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    _Entrance(
+                      animation: _entrance,
+                      interval: const Interval(
+                        0.24,
+                        0.72,
+                        curve: Curves.easeOutCubic,
+                      ),
+                      child: const _PromoBanner(),
+                    ),
+                    const SizedBox(height: 9),
+                    _Entrance(
+                      animation: _entrance,
+                      interval: const Interval(
+                        0.36,
+                        0.85,
+                        curve: Curves.easeOutCubic,
+                      ),
+                      child: _buildClassifieds(),
+                    ),
+                    const SizedBox(height: 32),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  /// The Classified Ads section, driven by [ClassifiedAdsController]. While
-  /// loading it shows skeleton cards; once loaded it renders the real ads. If
-  /// there are no ads (empty table or a fetch error), the whole section is
-  /// hidden so the logged-out landing stays clean.
   Widget _buildClassifieds() {
     return Obx(() {
       final loading = _adsController.isLoading.value;
@@ -121,137 +176,6 @@ class _AppDashboardViewState extends State<AppDashboardView>
       );
     });
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SoftBackground(
-        child: Stack(
-          children: [
-            // const _DashboardBackdrop(),
-            SafeArea(
-              bottom: false,
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-                    _Entrance(
-                      animation: _entrance,
-                      interval: const Interval(
-                        0.00,
-                        0.45,
-                        curve: Curves.easeOutCubic,
-                      ),
-                      child: Center(
-                        child: Image.asset(ImageConstant.logo, height: 84),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
-                      child: _Entrance(
-                        animation: _entrance,
-                        interval: const Interval(
-                          0.12,
-                          0.60,
-                          curve: Curves.easeOutCubic,
-                        ),
-                        child: const _ParentEntryCard(),
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    _Entrance(
-                      animation: _entrance,
-                      interval: const Interval(
-                        0.24,
-                        0.72,
-                        curve: Curves.easeOutCubic,
-                      ),
-                      child: const _PromoBanner(),
-                    ),
-                    const SizedBox(height: 9),
-                    _Entrance(
-                      animation: _entrance,
-                      interval: const Interval(
-                        0.36,
-                        0.85,
-                        curve: Curves.easeOutCubic,
-                      ),
-                      child: _buildClassifieds(),
-                    ),
-                    const SizedBox(height: 32),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _DashboardBackdrop extends StatelessWidget {
-  const _DashboardBackdrop();
-
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFFDF8EF), // soft warm cream
-              Color(0xFFF6F1FB), // gentle lavender
-              Color(0xFFF3F5FB), // cool finish
-            ],
-            stops: [0.0, 0.55, 1.0],
-          ),
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              top: -80,
-              right: -60,
-              child: _glow(
-                220,
-                const Color(0xFF7A35C9).withValues(alpha: 0.10),
-              ),
-            ),
-            Positioned(
-              top: 260,
-              left: -90,
-              child: _glow(
-                260,
-                const Color(0xFFF6C544).withValues(alpha: 0.14),
-              ),
-            ),
-            Positioned(
-              bottom: -60,
-              right: -40,
-              child: _glow(
-                200,
-                const Color(0xFF4B1F8C).withValues(alpha: 0.07),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _glow(double size, Color color) => Container(
-    width: size,
-    height: size,
-    decoration: BoxDecoration(
-      shape: BoxShape.circle,
-      gradient: RadialGradient(colors: [color, color.withOpacity(0)]),
-    ),
-  );
 }
 
 class _Entrance extends StatelessWidget {
@@ -363,7 +287,7 @@ class _ParentEntryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF4B1F8C).withOpacity(0.26),
+            color: AppColors.primary.withOpacity(0.26),
             blurRadius: 22,
             offset: const Offset(0, 10),
           ),
@@ -383,10 +307,10 @@ class _ParentEntryCard extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Color(0xFF4B1F8C),
-                    Color(0xFF7A35C9),
-                    Color(0xFFE7A23D),
-                    Color(0xFFF6C544),
+                    AppColors.primary,
+                    AppColors.primary,
+                    AppColors.primaryDark,
+                    AppColors.primary,
                   ],
                   stops: [0.0, 0.4, 0.78, 1.0],
                 ),
