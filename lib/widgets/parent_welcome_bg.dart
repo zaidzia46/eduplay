@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_colors.dart';
+
 class WelcomeBackgroundContainer extends StatelessWidget {
   final Widget child;
   final BorderRadius? borderRadius;
@@ -26,10 +28,10 @@ class WelcomeBackgroundContainer extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF4B1F8C),
-              Color(0xFF7A35C9),
-              Color(0xFFE7A23D),
-              Color(0xFFF6C544),
+              AppColors.primary,
+              AppColors.primary,
+              AppColors.primaryDark,
+              AppColors.primary,
             ],
             stops: [0.0, 0.4, 0.78, 1.0],
           ),
@@ -37,37 +39,24 @@ class WelcomeBackgroundContainer extends StatelessWidget {
         child: Stack(
           clipBehavior: Clip.hardEdge,
           children: [
-            Positioned(
-              left: -70,
-              bottom: -80,
-              child: _blurCircle(
-                200,
-                const Color(0xFF3B1770).withOpacity(0.45),
-              ),
-            ),
-            Positioned(
-              left: -10,
-              bottom: -100,
-              child: _blurCircle(
-                170,
-                const Color(0xFF3B1770).withOpacity(0.35),
-              ),
-            ),
-            Positioned(
-              right: -50,
-              bottom: -90,
-              child: _blurCircle(
-                220,
-                const Color(0xFFF8D77A).withOpacity(0.25),
-              ),
-            ),
-
+            Positioned(top: -70, left: -60, child: _deco(200, 0.10)),
+            Positioned(right: -20, bottom: -80, child: _deco(120, 0.10)),
+            Positioned(right: -80, bottom: -10, child: _deco(141, 0.10)),
             child,
           ],
         ),
       ),
     );
   }
+
+  Widget _deco(double size, double opacity) => Container(
+    width: size,
+    height: size,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      color: Colors.white.withOpacity(opacity),
+    ),
+  );
 
   static Widget _blurCircle(double size, Color color) {
     return Container(

@@ -50,9 +50,6 @@ class ParentSettingsView extends StatelessWidget {
           WelcomeBackgroundContainer(
             child: SizedBox(height: headerHeight, width: double.infinity),
           ),
-
-          // Content starts exactly where the header's flat part ends,
-          // so the avatar half-overlaps the gradient on every screen size.
           Padding(
             padding: EdgeInsets.only(top: topPadding + appBarHeight),
             child: SingleChildScrollView(
@@ -369,7 +366,10 @@ class ParentSettingsView extends StatelessWidget {
                         color: Colors.white,
                       ),
                     )
-                  : const Text('Log Out', style: TextStyle(color: Colors.white)),
+                  : const Text(
+                      'Log Out',
+                      style: TextStyle(color: Colors.white),
+                    ),
             ),
           ),
         ],
