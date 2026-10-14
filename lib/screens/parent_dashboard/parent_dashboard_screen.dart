@@ -128,7 +128,7 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
                   _buildChildrenSection(),
                   const SizedBox(height: 4),
                   _buildManageSection(),
-                  const SizedBox(height: 12),
+                  Padding(padding: EdgeInsets.symmetric(vertical: 60)),
                 ],
               ),
             ),
