@@ -1,0 +1,201 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:eduplay/fns/image_constant.dart';
+import 'package:eduplay/screens/parent_main/profile/profile_switcher/profile_switcher_controller.dart';
+import 'package:eduplay/widgets/staggered_anime.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../../../../theme/app_colors.dart';
+import '../../../../../theme/app_text_styles.dart';
+import '../../../../../widgets/add_profile_card.dart';
+import '../widgets/profile_card.dart';
+import '../widgets/skeleton_card_loader.dart';
+
+class ProfileSwitcherView extends StatefulWidget {
+  const ProfileSwitcherView({super.key});
+
+  @override
+  State<ProfileSwitcherView> createState() => _ProfileSwitcherViewState();
+}
+
+class _ProfileSwitcherViewState extends State<ProfileSwitcherView>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Worker _worker;
+
+  late final bool _showBackButton;
+
+  // Tracks which set of (childId -> avatarUrl) pairs we last kicked off
+  // precaching for, so we don't redo it on every unrelated Obx rebuild.
+  String? _precachedKey;
+  Future<void>? _precacheFuture;
+
+  /// Warms Flutter's image cache for every visible child's avatar so that
+  /// by the time ProfileCard actually builds, CachedNetworkImage resolves
+  /// from cache instantly instead of showing its own placeholder/skeleton.
+  Future<void> _precacheAvatars(ProfileSwitcherViewModel vm) {
+    final urls = vm.children
+        .map((c) => vm.avatarUrlByChild[c.id])
+        .whereType<String>()
+        .toSet();
+
+    return Future.wait(
+      urls.map(
+        (url) => precacheImage(CachedNetworkImageProvider(url), context)
+            .catchError((_) {
+              // Swallow individual failures (bad url/offline) so one broken
+              // avatar can't hold up the rest of the list forever.
+            }),
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final args = Get.arguments;
+    _showBackButton = args is Map && args['showBackButton'] == true;
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 700),
+    );
+
+    final vm = Get.find<ProfileSwitcherViewModel>();
+
+    _worker = ever(vm.children, (_) {
+      _controller
+        ..reset()
+        ..forward();
+    });
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _worker.dispose();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final vm = Get.find<ProfileSwitcherViewModel>();
+
+    return Scaffold(
+      body: Stack(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ShaderMask(
+                shaderCallback: (Rect bounds) {
+                  return const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.white,
+                      Colors.white,
+                      Colors.white,
+                      Colors.transparent,
+                    ],
+                    stops: [0.0, 0.5, 0.9, 1.0],
+                  ).createShader(bounds);
+                },
+                blendMode: BlendMode.dstIn,
+                child: Image.asset(
+                  ImageConstant.profileSwitchBg,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              SizedBox(height: 12),
+
+              Expanded(
+                child: Obx(() {
+                  if (vm.isLoading.value) {
+                    return const ProfileCardSkeletonList();
+                  }
+
+                  if (vm.errorMessage.isNotEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const SizedBox(height: 12),
+                          Text(
+                            vm.errorMessage.value,
+                            style: AppTextStyles.bodySecondary,
+                          ),
+                          const SizedBox(height: 12),
+                          TextButton(
+                            onPressed: vm.fetchChildren,
+                            child: const Text('Try again'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  final key = vm.children
+                      .map((c) => '${c.id}:${vm.avatarUrlByChild[c.id]}')
+                      .join(',');
+                  if (_precachedKey != key) {
+                    _precachedKey = key;
+                    _precacheFuture = _precacheAvatars(vm);
+                  }
+
+                  return FutureBuilder<void>(
+                    future: _precacheFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState != ConnectionState.done) {
+                        return const ProfileCardSkeletonList();
+                      }
+
+                      // The trailing null renders the add-child card.
+                      final items = [...vm.children, null];
+
+                      return ListView.builder(
+                        padding: EdgeInsets.symmetric(horizontal: 12),
+                        physics: const BouncingScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: items.length,
+                        itemBuilder: (context, index) {
+                          final child = items[index];
+                          return StaggeredAnimation(
+                            controller: _controller,
+                            index: index,
+                            child: child == null
+                                ? AddProfileCard(onTap: vm.goToCreateProfile)
+                                : ProfileCard(
+                                    child: child,
+                                    stars: vm.starsByChild[child.id] ?? 0,
+                                    streak: vm.streakByChild[child.id] ?? 0,
+                                    avatarUrl: vm.avatarUrlByChild[child.id],
+                                    onTap: () => vm.selectChild(child),
+                                  ),
+                          );
+                        },
+                      );
+                    },
+                  );
+                }),
+              ),
+            ],
+          ),
+          if (_showBackButton)
+            Positioned(
+              top: 0,
+              left: 0,
+              child: SafeArea(
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back, color: AppColors.white),
+                  onPressed: () => Get.back(),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}

@@ -3,10 +3,10 @@ import 'dart:developer';
 import 'package:eduplay/controller/session_controller.dart';
 import 'package:get/get.dart';
 
+import '../../parent_main/profile/create_child_profile/repo/create_child_profile_repo.dart';
+import '../../parent_main/profile/profile_switcher/models/child_profile_model.dart';
 import '../subjects/subject_repo.dart';
 import '../subjects/subjects_model.dart';
-import '../../profile/create_child_profile/repo/create_child_profile_repo.dart';
-import '../../profile/profile_switcher/models/child_profile_model.dart';
 
 class DashboardController extends GetxController {
   final SubjectRepository _subjectRepo = SubjectRepository();

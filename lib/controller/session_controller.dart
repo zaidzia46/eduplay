@@ -7,8 +7,8 @@ import 'package:image_picker/image_picker.dart';
 
 import '../core/supabase_client.dart';
 import '../fns/image_picker_service.dart';
-import '../screens/profile/create_child_profile/models/standard_model.dart';
-import '../screens/profile/profile_switcher/models/child_profile_model.dart';
+import '../screens/parent_main/profile/create_child_profile/models/standard_model.dart';
+import '../screens/parent_main/profile/profile_switcher/models/child_profile_model.dart';
 
 class SessionController extends GetxController {
   var currentStandard = Rxn<StandardModel>();

@@ -13,10 +13,10 @@ import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 
 import '../../../theme/app_text_styles.dart';
-import '../../profile/widgets/skeleton_avatar_loader.dart';
 import '../../../widgets/circular_loader.dart';
 import '../../../widgets/continue_learning_card.dart';
 import '../../../widgets/stat_chip.dart';
+import '../../parent_main/profile/widgets/skeleton_avatar_loader.dart';
 import '../subjects/chapters/quiz/quiz_screen.dart';
 import '../subjects/widgets/subject_progress_row.dart';
 import '../bottom_nav/bottomNavigation_controller.dart';

@@ -4,8 +4,8 @@ import 'package:get/get.dart';
 import '../../core/supabase_client.dart';
 import '../../fns/image_constant.dart';
 import '../../routes/app_routes.dart';
-import '../parent_settings/parent_settings_repo.dart';
-import '../profile/profile_switcher/profile_switcher_controller.dart';
+import '../parent_main/parent_settings/parent_settings_repo.dart';
+import '../parent_main/profile/profile_switcher/profile_switcher_controller.dart';
 
 class SplashController extends GetxController
     with GetSingleTickerProviderStateMixin {

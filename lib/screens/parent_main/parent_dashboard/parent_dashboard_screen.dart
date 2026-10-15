@@ -1,0 +1,308 @@
+import 'package:animations/animations.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:eduplay/screens/parent_main/parent_dashboard/parent_dashboard_controller.dart';
+import 'package:eduplay/screens/parent_main/parent_dashboard/widgets/summary_tile.dart';
+import 'package:eduplay/widgets/bg.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+import '../../../theme/app_colors.dart';
+import '../../../theme/app_text_styles.dart';
+import '../../../widgets/action_tile.dart';
+import '../../../widgets/circle_back_button.dart';
+import '../../../widgets/staggered_anime.dart';
+import '../../../widgets/title_row.dart';
+import '../parent_settings/parent_settings_bin.dart';
+import '../parent_settings/parent_settings_screen.dart';
+import '../profile/widgets/skeleton_card_loader.dart';
+import '../profile/widgets/welcome_bg_parent_dashboard.dart';
+import 'widgets/parent_child_card.dart';
+
+class ParentDashboardView extends StatefulWidget {
+  const ParentDashboardView({super.key});
+
+  @override
+  State<ParentDashboardView> createState() => _ParentDashboardViewState();
+}
+
+class _ParentDashboardViewState extends State<ParentDashboardView>
+    with SingleTickerProviderStateMixin {
+  final controller = Get.find<ParentDashboardController>();
+
+  late final AnimationController _staggerController;
+  late final Worker _worker;
+  late final bool _goToAppDashboard;
+
+  String? _precachedKey;
+  Future<void>? _precacheFuture;
+
+  // Roster signature (child ids) the stagger animation last played for. A
+  // background refresh re-emits `children` with the same roster but updated
+  // counters; replaying the entrance animation on that just flickers the list
+  // (fade out / fade in), so we only re-stagger when the roster really changes.
+  String _rosterKey = '';
+
+  String get _currentRosterKey =>
+      controller.children.map((c) => c.id).join(',');
+
+  @override
+  void initState() {
+    super.initState();
+    _staggerController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 700),
+    );
+    final args = Get.arguments;
+    _goToAppDashboard = args is Map && args['convert'] == true;
+
+    _rosterKey = _currentRosterKey;
+    _worker = ever(controller.children, (_) {
+      final key = _currentRosterKey;
+      if (key == _rosterKey) return;
+      _rosterKey = key;
+      _staggerController
+        ..reset()
+        ..forward();
+    });
+
+    _staggerController.forward();
+  }
+
+  @override
+  void dispose() {
+    _worker.dispose();
+    _staggerController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _precacheAvatars() {
+    final urls = controller.children
+        .map((c) => controller.avatarUrlByChild[c.id])
+        .whereType<String>()
+        .toSet();
+
+    return Future.wait(
+      urls.map(
+        (url) => precacheImage(
+          CachedNetworkImageProvider(url),
+          context,
+        ).catchError((_) {}),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          Get.offAllNamed('/app-dashboard');
+        }
+      },
+      child: Scaffold(
+        // backgroundColor: AppColors.primaryDark,
+        body: SoftBackground(
+          child: SafeArea(
+            bottom: false,
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                    child: CircleBackButton(
+                      onTap: () {
+                        _goToAppDashboard
+                            ? Get.offAllNamed('/app-dashboard')
+                            : Get.back();
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildHeader(),
+                  const SizedBox(height: 10),
+                  _buildChildrenSection(),
+                  const SizedBox(height: 4),
+                  _buildManageSection(),
+                  Padding(padding: EdgeInsets.symmetric(vertical: 60)),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          OpenContainer(
+            transitionDuration: const Duration(milliseconds: 600),
+            transitionType: ContainerTransitionType.fade,
+            closedElevation: 0,
+            openElevation: 0,
+            closedColor: Colors.transparent,
+            closedShape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            openShape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.zero,
+            ),
+            closedBuilder: (context, openContainer) {
+              return Obx(() {
+                return WelcomeBackground(
+                  welcomeText: 'Welcome',
+                  userName: controller.session.parentName.value ?? 'Guardian',
+                  subtitleText: "Here's how your family is doing today.",
+                );
+              });
+            },
+            openBuilder: (context, _) {
+              ParentSettingsBinding().dependencies();
+              return ParentSettingsView();
+            },
+          ),
+          const SizedBox(height: 12),
+          Obx(
+            () => Row(
+              children: [
+                Expanded(
+                  child: SummaryTile(
+                    icon: Icons.people_alt_rounded,
+                    color: AppColors.primary,
+                    value: '${controller.children.length}',
+                    label: 'Children',
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: SummaryTile(
+                    icon: Icons.star_rounded,
+                    color: AppColors.star,
+                    value: '${controller.totalStars.value}',
+                    label: 'Total Stars',
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildChildrenSection() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TitleRow(title: 'Your Children'),
+          const SizedBox(height: 2),
+          Obx(() {
+            if (controller.isLoading.value) {
+              return const SizedBox(
+                height: 300,
+                child: ProfileCardSkeletonList(),
+              );
+            }
+
+            if (controller.errorMessage.isNotEmpty) {
+              return _buildChildrenError();
+            }
+
+            if (controller.children.isEmpty) {
+              return const SizedBox.shrink();
+            }
+
+            // Recompute only when the (child, avatarUrl) pairs actually change.
+            final key = controller.children
+                .map((c) => '${c.id}:${controller.avatarUrlByChild[c.id]}')
+                .join(',');
+            if (_precachedKey != key) {
+              _precachedKey = key;
+              _precacheFuture = _precacheAvatars();
+            }
+
+            return FutureBuilder<void>(
+              future: _precacheFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return const SizedBox(
+                    height: 300,
+                    child: ProfileCardSkeletonList(),
+                  );
+                }
+
+                return ListView.builder(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: controller.children.length,
+                  itemBuilder: (context, index) {
+                    final child = controller.children[index];
+                    return StaggeredAnimation(
+                      controller: _staggerController,
+                      index: index,
+                      child: ParentChildCard(
+                        child: child,
+                        stars: controller.starsByChild[child.id] ?? 0,
+                        streak: controller.streakByChild[child.id] ?? 0,
+                        avatarUrl: controller.avatarUrlByChild[child.id],
+                        onContinue: () => controller.continueLearning(child),
+                        onViewProgress: () => controller.viewProgress(child),
+                      ),
+                    );
+                  },
+                );
+              },
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildChildrenError() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 12),
+          Text(
+            controller.errorMessage.value,
+            style: AppTextStyles.bodySecondary,
+          ),
+          const SizedBox(height: 12),
+          TextButton(
+            onPressed: controller.switcher.fetchChildren,
+            child: const Text('Try again'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildManageSection() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      child: Column(
+        children: [
+          ActionTile(
+            icon: Icons.add_circle_outline_rounded,
+            label: 'Add a Child',
+            subtitle: 'Create a new learner profile',
+            color: AppColors.primary,
+            onTap: controller.addChild,
+          ),
+        ],
+      ),
+    );
+  }
+}

@@ -7,11 +7,16 @@ import 'package:eduplay/routes/app_routes.dart';
 
 import 'package:eduplay/screens/splash/splash_screen.dart';
 
-import '../screens/app_dashboard/app_dashboard_bin.dart';
-import '../screens/auth/auth_binding.dart';
-import '../screens/auth/login.dart';
-import '../screens/auth/register.dart';
-import '../screens/app_dashboard/app_dashboard_screen.dart';
+import '../screens/parent_main/app_dashboard/app_dashboard_bin.dart';
+import '../screens/parent_main/app_dashboard/app_dashboard_screen.dart';
+import '../screens/parent_main/auth/auth_binding.dart';
+import '../screens/parent_main/auth/login.dart';
+import '../screens/parent_main/auth/register.dart';
+import '../screens/parent_main/parent_dashboard/parent_dashboard_bin.dart';
+import '../screens/parent_main/parent_dashboard/parent_dashboard_screen.dart';
+import '../screens/parent_main/profile/create_child_profile/create_child_profile_screen.dart';
+import '../screens/parent_main/profile/profile_switcher/profile_switcher_bin.dart';
+import '../screens/parent_main/profile/profile_switcher/profile_switcher_screen.dart';
 import '../screens/student_main/bottom_nav/bottomNavbar_bin.dart';
 import '../screens/student_main/child_profile/profile_bin.dart';
 import '../screens/student_main/dashboard/dashboard_bin.dart';
@@ -22,11 +27,6 @@ import '../screens/student_main/subjects/chapters/quiz/quiz_bin.dart';
 import '../screens/student_main/subjects/chapters/quiz/quiz_screen.dart';
 import '../screens/student_main/subjects/chapters/quiz_list/quiz_list_bin.dart';
 import '../screens/student_main/subjects/chapters/quiz_list/quiz_list_screen.dart';
-import '../screens/parent_dashboard/parent_dashboard_bin.dart';
-import '../screens/parent_dashboard/parent_dashboard_screen.dart';
-import '../screens/profile/create_child_profile/create_child_profile_screen.dart';
-import '../screens/profile/profile_switcher/profile_switcher_bin.dart';
-import '../screens/profile/profile_switcher/profile_switcher_screen.dart';
 import '../screens/splash/splash_bin.dart';
 import 'auth_middleware.dart';
 
