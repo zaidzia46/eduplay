@@ -1,5 +1,5 @@
 import 'package:eduplay/fns/image_constant.dart';
-import 'package:eduplay/screens/home/progress/progress_controller.dart';
+import 'package:eduplay/screens/student_main/progress/progress_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

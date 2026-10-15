@@ -1,6 +1,6 @@
-import 'package:eduplay/screens/home/child_profile/profile.dart';
-import 'package:eduplay/screens/home/progress/progress.dart';
-import 'package:eduplay/screens/home/subjects/subjects.dart';
+import 'package:eduplay/screens/student_main/child_profile/profile.dart';
+import 'package:eduplay/screens/student_main/progress/progress.dart';
+import 'package:eduplay/screens/student_main/subjects/subjects.dart';
 import 'package:eduplay/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

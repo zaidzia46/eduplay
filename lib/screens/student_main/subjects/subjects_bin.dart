@@ -1,4 +1,4 @@
-import 'package:eduplay/screens/home/subjects/subjects_controller.dart';
+import 'package:eduplay/screens/student_main/subjects/subjects_controller.dart';
 import 'package:get/get_instance/get_instance.dart';
 import 'package:get/get.dart';
 

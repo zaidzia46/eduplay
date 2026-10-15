@@ -1,7 +1,7 @@
 import 'package:eduplay/fns/image_constant.dart';
-import 'package:eduplay/screens/home/subjects/subjects_controller.dart';
-import 'package:eduplay/screens/home/subjects/widgets/subject_progress_row_skeleton.dart';
-import 'package:eduplay/screens/home/subjects/widgets/subject_progress_row.dart';
+import 'package:eduplay/screens/student_main/subjects/subjects_controller.dart';
+import 'package:eduplay/screens/student_main/subjects/widgets/subject_progress_row_skeleton.dart';
+import 'package:eduplay/screens/student_main/subjects/widgets/subject_progress_row.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../routes/app_routes.dart';

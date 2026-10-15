@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:eduplay/controller/session_controller.dart';
-import 'package:eduplay/screens/home/child_profile/profile_controller.dart';
+import 'package:eduplay/screens/student_main/child_profile/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

@@ -2,8 +2,8 @@ import 'package:get/get.dart';
 
 import '../../controller/session_controller.dart';
 import '../../routes/app_routes.dart';
-import '../home/progress/models/recent_act_model.dart';
-import '../home/progress/progress_repo.dart';
+import '../student_main/progress/models/recent_act_model.dart';
+import '../student_main/progress/progress_repo.dart';
 import '../profile/profile_switcher/models/child_profile_model.dart';
 import '../profile/profile_switcher/profile_switcher_controller.dart';
 

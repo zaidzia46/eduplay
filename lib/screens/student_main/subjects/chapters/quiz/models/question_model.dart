@@ -1,4 +1,4 @@
-import 'package:eduplay/screens/home/subjects/chapters/quiz/models/question_opt_model.dart';
+import 'package:eduplay/screens/student_main/subjects/chapters/quiz/models/question_opt_model.dart';
 
 class QuestionModel {
   final int id;

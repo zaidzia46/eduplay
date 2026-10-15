@@ -1,5 +1,5 @@
 import 'package:eduplay/controller/session_controller.dart';
-import 'package:eduplay/screens/home/subjects/widgets/filter_sheet.dart';
+import 'package:eduplay/screens/student_main/subjects/widgets/filter_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
