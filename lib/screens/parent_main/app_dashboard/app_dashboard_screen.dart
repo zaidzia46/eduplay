@@ -9,6 +9,7 @@ import '../../../routes/app_routes.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/title_row.dart';
+import '../bottom_nav_bar/bottom_nav_bar_controller.dart';
 import 'controllers/classified_ads_controller.dart';
 import 'controllers/promo_banner_controller.dart';
 import 'widgets/classified_ad_card.dart';
@@ -276,7 +277,11 @@ class _ParentEntryCard extends StatelessWidget {
 
   void _login() => Get.toNamed(AppRoutes.login);
 
-  void _continue() => Get.toNamed(AppRoutes.parentDashboard);
+  void _continue() {
+    // The card lives inside the shell, so "continue" is a tab switch — not a
+    // route push (which would stack a second copy of the shell on top).
+    Get.find<ParentBottomNavController>().changePage(1);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -359,10 +364,6 @@ class _ParentEntryCard extends StatelessWidget {
                             ],
                           ),
                         ),
-                        if (loggedIn) ...[
-                          const SizedBox(width: 10),
-                          _buildNextArrow(),
-                        ],
                       ],
                     ),
                   ),
@@ -371,26 +372,6 @@ class _ParentEntryCard extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  // A circular forward arrow shown on the logged-in card, signalling that the
-  // card taps through to the next screen (the Parent Dashboard).
-  Widget _buildNextArrow() {
-    const double size = 44;
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white.withOpacity(0.18),
-        border: Border.all(color: Colors.white.withOpacity(0.6), width: 2),
-      ),
-      child: const Icon(
-        Icons.arrow_forward_rounded,
-        color: Colors.white,
-        size: 24,
       ),
     );
   }

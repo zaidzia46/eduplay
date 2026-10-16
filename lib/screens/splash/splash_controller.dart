@@ -64,7 +64,7 @@ class SplashController extends GetxController
     // user-specific is created or read just because the app was opened. The
     // user reaches authenticated screens only by logging in or registering.
     if (session == null) {
-      Get.offAllNamed(AppRoutes.appDashboard);
+      Get.offAllNamed(AppRoutes.parentHome);
       return;
     }
 
@@ -93,7 +93,7 @@ class SplashController extends GetxController
         precacheImage(CachedNetworkImageProvider(parentAvatarUrl), context),
     ]);
 
-    Get.offAllNamed(AppRoutes.appDashboard);
+    Get.offAllNamed(AppRoutes.parentHome);
   }
 
   @override

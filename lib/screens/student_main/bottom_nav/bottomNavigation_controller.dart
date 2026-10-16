@@ -11,7 +11,7 @@ class BottomNavController extends GetxController {
   void onInit() {
     super.onInit();
     // The parent dashboard's "View Progress" enters Home on a specific tab by
-    // passing {'initialTab': <index>} through Get.offAllNamed. Default entry
+    // passing {'initialTab': <index>} when it pushes this shell. Default entry
     // (no args) stays on the Dashboard tab (0).
     final args = Get.arguments;
     if (args is Map && args['initialTab'] is int) {

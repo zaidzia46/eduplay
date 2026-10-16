@@ -1,3 +1,4 @@
+import 'package:eduplay/screens/parent_main/home.dart';
 import 'package:eduplay/screens/student_main/game_demo/game.dart';
 import 'package:eduplay/screens/student_main/progress/progress.dart';
 import 'package:eduplay/screens/student_main/progress/progress_bin.dart';
@@ -12,8 +13,10 @@ import '../screens/parent_main/app_dashboard/app_dashboard_screen.dart';
 import '../screens/parent_main/auth/auth_binding.dart';
 import '../screens/parent_main/auth/login.dart';
 import '../screens/parent_main/auth/register.dart';
+import '../screens/parent_main/bottom_nav_bar/bottom_nav_bar_bin.dart';
 import '../screens/parent_main/parent_dashboard/parent_dashboard_bin.dart';
 import '../screens/parent_main/parent_dashboard/parent_dashboard_screen.dart';
+import '../screens/parent_main/parent_settings/parent_settings_bin.dart';
 import '../screens/parent_main/profile/create_child_profile/create_child_profile_screen.dart';
 import '../screens/parent_main/profile/profile_switcher/profile_switcher_bin.dart';
 import '../screens/parent_main/profile/profile_switcher/profile_switcher_screen.dart';
@@ -37,27 +40,6 @@ abstract class AppPages {
       page: () => const SplashScreen(),
       binding: SplashBinding(),
     ),
-    // GetPage(
-    //   name: AppRoutes.onboardingName,
-    //   page: () => Name(),
-    //   binding: OnboardingBinding(),
-    // ),
-    // GetPage(
-    //   name: AppRoutes.onboardingAge,
-    //   page: () => Age(),
-    //   binding: OnboardingBinding(),
-    //   transition: Transition.rightToLeft,
-    //   transitionDuration: const Duration(milliseconds: 400), // ← add this
-    //   curve: Curves.easeInOut,
-    // ),
-    // GetPage(
-    //   name: AppRoutes.onboardingReady,
-    //   page: () => StandardView(),
-    //   binding: OnboardingBinding(),
-    //   transition: Transition.rightToLeft,
-    //   transitionDuration: const Duration(milliseconds: 400), // ← add this
-    //   curve: Curves.easeInOut,
-    // ),
     GetPage(
       name: AppRoutes.login,
       page: () => const LoginView(),
@@ -70,19 +52,15 @@ abstract class AppPages {
       binding: AuthBinding(),
     ),
     GetPage(
-      name: AppRoutes.appDashboard,
-      page: () => const AppDashboardView(),
-      binding: AppDashboardBinding(),
-      transition: Transition.fadeIn,
-    ),
-    // ----- Authenticated routes: guarded by [AuthGuard] so a logged-out user
-    // is redirected to the public App Dashboard before any binding/DB call. -----
-    GetPage(
-      name: AppRoutes.parentDashboard,
-      page: () => const ParentDashboardView(),
-      binding: ParentDashboardBinding(),
-      middlewares: [AuthGuard()],
-      transition: Transition.fadeIn,
+      name: AppRoutes.parentHome,
+      page: () => ParentHome(),
+      // middlewares: [AuthGuard()],
+      binding: BindingsBuilder(() {
+        ParentBottomNavBinding().dependencies();
+        AppDashboardBinding().dependencies();
+        ParentDashboardBinding().dependencies();
+        ParentSettingsBinding().dependencies();
+      }),
     ),
     GetPage(
       name: AppRoutes.profileSwitcher,

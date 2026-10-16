@@ -1,10 +1,8 @@
 abstract class AppRoutes {
   static const splash = '/';
-  static const onboardingName = '/onboarding/name';
-  static const onboardingAge = '/onboarding/age';
-  static const onboardingReady = '/onboarding/ready';
   static const String login = '/login';
   static const String register = '/register';
+  static const String parentHome = '/parent-home';
   static const String appDashboard = '/app-dashboard';
   static const String parentDashboard = '/parent-dashboard';
   static const String profileSwitcher = '/profile-switcher';

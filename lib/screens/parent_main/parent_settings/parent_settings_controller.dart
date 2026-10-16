@@ -146,7 +146,9 @@ class ParentSettingsController extends GetxController {
       Get.delete<DashboardController>(force: true);
       ChildProfileRepository.clearCache();
       ParentRepository.clearCache();
-      Get.offAllNamed(AppRoutes.appDashboard);
+      // Back to the shell's public landing tab — tab 1/2 are now gated, so
+      // staying on Settings after a sign-out is not an option.
+      Get.offAllNamed(AppRoutes.parentHome, arguments: {'initialTab': 0});
     } catch (e) {
       log('Logout failed: $e');
       isLoggingOut.value = false;

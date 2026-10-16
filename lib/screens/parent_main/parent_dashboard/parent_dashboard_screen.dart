@@ -12,6 +12,7 @@ import '../../../widgets/action_tile.dart';
 import '../../../widgets/circle_back_button.dart';
 import '../../../widgets/staggered_anime.dart';
 import '../../../widgets/title_row.dart';
+import '../bottom_nav_bar/bottom_nav_bar_controller.dart';
 import '../parent_settings/parent_settings_bin.dart';
 import '../parent_settings/parent_settings_screen.dart';
 import '../profile/widgets/skeleton_card_loader.dart';
@@ -31,7 +32,6 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
 
   late final AnimationController _staggerController;
   late final Worker _worker;
-  late final bool _goToAppDashboard;
 
   String? _precachedKey;
   Future<void>? _precacheFuture;
@@ -52,9 +52,6 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
       vsync: this,
       duration: const Duration(milliseconds: 700),
     );
-    final args = Get.arguments;
-    _goToAppDashboard = args is Map && args['convert'] == true;
-
     _rosterKey = _currentRosterKey;
     _worker = ever(controller.children, (_) {
       final key = _currentRosterKey;
@@ -93,42 +90,26 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-        if (!didPop) {
-          Get.offAllNamed('/app-dashboard');
-        }
-      },
-      child: Scaffold(
-        // backgroundColor: AppColors.primaryDark,
-        body: SoftBackground(
-          child: SafeArea(
-            bottom: false,
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                    child: CircleBackButton(
-                      onTap: () {
-                        _goToAppDashboard
-                            ? Get.offAllNamed('/app-dashboard')
-                            : Get.back();
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  _buildHeader(),
-                  const SizedBox(height: 10),
-                  _buildChildrenSection(),
-                  const SizedBox(height: 4),
-                  _buildManageSection(),
-                  Padding(padding: EdgeInsets.symmetric(vertical: 60)),
-                ],
-              ),
+    final nav = Get.find<ParentBottomNavController>();
+
+    return Scaffold(
+      // backgroundColor: AppColors.primaryDark,
+      body: SoftBackground(
+        child: SafeArea(
+          bottom: false,
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 8),
+                _buildHeader(),
+                const SizedBox(height: 10),
+                _buildChildrenSection(),
+                const SizedBox(height: 4),
+                _buildManageSection(),
+                Padding(padding: EdgeInsets.symmetric(vertical: 60)),
+              ],
             ),
           ),
         ),
@@ -142,32 +123,13 @@ class _ParentDashboardViewState extends State<ParentDashboardView>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          OpenContainer(
-            transitionDuration: const Duration(milliseconds: 600),
-            transitionType: ContainerTransitionType.fade,
-            closedElevation: 0,
-            openElevation: 0,
-            closedColor: Colors.transparent,
-            closedShape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            openShape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.zero,
-            ),
-            closedBuilder: (context, openContainer) {
-              return Obx(() {
-                return WelcomeBackground(
-                  welcomeText: 'Welcome',
-                  userName: controller.session.parentName.value ?? 'Guardian',
-                  subtitleText: "Here's how your family is doing today.",
-                );
-              });
-            },
-            openBuilder: (context, _) {
-              ParentSettingsBinding().dependencies();
-              return ParentSettingsView();
-            },
-          ),
+          Obx(() {
+            return WelcomeBackground(
+              welcomeText: 'Welcome',
+              userName: controller.session.parentName.value ?? 'Guardian',
+              subtitleText: "Here's how your family is doing today.",
+            );
+          }),
           const SizedBox(height: 12),
           Obx(
             () => Row(

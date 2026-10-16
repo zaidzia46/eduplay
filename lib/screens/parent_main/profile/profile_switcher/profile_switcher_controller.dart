@@ -90,10 +90,10 @@ class ProfileSwitcherViewModel extends GetxController {
       precacheImage(const AssetImage(ImageConstant.profileCardBg), context),
       precacheImage(const AssetImage(ImageConstant.banner), context),
     ]);
-    // initialTab lets callers (the parent dashboard's "View Progress") land on
-    // a specific Home tab; BottomNavController.onInit reads it. Default 0 keeps
-    // the switcher's own behaviour identical.
-    Get.offAllNamed(AppRoutes.home, arguments: {'initialTab': initialTab});
+    // PUSH the student shell rather than replacing the stack, so system-back
+    // returns the parent to the shell (still on the Parent Dashboard tab)
+    // instead of dropping them out of the app.
+    Get.toNamed(AppRoutes.home, arguments: {'initialTab': initialTab});
   }
 
   void updateChild(ChildProfileModel updatedChild, {String? avatarUrl}) {

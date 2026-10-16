@@ -32,7 +32,7 @@ class AuthViewModel extends GetxController {
 
       await _handleAuthSuccess(response);
 
-      Get.offAllNamed(AppRoutes.parentDashboard);
+      _enterFamilyDashboard();
     } on AuthException catch (e) {
       final error = _extractErrorMessage(e);
       if (error.contains('Invalid login credentials')) {
@@ -70,7 +70,7 @@ class AuthViewModel extends GetxController {
 
       await _handleAuthSuccess(response);
 
-      Get.offAllNamed(AppRoutes.parentDashboard);
+      _enterFamilyDashboard();
     } on AuthException catch (e) {
       errorMessage.value = _extractErrorMessage(e);
     } catch (e) {
@@ -80,6 +80,13 @@ class AuthViewModel extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  /// Opens the app shell on the Parent Dashboard tab. `offAllNamed` (not a
+  /// push) so the auth screens are dropped from the stack once the user is in,
+  /// and the shell's binding runs against the now-authenticated session.
+  void _enterFamilyDashboard() {
+    Get.offAllNamed(AppRoutes.parentHome, arguments: {'initialTab': 1});
   }
 
   Future<void> _handleAuthSuccess(AuthResponse response) async {

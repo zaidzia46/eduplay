@@ -156,7 +156,7 @@ class CreateProfileViewModel extends GetxController {
         await Get.find<ProfileSwitcherViewModel>().fetchChildren();
       }
 
-      Get.offAllNamed(AppRoutes.parentDashboard);
+      Get.offAllNamed(AppRoutes.parentHome, arguments: {'initialTab': 1});
     } on PostgrestException catch (e) {
       errorMessage.value = e.code == '23505'
           ? 'That username is already taken.'
