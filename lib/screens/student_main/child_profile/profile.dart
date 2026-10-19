@@ -166,10 +166,6 @@ class _ProfileViewState extends State<ProfileView>
                               );
                             }),
 
-                            const SizedBox(height: 22),
-
-                            _buildParentDashboardTile(),
-
                             const SizedBox(height: 32),
                           ],
                         ),
@@ -604,35 +600,6 @@ class _ProfileViewState extends State<ProfileView>
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildParentDashboardTile() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFF0EEFA), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withOpacity(.08),
-            blurRadius: 18,
-            offset: const Offset(0, 7),
-          ),
-        ],
-      ),
-      child: ActionTile(
-        icon: Icons.dashboard_rounded,
-        label: 'Parent Dashboard',
-        subtitle: 'Back to your dashboard',
-        color: AppColors.primary,
-        onTap: () {
-          Get.offAllNamed(
-            AppRoutes.parentHome,
-            arguments: {'initialTab': 1},
-          );
-        },
       ),
     );
   }
