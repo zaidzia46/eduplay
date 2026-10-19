@@ -57,7 +57,7 @@ class ParentHome extends StatelessWidget {
                 BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.dashboard_sharp),
-                  label: 'Parent Dashboard',
+                  label: 'Parent',
                 ),
                 BottomNavigationBarItem(
                   icon: Icon(Icons.person),

@@ -303,8 +303,6 @@ class _ParentEntryCard extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            // Logged in: the whole card taps through to the Parent Dashboard.
-            // Logged out: not tappable — the Sign in button inside handles it.
             onTap: loggedIn ? _continue : null,
             child: Container(
               decoration: const BoxDecoration(
@@ -363,6 +361,11 @@ class _ParentEntryCard extends StatelessWidget {
                               ],
                             ],
                           ),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios_outlined,
+                          color: AppColors.white,
+                          size: 20,
                         ),
                       ],
                     ),
