@@ -110,6 +110,33 @@ class _DashBoardState extends State<DashBoard>
                   padding: EdgeInsets.symmetric(horizontal: 12.0),
                   child: Column(
                     children: [
+                      GestureDetector(
+                        onTap: Get.back,
+                        child: Container(
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColors.white.withAlpha(30),
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.arrow_back_ios_outlined,
+                                color: AppColors.white,
+                                size: 12,
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                'Back to Parent Dashboard',
+                                style: AppTextStyles.bodySecondary.copyWith(
+                                  color: AppColors.white,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                       SizedBox(height: 15),
                       Obx(() {
                         return Row(
