@@ -111,11 +111,16 @@ class _DashBoardState extends State<DashBoard>
                   child: Column(
                     children: [
                       GestureDetector(
-                        onTap: Get.back,
+                        onTap: () {
+                          Get.toNamed(
+                            AppRoutes.parentHome,
+                            arguments: {'initialTab': 1},
+                          );
+                        },
                         child: Container(
                           padding: EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: AppColors.white.withAlpha(30),
+                            color: AppColors.white.withAlpha(55),
                             borderRadius: BorderRadius.circular(50),
                           ),
                           child: Row(

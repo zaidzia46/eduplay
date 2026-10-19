@@ -93,7 +93,7 @@ class ProfileSwitcherViewModel extends GetxController {
     // PUSH the student shell rather than replacing the stack, so system-back
     // returns the parent to the shell (still on the Parent Dashboard tab)
     // instead of dropping them out of the app.
-    Get.toNamed(AppRoutes.home, arguments: {'initialTab': initialTab});
+    Get.offAllNamed(AppRoutes.home, arguments: {'initialTab': initialTab});
   }
 
   void updateChild(ChildProfileModel updatedChild, {String? avatarUrl}) {

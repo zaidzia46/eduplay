@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 
+import '../../routes/app_routes.dart';
 import 'bottom_nav/bottomNavigation_controller.dart';
 import 'dashboard/dashboard.dart';
 
@@ -26,35 +27,41 @@ class Home extends StatelessWidget {
     ProfileView(),
   ];
 
-  Widget build(context) {
-    return PopScope(
-      canPop: vm.currentIndex.value == 0,
-      onPopInvokedWithResult: (didPop, result) {
-        if (!didPop && vm.currentIndex.value != 0) {
-          vm.changePage(0);
-        }
-      },
-      child: Scaffold(
-        body: Obx(() {
-          final index = vm.currentIndex.value;
-          _builtOnce[index] = true;
-          return IndexedStack(
-            index: vm.currentIndex.value,
-            children: List.generate(_screens.length, (i) {
-              return _builtOnce[i] ? _screens[i] : const SizedBox.shrink();
-            }),
-          );
-        }),
+  @override
+  Widget build(BuildContext context) {
+    return Obx(
+      () => PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
 
-        bottomNavigationBar: Obx(
-          () => ClipRRect(
+          if (vm.currentIndex.value != 0) {
+            vm.changePage(0);
+          } else {
+            Get.offAllNamed(AppRoutes.parentHome, arguments: {'initialTab': 1});
+          }
+        },
+        child: Scaffold(
+          body: Builder(
+            builder: (context) {
+              final index = vm.currentIndex.value;
+              _builtOnce[index] = true;
+              return IndexedStack(
+                index: index,
+                children: List.generate(_screens.length, (i) {
+                  return _builtOnce[i] ? _screens[i] : const SizedBox.shrink();
+                }),
+              );
+            },
+          ),
+          bottomNavigationBar: ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
             child: BottomNavigationBar(
               currentIndex: vm.currentIndex.value,
-              onTap: (index) => vm.changePage(index),
+              onTap: vm.changePage,
               fixedColor: AppColors.white,
               backgroundColor: AppColors.primary,
-              unselectedItemColor: Color(0xffD1C4E9),
+              unselectedItemColor: const Color(0xffD1C4E9),
               items: const [
                 BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
                 BottomNavigationBarItem(
