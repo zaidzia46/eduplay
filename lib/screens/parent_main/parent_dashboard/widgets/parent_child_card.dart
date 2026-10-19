@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -29,78 +31,83 @@ class ParentChildCard extends StatelessWidget {
   Widget build(BuildContext context) {
     const double avatarSize = 52;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.fromLTRB(12, 12, 10, 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _buildAvatar(avatarSize),
-          const SizedBox(width: 12),
+    return GestureDetector(
+      onTap: onContinue,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.fromLTRB(12, 12, 10, 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _buildAvatar(avatarSize),
+            const SizedBox(width: 12),
 
-          // Info
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  child.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.h4.copyWith(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  child.standard?.name ?? 'Not enrolled yet',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.bodySmall.copyWith(
-                    color: AppColors.primaryDark,
-                    fontWeight: FontWeight.w700,
+            // Info
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    child.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.h4.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    StatChip.stars(value: '$stars'),
-                    const SizedBox(width: 8),
-                    StatChip.streak(value: '$streak'),
-                  ],
+                  const SizedBox(height: 2),
+                  Text(
+                    child.standard?.name ?? 'Not enrolled yet',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.primaryDark,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      StatChip.stars(value: '$stars'),
+                      const SizedBox(width: 8),
+                      StatChip.streak(value: '$streak'),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  _buildProgress(),
+                ],
+              ),
+            ),
+
+            const SizedBox(width: 10),
+
+            // Right side: icon actions
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _IconAction(
+                  icon: Icons.arrow_forward_rounded,
+                  tooltip: 'Continue Learning',
+                  filled: true,
+                  onTap: onContinue,
                 ),
                 const SizedBox(height: 8),
-                _buildProgress(),
+                _IconAction(
+                  icon: Icons.insights_rounded,
+                  tooltip: 'View Progress',
+                  filled: false,
+                  onTap: onViewProgress,
+                ),
               ],
             ),
-          ),
-
-          const SizedBox(width: 10),
-
-          // Right side: icon actions
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _IconAction(
-                icon: Icons.arrow_forward_rounded,
-                tooltip: 'Continue Learning',
-                filled: true,
-                onTap: onContinue,
-              ),
-              const SizedBox(height: 8),
-              _IconAction(
-                icon: Icons.insights_rounded,
-                tooltip: 'View Progress',
-                filled: false,
-                onTap: onViewProgress,
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
