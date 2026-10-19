@@ -11,6 +11,7 @@ import 'progress_repo.dart';
 class ProgressController extends GetxController {
   final ProgressRepository _repo = ProgressRepository();
   final SessionController _session = Get.find<SessionController>();
+  late var studentName;
 
   final overview = Rxn<ProgressOverviewModel>();
   var recentActivity = <RecentActivityModel>[].obs;
@@ -45,9 +46,8 @@ class ProgressController extends GetxController {
     final isFirstLoad = overview.value == null;
     try {
       if (isFirstLoad) isLoading.value = true;
-
+      studentName = _session.activeChild.value?.name;
       final result = await _repo.getOverview(childId);
-      log('Overall progress of children: ${result.overallPercent}');
       final activity = await _repo.getRecentActivity(childId, limit: 5);
 
       overview.value = result;

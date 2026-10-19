@@ -155,6 +155,12 @@ class _ProgressViewState extends State<ProgressView>
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
+                                  if (widget.readOnly)
+                                    Text(
+                                      vm.studentName,
+                                      style: AppTextStyles.sectionHeader
+                                          .copyWith(fontSize: 23),
+                                    ),
                                   Text(
                                     'Overall Progress',
                                     style: AppTextStyles.sectionHeader,
