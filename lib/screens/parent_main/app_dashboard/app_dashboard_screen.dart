@@ -362,11 +362,13 @@ class _ParentEntryCard extends StatelessWidget {
                             ],
                           ),
                         ),
-                        Icon(
-                          Icons.arrow_forward_ios_outlined,
-                          color: AppColors.white,
-                          size: 20,
-                        ),
+                        if (loggedIn) ...[
+                          Icon(
+                            Icons.arrow_forward_ios_outlined,
+                            color: AppColors.white,
+                            size: 20,
+                          ),
+                        ],
                       ],
                     ),
                   ),
