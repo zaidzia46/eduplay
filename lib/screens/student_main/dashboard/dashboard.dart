@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 
+import '../../../controller/session_controller.dart';
 import '../../../theme/app_text_styles.dart';
 import '../../../widgets/circular_loader.dart';
 import '../../../widgets/continue_learning_card.dart';
@@ -44,7 +45,6 @@ class _DashBoardState extends State<DashBoard>
   @override
   void initState() {
     super.initState();
-    log("updated child: ${vm.child.value?.totalStars}");
 
     _controller = AnimationController(
       vsync: this,
@@ -72,6 +72,7 @@ class _DashBoardState extends State<DashBoard>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final child = Get.find<SessionController>().activeChild;
     const double avatarSize = 64;
     final media = MediaQuery.of(context);
     final size = media.size;
@@ -205,14 +206,26 @@ class _DashBoardState extends State<DashBoard>
                                       height: 1.2,
                                     ),
                                   ),
-                                  Text(
-                                    'Ready to learn something amazing today?',
-                                    style: AppTextStyles.bodySmall.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.white,
-                                    ),
-                                    softWrap: true,
-                                    textAlign: TextAlign.start,
+                                  SizedBox(height: 4),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${child.value?.institution?.name}',
+                                        style: AppTextStyles.bodySmall.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.white,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${child.value?.standard?.name}',
+                                        style: AppTextStyles.bodySmall.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.white,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
