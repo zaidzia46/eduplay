@@ -12,11 +12,16 @@ class QuizListRepository {
         .from('quizzes')
         .select()
         .eq('chapter_id', chapterId)
-        .order('id');
+        .order('id', ascending: true);
 
-    return (rows as List)
+    final quizzes = (rows as List)
         .map((e) => QuizModel.fromJson(e as Map<String, dynamic>))
         .toList();
+
+    // Keep the visible order deterministic even if the response ordering is
+    // changed by a future query modification.
+    quizzes.sort((a, b) => a.id.compareTo(b.id));
+    return quizzes;
   }
 
   /// Best score / pass state per quiz for this child in this chapter, computed
