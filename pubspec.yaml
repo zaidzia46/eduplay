@@ -15,7 +15,7 @@ dependencies:
   get_storage: ^2.1.1
   linear_progress_bar: ^3.0.0
   lottie: ^3.3.1
-  font_awesome_flutter: ^10.9.1
+  font_awesome_flutter: ^11.0.0
   flutter_staggered_animations: ^1.1.1
   shimmer_animation: ^2.2.2+1
   vector_math: ^2.1.4

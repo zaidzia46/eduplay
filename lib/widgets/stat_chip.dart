@@ -19,7 +19,7 @@ import '../theme/app_text_styles.dart';
 /// `StatTile` had no background and only worked because a white card sat
 /// behind it.
 class StatChip extends StatelessWidget {
-  final IconData icon;
+  final FaIconData icon;
   final Color color;
   final String value;
   final String? label;

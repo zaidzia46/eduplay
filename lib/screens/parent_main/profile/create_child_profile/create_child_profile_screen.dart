@@ -273,7 +273,7 @@ class CreateProfileView extends StatelessWidget {
     );
   }
 
-  Widget _prefixIcon(IconData icon) {
+  Widget _prefixIcon(FaIconData icon) {
     return Padding(
       padding: const EdgeInsets.only(left: 12, right: 8),
       child: SizedBox(
